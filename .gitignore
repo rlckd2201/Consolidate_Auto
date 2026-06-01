@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.log
+backend/data/*.json
+backend/generated/
+!backend/data/.gitkeep

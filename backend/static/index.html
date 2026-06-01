@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>특근 보고 취합 WEB</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">DS</span>
+          <div>
+            <strong>특근 보고</strong>
+            <span>취합 WEB</span>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-btn active" data-view="manager">관리자 뷰</button>
+          <button class="nav-btn" data-view="staff">담당자 입력</button>
+          <button class="nav-btn" data-view="ppt">PPT 보고 뷰</button>
+          <button class="nav-btn" data-view="approval">전자결재 초안</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <h1>5월 5주차 특근계획 취합</h1>
+            <p id="periodText">데이터 로딩 중</p>
+          </div>
+          <div class="top-actions">
+            <button id="refreshBtn" class="ghost">새로고침</button>
+            <button id="exportExcelBtn">Excel 기준데이터 저장</button>
+          </div>
+        </header>
+
+        <section id="manager" class="view active">
+          <div class="kpi-grid">
+            <div class="kpi"><span>전체 특근인원</span><strong id="kpiTotal">-</strong></div>
+            <div class="kpi"><span>주말 특근현황</span><strong id="kpiWeekend">-</strong></div>
+            <div class="kpi"><span>6/3 포함 참고</span><strong id="kpiReference">-</strong></div>
+            <div class="kpi warn"><span>검토 필요</span><strong id="kpiUnresolved">-</strong></div>
+          </div>
+
+          <div class="split">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>분류별 집계</h2>
+                <span>보고자료 PPT 기준</span>
+              </div>
+              <div id="categoryBars" class="bars"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <h2>공장별 집계</h2>
+                <span>더원공장 포함</span>
+              </div>
+              <div id="factoryBars" class="bars"></div>
+            </section>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>통합 검토 그리드</h2>
+              <span>기존 보고자료 엑셀 매핑 기준 적용</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>일자</th><th>법인</th><th>공장</th><th>직군</th><th>팀</th><th>성명</th><th>인원</th><th>분류1</th><th>분류2</th><th>세부내용</th><th>상태</th>
+                  </tr>
+                </thead>
+                <tbody id="reviewRows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="staff" class="view">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>담당자 제출 초안</h2>
+              <span>수기 입력, 붙여넣기, 첨부 업로드 예정</span>
+            </div>
+            <div class="form-grid">
+              <label>법인
+                <select id="entitySelect"></select>
+              </label>
+              <label>공장
+                <input id="factoryInput" value="D3공장" />
+              </label>
+              <label>팀
+                <input id="teamInput" value="생산" />
+              </label>
+              <label>담당자
+                <input id="submitterInput" value="샘플 담당자" />
+              </label>
+            </div>
+            <div class="table-wrap compact">
+              <table>
+                <thead>
+                  <tr>
+                    <th>일자</th><th>직군</th><th>팀</th><th>성명</th><th>인원</th><th>시간</th><th>세부내용</th>
+                  </tr>
+                </thead>
+                <tbody id="entryRows"></tbody>
+              </table>
+            </div>
+            <div class="button-row">
+              <button id="addEntryBtn" class="ghost">행 추가</button>
+              <button id="saveSubmissionBtn">제출 초안 저장</button>
+            </div>
+          </section>
+        </section>
+
+        <section id="ppt" class="view">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>PPT 반영 미리보기</h2>
+              <span>슬라이드별 입력값 검토</span>
+            </div>
+            <div id="slideCards" class="slide-grid"></div>
+          </section>
+        </section>
+
+        <section id="approval" class="view">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>그룹웨어 전자결재 본문 초안</h2>
+              <span>상신 금지, 작성 보조만 수행</span>
+            </div>
+            <div class="approval-layout">
+              <div>
+                <label>제출 건
+                  <select id="submissionSelect"></select>
+                </label>
+                <div class="button-row">
+                  <button id="loadApprovalBtn">본문 미리보기</button>
+                  <button id="fillDraftBtn" class="ghost">그룹웨어 작성 화면 채우기</button>
+                </div>
+                <p id="draftMessage" class="note">자동입력 어댑터는 이후 연결됩니다.</p>
+              </div>
+              <iframe id="approvalPreview" title="approval preview"></iframe>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
