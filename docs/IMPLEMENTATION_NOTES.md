@@ -25,6 +25,7 @@ powershell -ExecutionPolicy Bypass -File .\deploy\start_operating_server.ps1
 
 ## Important Policies
 - Do not use port `8080`; existing accounting web runs there.
+- Use this app's `.venv`; do not install dependencies into the existing accounting web environment.
 - Do not treat groupware draft fill as submitted approval.
 - Keep `더원/더원공장` and `제이엠/제이엠공장` in the legal entity master.
 - Use the existing human-made report workbook as the category mapping reference.

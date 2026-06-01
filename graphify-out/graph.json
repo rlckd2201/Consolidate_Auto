@@ -18,7 +18,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1",
       "id": "backend_app_py",
-      "community": 3,
+      "community": 4,
       "norm_label": "app.py"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L146",
       "id": "backend_app_all_rows",
-      "community": 4,
+      "community": 3,
       "norm_label": "all_rows()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L153",
       "id": "backend_app_summarize",
-      "community": 4,
+      "community": 3,
       "norm_label": "summarize()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L216",
       "id": "backend_app_index",
-      "community": 3,
+      "community": 4,
       "norm_label": "index()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L221",
       "id": "backend_app_health",
-      "community": 3,
+      "community": 4,
       "norm_label": "health()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L226",
       "id": "backend_app_version",
-      "community": 3,
+      "community": 4,
       "norm_label": "version()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L231",
       "id": "backend_app_bootstrap",
-      "community": 4,
+      "community": 3,
       "norm_label": "bootstrap()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L243",
       "id": "backend_app_dashboard",
-      "community": 4,
+      "community": 3,
       "norm_label": "dashboard()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L275",
       "id": "backend_app_report_preview",
-      "community": 4,
+      "community": 3,
       "norm_label": "report_preview()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L301",
       "id": "backend_app_export_ppt_stub",
-      "community": 3,
+      "community": 4,
       "norm_label": "export_ppt_stub()"
     },
     {
@@ -278,9 +278,9 @@
       "file_type": "rationale",
       "source_file": "backend\\__init__.py",
       "source_location": "L1",
-      "id": "backend_init_rationale_1",
       "community": 8,
-      "norm_label": "overtime reporting web backend."
+      "norm_label": "overtime reporting web backend.",
+      "id": "backend_init_rationale_1"
     },
     {
       "label": "app.js",
@@ -351,7 +351,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L45",
       "id": "static_app_renderreviewrows",
-      "community": 6,
+      "community": 5,
       "norm_label": "renderreviewrows()"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L75",
       "id": "static_app_renderentryrows",
-      "community": 5,
+      "community": 6,
       "norm_label": "renderentryrows()"
     },
     {

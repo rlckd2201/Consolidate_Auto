@@ -5,8 +5,7 @@
 ## 실행
 
 ```powershell
-python -m pip install -r .\backend\requirements.txt
-python -m uvicorn backend.app:app --host 0.0.0.0 --port 8090
+powershell -ExecutionPolicy Bypass -File .\start_overtime_server.ps1
 ```
 
 브라우저:
@@ -35,4 +34,5 @@ http://172.17.39.121:8090
 - draft fill은 작성 화면 자동입력 보조만 의미한다.
 - Excel/PPT는 같은 검토 데이터에서 생성한다.
 - 기존 회계 WEB `8080`과 분리해 `8090`에서 실행한다.
+- 실행 스크립트는 `.venv`를 만들어 사용하므로 기존 회계 WEB Python 환경과 분리된다.
 취합업무 자동화
