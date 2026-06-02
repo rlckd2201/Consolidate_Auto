@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -18,6 +20,11 @@ DATA_DIR = ROOT / "data"
 STATE_PATH = DATA_DIR / "app_state.json"
 GENERATED_DIR = ROOT / "generated"
 
+DEFAULT_TEMPLATE_DIR = ROOT.parent.parent / "보고자료"
+DEFAULT_OUTPUT_ROOT = Path(os.environ.get("APPDATA", str(ROOT))) / "Consolidate_Auto"
+TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPLATE_DIR)))
+OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
+
 
 class Period(BaseModel):
     id: str
@@ -34,6 +41,7 @@ class LegalEntity(BaseModel):
     display_name: str
     factory_label: str
     default_overtime_form_label: str
+    business_no: str = ""
     active: bool = True
     note: str = ""
 
@@ -103,9 +111,9 @@ def _seed_state() -> State:
     entities = [
         LegalEntity(entity_code="daeseung", display_name="대승", factory_label="D1/D2/D3공장", default_overtime_form_label="대승 - 특근계획서"),
         LegalEntity(entity_code="daeseung_precision", display_name="대승정밀", factory_label="P1/P2/P3/P4공장", default_overtime_form_label="대승정밀 - 특근계획서"),
-        LegalEntity(entity_code="theone", display_name="더원", factory_label="더원공장", default_overtime_form_label="더원 - 특근계획서"),
+        LegalEntity(entity_code="theone", display_name="더원", factory_label="더원공장", default_overtime_form_label="더원 - 특근계획서", business_no="421-86-02723"),
         LegalEntity(entity_code="ilgang", display_name="일강", factory_label="일강1/2공장", default_overtime_form_label="일강 - 특근계획서"),
-        LegalEntity(entity_code="jm", display_name="제이엠", factory_label="제이엠공장", default_overtime_form_label="제이엠 - 특근계획서", note="현재 특근 발생 가능성 낮음"),
+        LegalEntity(entity_code="jm", display_name="제이엠", factory_label="제이엠공장", default_overtime_form_label="제이엠 - 특근계획서", business_no="125-81-54876", note="현재 특근 발생 가능성 낮음"),
     ]
     rows = [
         OvertimeRow(id="r-001", date="2026-05-30", company="대승", source_factory="D2공장", job_group="관리직", team="보전", name="송인섭", position="마스터", headcount=1, hours=4, category1="유지보수", category2="설비유지보수", detail="승용컷팅 콜렛척 가이드 교체"),
@@ -135,12 +143,29 @@ def load_state() -> State:
         state = _seed_state()
         save_state(state)
         return state
-    return State.model_validate(json.loads(STATE_PATH.read_text(encoding="utf-8")))
+    state = State.model_validate(json.loads(STATE_PATH.read_text(encoding="utf-8")))
+    apply_master_updates(state)
+    return state
 
 
 def save_state(state: State) -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     STATE_PATH.write_text(state.model_dump_json(indent=2), encoding="utf-8")
+
+
+def apply_master_updates(state: State) -> None:
+    updates = {
+        "theone": {"display_name": "더원", "factory_label": "더원공장", "default_overtime_form_label": "더원 - 특근계획서", "business_no": "421-86-02723"},
+        "jm": {"display_name": "제이엠", "factory_label": "제이엠공장", "default_overtime_form_label": "제이엠 - 특근계획서", "business_no": "125-81-54876", "note": "현재 특근 발생 가능성 낮음"},
+    }
+    existing = {entity.entity_code: entity for entity in state.legal_entities}
+    for code, values in updates.items():
+        entity = existing.get(code)
+        if entity:
+            for key, value in values.items():
+                setattr(entity, key, value)
+        else:
+            state.legal_entities.append(LegalEntity(entity_code=code, active=True, **values))
 
 
 def all_rows(state: State) -> list[OvertimeRow]:
@@ -176,34 +201,84 @@ def summarize(rows: list[OvertimeRow], period: Period | None = None) -> dict:
     }
 
 
+def split_counts(rows: list[OvertimeRow]) -> dict[str, int]:
+    counts: dict[str, int] = {"직접직": 0, "간접직": 0, "관리직": 0}
+    for row in rows:
+        counts[row.job_group] = counts.get(row.job_group, 0) + row.headcount
+    return counts
+
+
+def choose_template(kind: Literal["excel", "ppt"]) -> Path | None:
+    if not TEMPLATE_DIR.exists():
+        return None
+    suffixes = {".xlsx"} if kind == "excel" else {".pptx"}
+    files = [path for path in TEMPLATE_DIR.iterdir() if path.is_file() and path.suffix.lower() in suffixes]
+    if kind == "excel":
+        preferred = [path for path in files if "특근계획 검토" in path.name]
+    else:
+        preferred = [path for path in files if "비생산부문 주말 특근" in path.name]
+    candidates = preferred or files
+    return max(candidates, key=lambda path: path.stat().st_mtime) if candidates else None
+
+
+def copy_template_output(kind: Literal["excel", "ppt"]) -> dict:
+    template = choose_template(kind)
+    if not template:
+        raise HTTPException(status_code=404, detail=f"{kind} template not found in {TEMPLATE_DIR}")
+    ext = template.suffix
+    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    generated_dir = OUTPUT_ROOT / "generated"
+    generated_dir.mkdir(parents=True, exist_ok=True)
+    stamped = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output = generated_dir / f"{template.stem}_copy_{stamped}{ext}"
+    shutil.copy2(template, output)
+    return {"ok": True, "source_template": str(template), "path": str(output), "message": "원본 템플릿은 건드리지 않고 복사본을 생성했습니다."}
+
+
 def build_approval_title(submission: Submission, period: Period) -> str:
     return f"{submission.factory} {period.label} 특근계획서"
 
 
 def build_approval_body(submission: Submission, period: Period) -> str:
     summary = summarize(submission.rows, period)
+    job_counts = split_counts(submission.rows)
+    date_rows = "\n".join(
+        f"<tr><td>{date}</td><td>{count}명</td></tr>"
+        for date, count in sorted(summary["by_date"].items())
+    )
     row_html = "\n".join(
         "<tr>"
         f"<td>{row.date}</td><td>{row.source_factory}</td><td>{row.job_group}</td>"
-        f"<td>{row.team}</td><td>{row.name or '-'}</td><td>{row.headcount}</td>"
-        f"<td>{row.hours:g}</td><td>{row.category1}</td><td>{row.detail}</td>"
+        f"<td>{row.team}</td><td>{row.name or '-'}</td><td>{row.position or '-'}</td>"
+        f"<td>{row.headcount}명</td><td>{row.hours:g}H</td><td>{row.category1}</td><td>{row.detail}</td>"
         "</tr>"
         for row in submission.rows
     )
+    attachments = "".join(f"<li>{name}</li>" for name in submission.attachments) or "<li>첨부 없음</li>"
     return f"""
-<h3>{build_approval_title(submission, period)}</h3>
-<p>아래와 같이 {period.label} 특근계획을 보고드립니다.</p>
-<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;">
-  <tr><th>구분</th><th>인원</th></tr>
-  <tr><td>총 특근인원</td><td>{summary["total_headcount"]}명</td></tr>
-  <tr><td>주말 특근인원</td><td>{summary["weekend_headcount"]}명</td></tr>
-  <tr><td>참고일 포함 인원</td><td>{summary["reference_headcount"]}명</td></tr>
+<h3 style="margin:0 0 12px;">{build_approval_title(submission, period)}</h3>
+<p style="margin:0 0 14px;">아래와 같이 {period.label} 특근계획을 보고드립니다.</p>
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;margin-bottom:14px;">
+  <tr><th style="width:28%;">기안부서</th><td>{submission.factory} / {submission.team}</td><th style="width:18%;">담당자</th><td>{submission.submitter}</td></tr>
+  <tr><th>기간</th><td colspan="3">{period.start_date} ~ {period.end_date}</td></tr>
 </table>
-<br>
-<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;">
-  <tr><th>일자</th><th>공장</th><th>직군</th><th>팀</th><th>성명</th><th>인원</th><th>시간</th><th>분류</th><th>세부내용</th></tr>
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;margin-bottom:14px;">
+  <tr><th>구분</th><th>인원</th><th>비고</th></tr>
+  <tr><td>총 특근인원</td><td>{summary["total_headcount"]}명</td><td></td></tr>
+  <tr><td>주말 특근인원</td><td>{summary["weekend_headcount"]}명</td><td>{", ".join(period.weekend_dates)}</td></tr>
+  <tr><td>참고일 포함 인원</td><td>{summary["reference_headcount"]}명</td><td>{", ".join(period.reference_dates)}</td></tr>
+  <tr><td>직접직/간접직/관리직</td><td colspan="2">직접 {job_counts.get("직접직", 0)}명 / 간접 {job_counts.get("간접직", 0)}명 / 관리 {job_counts.get("관리직", 0)}명</td></tr>
+</table>
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:360px;margin-bottom:14px;">
+  <tr><th>일자</th><th>인원</th></tr>
+  {date_rows}
+</table>
+<table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%;margin-bottom:14px;">
+  <tr><th>일자</th><th>공장</th><th>직군</th><th>팀</th><th>성명</th><th>직위</th><th>인원</th><th>시간</th><th>특근업무</th><th>세부내용</th></tr>
   {row_html}
 </table>
+<p style="margin:0 0 6px;"><strong>첨부</strong></p>
+<ul style="margin-top:0;">{attachments}</ul>
 <p style="color:#666;">※ 본문은 자동 작성 초안이며, 그룹웨어 화면에서 확인 후 수동 상신합니다.</p>
 """.strip()
 
@@ -236,7 +311,37 @@ def bootstrap() -> dict:
         "legal_entities": [e.model_dump() for e in state.legal_entities],
         "submissions": [s.model_dump() for s in state.submissions],
         "dashboard": summarize(all_rows(state), period),
+        "config": config(),
     }
+
+
+@app.get("/api/config")
+def config() -> dict:
+    return {
+        "template_dir": str(TEMPLATE_DIR),
+        "template_dir_exists": TEMPLATE_DIR.exists(),
+        "output_root": str(OUTPUT_ROOT),
+        "hr_db": {
+            "host": os.environ.get("HR_DB_HOST", ""),
+            "port": os.environ.get("HR_DB_PORT", "3306"),
+            "user_configured": bool(os.environ.get("HR_DB_USER")),
+            "password_configured": bool(os.environ.get("HR_DB_PASSWORD")),
+            "database_configured": bool(os.environ.get("HR_DB_NAME")),
+            "policy": "read_only_select_only",
+        },
+    }
+
+
+@app.get("/api/templates")
+def templates() -> dict:
+    files = []
+    if TEMPLATE_DIR.exists():
+        files = [
+            {"name": path.name, "path": str(path), "size": path.stat().st_size}
+            for path in sorted(TEMPLATE_DIR.iterdir())
+            if path.is_file() and path.suffix.lower() in {".xlsx", ".xls", ".pptx"}
+        ]
+    return {"template_dir": str(TEMPLATE_DIR), "files": files}
 
 
 @app.get("/api/dashboard")
@@ -290,16 +395,12 @@ def report_preview() -> dict:
 
 @app.post("/api/report/export-excel")
 def export_excel_stub() -> dict:
-    GENERATED_DIR.mkdir(parents=True, exist_ok=True)
-    state = load_state()
-    output = GENERATED_DIR / f"normalized_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    output.write_text(state.model_dump_json(indent=2), encoding="utf-8")
-    return {"ok": True, "message": "초안 단계에서는 JSON 기준 데이터로 저장했습니다. Excel 생성기는 다음 단계에서 연결합니다.", "path": str(output)}
+    return copy_template_output("excel")
 
 
 @app.post("/api/report/export-ppt")
 def export_ppt_stub() -> dict:
-    return {"ok": False, "status": "adapter_pending", "message": "PPT 생성기는 검토 데이터 잠금 기능 다음 단계에서 연결합니다."}
+    return copy_template_output("ppt")
 
 
 @app.get("/api/overtime-submissions/{submission_id}/approval-preview")

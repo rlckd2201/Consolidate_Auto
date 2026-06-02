@@ -29,3 +29,9 @@ powershell -ExecutionPolicy Bypass -File .\deploy\start_operating_server.ps1
 - Do not treat groupware draft fill as submitted approval.
 - Keep `더원/더원공장` and `제이엠/제이엠공장` in the legal entity master.
 - Use the existing human-made report workbook as the category mapping reference.
+
+## 2026-06-02 Update
+- Excel/PPT generation endpoints currently copy source templates into the output root. Actual cell/slide filling is next.
+- 더원 사업자번호: `421-86-02723`.
+- 제이엠 사업자번호: `125-81-54876`.
+- Original files in `보고자료` must not be modified; work on generated copies only.

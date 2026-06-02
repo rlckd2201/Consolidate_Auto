@@ -1,5 +1,9 @@
-$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+﻿$Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $Root
+
+if (-not $env:CONSOLIDATE_OUTPUT_ROOT) {
+  $env:CONSOLIDATE_OUTPUT_ROOT = "C:\ERP_DB\Consolidate_Auto"
+}
 
 $VenvPython = Join-Path $Root ".venv\Scripts\python.exe"
 

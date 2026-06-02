@@ -181,7 +181,12 @@ async function saveSubmission() {
 
 async function exportExcel() {
   const result = await api("/api/report/export-excel", { method: "POST" });
-  alert(result.message);
+  alert(`${result.message}\n${result.path || ""}`);
+}
+
+async function exportPpt() {
+  const result = await api("/api/report/export-ppt", { method: "POST" });
+  alert(`${result.message}\n${result.path || ""}`);
 }
 
 async function fillDraft() {
@@ -193,6 +198,7 @@ async function fillDraft() {
 document.querySelectorAll(".nav-btn").forEach((btn) => btn.addEventListener("click", () => switchView(btn.dataset.view)));
 $("refreshBtn").addEventListener("click", loadBootstrap);
 $("exportExcelBtn").addEventListener("click", exportExcel);
+$("exportPptBtn").addEventListener("click", exportPpt);
 $("addEntryBtn").addEventListener("click", addEntryRow);
 $("saveSubmissionBtn").addEventListener("click", saveSubmission);
 $("loadApprovalBtn").addEventListener("click", loadApprovalPreview);

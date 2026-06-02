@@ -36,3 +36,9 @@ http://172.17.39.121:8090
 - 기존 회계 WEB `8080`과 분리해 `8090`에서 실행한다.
 - 실행 스크립트는 `.venv`를 만들어 사용하므로 기존 회계 WEB Python 환경과 분리된다.
 취합업무 자동화
+
+## 2026-06-02 Notes
+- Excel/PPT template copy endpoints are included.
+- Runtime output root can be configured with `CONSOLIDATE_OUTPUT_ROOT`.
+- Template source can be configured with `CONSOLIDATE_TEMPLATE_DIR`.
+- HR DB secrets must be supplied through environment variables only.
