@@ -29,7 +29,7 @@ $env:HR_DB_HOST = "172.16.19.33"
 $env:HR_DB_PORT = "3306"
 $env:HR_DB_USER = "dlpadmin2"
 $env:HR_DB_PASSWORD = "<secret>"
-$env:HR_DB_NAME = "<schema-name>"
+$env:HR_DB_NAME = "ksystem_yundong"
 ```
 
 Read-only rule:
@@ -38,9 +38,14 @@ Read-only rule:
 - No stored procedures with side effects.
 
 Still needed before live HR mapping:
-- schema/database name
-- table names
-- column names for name, employee id, company, factory, team, job group, position, active flag
+- live connector endpoint and UI disambiguation flow
+- duplicate-name handling
+- final confirmation for `binum=4` split: `JM서울` + `더원-*` departments as 더원공장, `JM평택` as 제이엠공장
+
+Inspected table basis:
+- Employee table: `ds_t_emp`
+- Organization table: `buseo_t`
+- Detailed notes: root `HR_DB_ANALYSIS.md`
 
 ## Business Numbers
 - 더원: `421-86-02723`

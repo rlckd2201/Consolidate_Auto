@@ -9,7 +9,7 @@
       "source_file": "start_overtime_server.ps1",
       "source_location": "L1",
       "id": "start_overtime_server_ps1",
-      "community": 10,
+      "community": 11,
       "norm_label": "start_overtime_server.ps1"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L29",
       "id": "backend_app_period",
-      "community": 2,
+      "community": 0,
       "norm_label": "period"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "",
       "source_location": "",
       "id": "basemodel",
-      "community": 2,
+      "community": 0,
       "norm_label": "basemodel"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L39",
       "id": "backend_app_legalentity",
-      "community": 7,
+      "community": 0,
       "norm_label": "legalentity"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L49",
       "id": "backend_app_overtimerow",
-      "community": 2,
+      "community": 0,
       "norm_label": "overtimerow"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L70",
       "id": "backend_app_submission",
-      "community": 2,
+      "community": 0,
       "norm_label": "submission"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L84",
       "id": "backend_app_submissioncreate",
-      "community": 2,
+      "community": 0,
       "norm_label": "submissioncreate"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L92",
       "id": "backend_app_state",
-      "community": 2,
+      "community": 0,
       "norm_label": "state"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L102",
       "id": "backend_app_seed_state",
-      "community": 2,
+      "community": 0,
       "norm_label": "_seed_state()"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L156",
       "id": "backend_app_apply_master_updates",
-      "community": 7,
+      "community": 0,
       "norm_label": "apply_master_updates()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L171",
       "id": "backend_app_all_rows",
-      "community": 0,
+      "community": 5,
       "norm_label": "all_rows()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L178",
       "id": "backend_app_summarize",
-      "community": 0,
+      "community": 5,
       "norm_label": "summarize()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L204",
       "id": "backend_app_split_counts",
-      "community": 0,
+      "community": 8,
       "norm_label": "split_counts()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L238",
       "id": "backend_app_build_approval_title",
-      "community": 0,
+      "community": 8,
       "norm_label": "build_approval_title()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L242",
       "id": "backend_app_build_approval_body",
-      "community": 0,
+      "community": 8,
       "norm_label": "build_approval_body()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L306",
       "id": "backend_app_bootstrap",
-      "community": 0,
+      "community": 5,
       "norm_label": "bootstrap()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L319",
       "id": "backend_app_config",
-      "community": 0,
+      "community": 5,
       "norm_label": "config()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L348",
       "id": "backend_app_dashboard",
-      "community": 0,
+      "community": 5,
       "norm_label": "dashboard()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L380",
       "id": "backend_app_report_preview",
-      "community": 0,
+      "community": 5,
       "norm_label": "report_preview()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L407",
       "id": "backend_app_approval_preview",
-      "community": 0,
+      "community": 8,
       "norm_label": "approval_preview()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "backend\\__init__.py",
       "source_location": "L1",
       "id": "backend_init_py",
-      "community": 8,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -332,7 +332,7 @@
       "file_type": "rationale",
       "source_file": "backend\\__init__.py",
       "source_location": "L1",
-      "community": 8,
+      "community": 9,
       "norm_label": "overtime reporting web backend.",
       "id": "backend_init_rationale_1"
     },
@@ -342,7 +342,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L1",
       "id": "backend_static_app_js",
-      "community": 3,
+      "community": 2,
       "norm_label": "app.js"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L6",
       "id": "static_app",
-      "community": 5,
+      "community": 7,
       "norm_label": "$()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L12",
       "id": "static_app_api",
-      "community": 3,
+      "community": 2,
       "norm_label": "api()"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L24",
       "id": "static_app_switchview",
-      "community": 9,
+      "community": 10,
       "norm_label": "switchview()"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L45",
       "id": "static_app_renderreviewrows",
-      "community": 5,
+      "community": 7,
       "norm_label": "renderreviewrows()"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L63",
       "id": "static_app_renderentities",
-      "community": 5,
+      "community": 7,
       "norm_label": "renderentities()"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L75",
       "id": "static_app_renderentryrows",
-      "community": 5,
+      "community": 7,
       "norm_label": "renderentryrows()"
     },
     {
@@ -441,7 +441,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L87",
       "id": "static_app_renderslides",
-      "community": 3,
+      "community": 2,
       "norm_label": "renderslides()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L101",
       "id": "static_app_loadapprovalpreview",
-      "community": 3,
+      "community": 2,
       "norm_label": "loadapprovalpreview()"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L141",
       "id": "static_app_addentryrow",
-      "community": 5,
+      "community": 7,
       "norm_label": "addentryrow()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L147",
       "id": "static_app_savesubmission",
-      "community": 9,
+      "community": 10,
       "norm_label": "savesubmission()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L182",
       "id": "static_app_exportexcel",
-      "community": 3,
+      "community": 2,
       "norm_label": "exportexcel()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L187",
       "id": "static_app_exportppt",
-      "community": 3,
+      "community": 2,
       "norm_label": "exportppt()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L192",
       "id": "static_app_filldraft",
-      "community": 3,
+      "community": 2,
       "norm_label": "filldraft()"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "deploy\\start_operating_server.ps1",
       "source_location": "L1",
       "id": "deploy_start_operating_server_ps1",
-      "community": 11,
+      "community": 12,
       "norm_label": "start_operating_server.ps1"
     },
     {
@@ -522,8 +522,71 @@
       "source_file": "deploy\\update_from_github.ps1",
       "source_location": "L1",
       "id": "deploy_update_from_github_ps1",
-      "community": 12,
+      "community": 13,
       "norm_label": "update_from_github.ps1"
+    },
+    {
+      "label": "hr_db_probe.py",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L1",
+      "id": "tools_hr_db_probe_py",
+      "community": 3,
+      "norm_label": "hr_db_probe.py"
+    },
+    {
+      "label": "_connect()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L14",
+      "id": "tools_hr_db_probe_connect",
+      "community": 3,
+      "norm_label": "_connect()"
+    },
+    {
+      "label": "_fetchall()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L28",
+      "id": "tools_hr_db_probe_fetchall",
+      "community": 3,
+      "norm_label": "_fetchall()"
+    },
+    {
+      "label": "_fetchone()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L33",
+      "id": "tools_hr_db_probe_fetchone",
+      "community": 3,
+      "norm_label": "_fetchone()"
+    },
+    {
+      "label": "_mask_name()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L38",
+      "id": "tools_hr_db_probe_mask_name",
+      "community": 3,
+      "norm_label": "_mask_name()"
+    },
+    {
+      "label": "_candidate_columns()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L46",
+      "id": "tools_hr_db_probe_candidate_columns",
+      "community": 3,
+      "norm_label": "_candidate_columns()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L73",
+      "id": "tools_hr_db_probe_main",
+      "community": 3,
+      "norm_label": "main()"
     }
   ],
   "links": [
@@ -1989,6 +2052,138 @@
       "_tgt": "static_app_loadbootstrap",
       "source": "static_app_loadbootstrap",
       "target": "static_app_savesubmission",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_connect",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_connect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_fetchall",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_fetchall",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_fetchone",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_fetchone",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_mask_name",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_mask_name",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L46",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_candidate_columns",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_candidate_columns",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_py",
+      "_tgt": "tools_hr_db_probe_main",
+      "source": "tools_hr_db_probe_py",
+      "target": "tools_hr_db_probe_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_main",
+      "_tgt": "tools_hr_db_probe_connect",
+      "source": "tools_hr_db_probe_connect",
+      "target": "tools_hr_db_probe_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L80",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_main",
+      "_tgt": "tools_hr_db_probe_fetchall",
+      "source": "tools_hr_db_probe_fetchall",
+      "target": "tools_hr_db_probe_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L79",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_main",
+      "_tgt": "tools_hr_db_probe_fetchone",
+      "source": "tools_hr_db_probe_fetchone",
+      "target": "tools_hr_db_probe_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L125",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_main",
+      "_tgt": "tools_hr_db_probe_mask_name",
+      "source": "tools_hr_db_probe_mask_name",
+      "target": "tools_hr_db_probe_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\hr_db_probe.py",
+      "source_location": "L113",
+      "weight": 1.0,
+      "_src": "tools_hr_db_probe_main",
+      "_tgt": "tools_hr_db_probe_candidate_columns",
+      "source": "tools_hr_db_probe_candidate_columns",
+      "target": "tools_hr_db_probe_main",
       "confidence_score": 1.0
     }
   ],
