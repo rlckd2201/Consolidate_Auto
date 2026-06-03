@@ -32,6 +32,8 @@ $env:HR_DB_PASSWORD = "<secret>"
 $env:HR_DB_NAME = "ksystem_yundong"
 ```
 
+The app reads these variables at server startup. If they are missing, the web UI still runs but HR employee lookup returns an unavailable state.
+
 Read-only rule:
 - Only `SELECT` and metadata inspection.
 - No mutation SQL.
@@ -46,6 +48,10 @@ Inspected table basis:
 - Employee table: `ds_t_emp`
 - Organization table: `buseo_t`
 - Detailed notes: root `HR_DB_ANALYSIS.md`
+
+Live read-only endpoints:
+- `GET /api/hr/status`
+- `GET /api/hr/employees/search?q=<name>&entity_code=<code>&factory=<factory>`
 
 ## Business Numbers
 - 더원: `421-86-02723`

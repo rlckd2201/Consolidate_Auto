@@ -37,6 +37,12 @@ button.ghost {
   color: var(--accent);
 }
 
+button.small {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -222,7 +228,7 @@ p {
 table {
   border-collapse: collapse;
   width: 100%;
-  min-width: 920px;
+  min-width: 1040px;
   background: #fff;
 }
 
@@ -279,8 +285,35 @@ input, select {
 }
 
 .compact table {
-  min-width: 760px;
+  min-width: 1180px;
 }
+
+.employee-cell {
+  display: grid;
+  gap: 6px;
+  min-width: 260px;
+}
+
+.inline-actions {
+  display: grid;
+  grid-template-columns: 58px minmax(170px, 1fr);
+  gap: 6px;
+}
+
+.candidate-select {
+  min-width: 0;
+}
+
+.row-note {
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.row-note.high { color: var(--accent); }
+.row-note.medium { color: var(--warn); }
+.row-note.low { color: #b91c1c; }
 
 .slide-grid {
   display: grid;

@@ -7,10 +7,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+try:
+    import pymysql
+except ImportError:  # pragma: no cover - dependency is optional until HR lookup is used.
+    pymysql = None
 
 
 APP_VERSION = "0.1.0"
@@ -24,6 +29,18 @@ DEFAULT_TEMPLATE_DIR = ROOT.parent.parent / "보고자료"
 DEFAULT_OUTPUT_ROOT = Path(os.environ.get("APPDATA", str(ROOT))) / "Consolidate_Auto"
 TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPLATE_DIR)))
 OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
+HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
+
+HR_ENTITY_RULES = {
+    "daeseung": {"label": "대승", "binum": "1", "factories": ["D1공장", "D2공장", "D3공장"]},
+    "daeseung_precision": {"label": "대승정밀", "binum": "2", "factories": ["P1공장", "P2공장", "P3공장", "P4공장"]},
+    "ilgang": {"label": "일강", "binum": "3", "factories": ["일강 1공장", "일강 2공장"]},
+    "theone": {"label": "더원", "binum": "4", "factories": ["더원공장"]},
+    "jm": {"label": "제이엠", "binum": "4", "factories": ["제이엠공장"]},
+}
+
+PRODUCTION_MARKERS = ("생산", "조립", "가공", "주조", "단조", "B/CAP", "C/ROD", "JOINT", "SPIDER", "후처리", "M.P.I", "금형", "제관")
+INDIRECT_MARKERS = ("생산관리", "생관", "생기", "생산기술", "제조기술", "품질", "보전", "물류", "자재", "구매", "영업", "인사", "총무", "재정", "전산", "원가", "공구", "개발", "지원", "안전", "환경", "출하")
 
 
 class Period(BaseModel):
@@ -93,6 +110,27 @@ class State(BaseModel):
     periods: list[Period]
     legal_entities: list[LegalEntity]
     submissions: list[Submission]
+
+
+class HREmployeeCandidate(BaseModel):
+    emp_id: str
+    name: str
+    entity_code: str
+    entity_name: str
+    factory: str
+    db_factory: str
+    department: str
+    department_code: str
+    org_name: str = ""
+    org_code: str = ""
+    position: str = ""
+    duty: str = ""
+    job_family: str = ""
+    direct_marker: str = ""
+    pay_type: str = ""
+    job_group: Literal["직접직", "간접직", "관리직"]
+    classification_reason: str
+    confidence: Literal["high", "medium", "low"] = "high"
 
 
 def _now() -> str:
@@ -206,6 +244,121 @@ def split_counts(rows: list[OvertimeRow]) -> dict[str, int]:
     for row in rows:
         counts[row.job_group] = counts.get(row.job_group, 0) + row.headcount
     return counts
+
+
+def hr_db_configured() -> bool:
+    required = ("HR_DB_HOST", "HR_DB_USER", "HR_DB_PASSWORD")
+    return all(os.environ.get(key) for key in required)
+
+
+def hr_connection():
+    if pymysql is None:
+        raise HTTPException(status_code=503, detail="pymysql dependency is not installed")
+    if not hr_db_configured():
+        raise HTTPException(status_code=503, detail="HR DB environment variables are not configured")
+    return pymysql.connect(
+        host=os.environ["HR_DB_HOST"],
+        port=int(os.environ.get("HR_DB_PORT", "3306")),
+        user=os.environ["HR_DB_USER"],
+        password=os.environ["HR_DB_PASSWORD"],
+        database=HR_DB_NAME,
+        charset="utf8mb4",
+        connect_timeout=5,
+        read_timeout=15,
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
+
+def production_department(text: str) -> bool:
+    normalized = text.upper().replace(" ", "")
+    if any(marker.upper().replace(" ", "") in normalized for marker in INDIRECT_MARKERS):
+        return False
+    return any(marker.upper().replace(" ", "") in normalized for marker in PRODUCTION_MARKERS)
+
+
+def classify_hr_employee(row: dict) -> tuple[str, str, str]:
+    dept_text = " ".join(
+        str(row.get(key) or "")
+        for key in ("DeptName", "emp_org_name", "org_name")
+    )
+    if row.get("UMJoName") == "관리직":
+        return "관리직", "high", "HR UMJoName=관리직"
+    if row.get("PosName") == "직접" and row.get("UMJoName") == "생산직" and production_department(dept_text):
+        return "직접직", "high", "HR 직접/생산직 + 실제 생산부서"
+    if row.get("PosName") == "직접" and row.get("UMJoName") == "생산직":
+        return "간접직", "medium", "직접 표기는 있으나 생산부서 확증 부족"
+    return "간접직", "high", "HR 간접 또는 지원부서 기준"
+
+
+def entity_code_from_hr(row: dict, requested_entity_code: str | None = None) -> str:
+    if requested_entity_code:
+        return requested_entity_code
+    binum = str(row.get("binum") or "")
+    if binum == "1":
+        return "daeseung"
+    if binum == "2":
+        return "daeseung_precision"
+    if binum == "3":
+        return "ilgang"
+    if binum == "4":
+        return "theone" if str(row.get("DeptName") or "").startswith("더원-") or row.get("PuName") == "JM서울" else "jm"
+    return ""
+
+
+def display_factory_from_hr(row: dict, entity_code: str) -> str:
+    if entity_code == "theone":
+        return "더원공장"
+    if entity_code == "jm":
+        return "제이엠공장"
+    return str(row.get("PuName") or "")
+
+
+def hr_candidate_from_row(row: dict, requested_entity_code: str | None = None) -> HREmployeeCandidate:
+    entity_code = entity_code_from_hr(row, requested_entity_code)
+    entity_rule = HR_ENTITY_RULES.get(entity_code, {})
+    job_group, confidence, reason = classify_hr_employee(row)
+    return HREmployeeCandidate(
+        emp_id=str(row.get("EmpID") or ""),
+        name=str(row.get("EmpName") or ""),
+        entity_code=entity_code,
+        entity_name=str(entity_rule.get("label") or ""),
+        factory=display_factory_from_hr(row, entity_code),
+        db_factory=str(row.get("PuName") or ""),
+        department=str(row.get("DeptName") or ""),
+        department_code=str(row.get("DeptSeq") or ""),
+        org_name=str(row.get("emp_org_name") or row.get("org_name") or ""),
+        org_code=str(row.get("emp_bu_code") or row.get("org_code") or ""),
+        position=str(row.get("UMJpName") or ""),
+        duty=str(row.get("UMJdName") or ""),
+        job_family=str(row.get("UMJoName") or ""),
+        direct_marker=str(row.get("PosName") or ""),
+        pay_type=str(row.get("PtName") or ""),
+        job_group=job_group,
+        classification_reason=reason,
+        confidence=confidence,
+    )
+
+
+def add_entity_filters(where: list[str], params: list, entity_code: str | None, factory: str | None) -> None:
+    rule = HR_ENTITY_RULES.get(entity_code or "")
+    if rule:
+        where.append("e.binum = %s")
+        params.append(rule["binum"])
+        if entity_code == "theone":
+            where.append("(e.PuName = %s OR e.DeptName LIKE %s)")
+            params.extend(["JM서울", "더원-%"])
+            return
+        if entity_code == "jm":
+            where.append("(e.PuName = %s OR (e.PuName LIKE %s AND e.DeptName NOT LIKE %s))")
+            params.extend(["JM평택", "JM%", "더원-%"])
+            return
+    elif entity_code:
+        where.append("1 = 0")
+        return
+
+    if factory:
+        where.append("REPLACE(e.PuName, ' ', '') = REPLACE(%s, ' ', '')")
+        params.append(factory)
 
 
 def choose_template(kind: Literal["excel", "ppt"]) -> Path | None:
@@ -324,11 +477,105 @@ def config() -> dict:
         "hr_db": {
             "host": os.environ.get("HR_DB_HOST", ""),
             "port": os.environ.get("HR_DB_PORT", "3306"),
+            "database": HR_DB_NAME,
             "user_configured": bool(os.environ.get("HR_DB_USER")),
             "password_configured": bool(os.environ.get("HR_DB_PASSWORD")),
-            "database_configured": bool(os.environ.get("HR_DB_NAME")),
+            "database_configured": bool(HR_DB_NAME),
+            "lookup_available": bool(hr_db_configured() and pymysql is not None),
             "policy": "read_only_select_only",
         },
+        "hr_factory_options": {
+            code: values["factories"]
+            for code, values in HR_ENTITY_RULES.items()
+        },
+    }
+
+
+@app.get("/api/hr/status")
+def hr_status() -> dict:
+    return {
+        "configured": hr_db_configured(),
+        "dependency_available": pymysql is not None,
+        "database": HR_DB_NAME,
+        "policy": "read_only_select_only",
+        "factory_options": {code: values["factories"] for code, values in HR_ENTITY_RULES.items()},
+    }
+
+
+@app.get("/api/hr/employees/search")
+def search_hr_employees(
+    q: str = Query("", min_length=0, max_length=40),
+    entity_code: str | None = Query(None, max_length=40),
+    factory: str | None = Query(None, max_length=40),
+    limit: int = Query(20, ge=1, le=50),
+) -> dict:
+    query = q.strip()
+    if len(query) < 2:
+        return {"ok": True, "items": [], "count": 0, "message": "이름을 2글자 이상 입력하세요."}
+
+    where = ["e.TypeName = %s", "e.binum IN ('1', '2', '3', '4')", "e.EmpName LIKE %s"]
+    params: list = ["재직자", f"%{query}%"]
+    add_entity_filters(where, params, entity_code, factory)
+    params.extend([query, limit])
+    sql = f"""
+        SELECT
+            e.EmpName,
+            e.EmpID,
+            e.binum,
+            e.PuName,
+            e.DeptName,
+            e.DeptSeq,
+            e.PosName,
+            e.UMJpName,
+            e.UMJdName,
+            e.UMJoName,
+            e.PtName,
+            e.TypeName,
+            e.TypeSeq,
+            e.n_bu_name AS emp_org_name,
+            e.bu_code AS emp_bu_code,
+            e.up_bu_code AS emp_up_bu_code,
+            b.n_bu_name AS org_name,
+            b.bu_code AS org_code,
+            b.up_bu_code AS org_parent_code,
+            b.lv_no AS org_level
+        FROM ds_t_emp e
+        LEFT JOIN (
+            SELECT
+                old_bi_code,
+                old_bu_code,
+                MIN(n_bu_name) AS n_bu_name,
+                MIN(bu_code) AS bu_code,
+                MIN(up_bu_code) AS up_bu_code,
+                MIN(lv_no) AS lv_no
+            FROM buseo_t
+            WHERE old_bi_code IS NOT NULL AND old_bu_code IS NOT NULL
+            GROUP BY old_bi_code, old_bu_code
+        ) b
+            ON e.DeptSeq = CAST(b.old_bu_code AS CHAR)
+            AND e.binum = CAST(b.old_bi_code AS CHAR)
+        WHERE {" AND ".join(where)}
+        ORDER BY
+            CASE WHEN e.EmpName = %s THEN 0 ELSE 1 END,
+            e.PuName,
+            e.DeptName,
+            e.EmpName,
+            e.EmpID
+        LIMIT %s
+    """
+    with hr_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SET SESSION TRANSACTION READ ONLY")
+            cur.execute("START TRANSACTION READ ONLY")
+            cur.execute(sql, params)
+            rows = cur.fetchall()
+            cur.execute("ROLLBACK")
+    items = [hr_candidate_from_row(row, entity_code).model_dump() for row in rows]
+    return {
+        "ok": True,
+        "items": items,
+        "count": len(items),
+        "policy": "read_only_select_only",
     }
 
 

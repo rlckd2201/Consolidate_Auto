@@ -1,9 +1,22 @@
 const state = {
   bootstrap: null,
   rows: [],
+  nextRowId: 1,
+  employeeCandidates: {},
+  selectedEmployees: {},
 };
 
 const $ = (id) => document.getElementById(id);
+const JOB_GROUPS = ["관리직", "간접직", "직접직"];
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function fmtCount(value) {
   return `${value ?? 0}명`;
@@ -48,9 +61,11 @@ function renderReviewRows(rows) {
       <td>${row.date}</td>
       <td>${row.company}</td>
       <td>${row.source_factory}</td>
+      <td>${row.target_factory || "-"}</td>
       <td>${row.job_group}</td>
       <td>${row.team}</td>
       <td>${row.name || "-"}</td>
+      <td>${row.position || "-"}</td>
       <td>${row.headcount}</td>
       <td>${row.category1}</td>
       <td>${row.category2 || "-"}</td>
@@ -64,6 +79,7 @@ function renderEntities(entities) {
   $("entitySelect").innerHTML = entities.map((entity) => `
     <option value="${entity.entity_code}">${entity.display_name} (${entity.default_overtime_form_label})</option>
   `).join("");
+  updateFactoryOptions();
 }
 
 function renderSubmissionSelect(submissions) {
@@ -72,16 +88,55 @@ function renderSubmissionSelect(submissions) {
   `).join("");
 }
 
+function updateFactoryOptions() {
+  const entityCode = $("entitySelect").value || "daeseung";
+  const options = state.bootstrap?.config?.hr_factory_options?.[entityCode] || ["D3공장"];
+  const current = $("factoryInput").value;
+  $("factoryInput").innerHTML = options.map((factory) => `<option value="${escapeHtml(factory)}">${escapeHtml(factory)}</option>`).join("");
+  $("factoryInput").value = options.includes(current) ? current : options[0];
+}
+
+function renderJobGroupOptions(selected = "관리직") {
+  return JOB_GROUPS.map((value) => `<option value="${value}" ${value === selected ? "selected" : ""}>${value}</option>`).join("");
+}
+
+function makeRowKey() {
+  return `entry-${state.nextRowId++}`;
+}
+
+function renderEntryRow(row = {}) {
+  const key = makeRowKey();
+  return `
+    <tr data-row-key="${key}">
+      <td><input data-field="date" value="${escapeHtml(row.date || "2026-06-03")}"></td>
+      <td>
+        <div class="employee-cell">
+          <input data-field="name" value="${escapeHtml(row.name || "")}">
+          <div class="inline-actions">
+            <button type="button" class="ghost small employee-search-btn">검색</button>
+            <select data-field="employee_candidate" class="candidate-select"><option value="">후보 없음</option></select>
+          </div>
+          <span data-field="hr_status" class="row-note">미검색</span>
+        </div>
+      </td>
+      <td><select data-field="job_group">${renderJobGroupOptions(row.job_group || "관리직")}</select></td>
+      <td><input data-field="team" value="${escapeHtml(row.team || "")}"></td>
+      <td><input data-field="position" value="${escapeHtml(row.position || "")}"></td>
+      <td><input data-field="headcount" type="number" min="0" value="${escapeHtml(row.headcount ?? 1)}"></td>
+      <td><input data-field="hours" type="number" min="0" step="0.5" value="${escapeHtml(row.hours ?? 8)}"></td>
+      <td><input data-field="detail" value="${escapeHtml(row.detail || "")}"></td>
+    </tr>
+  `;
+}
+
 function renderEntryRows() {
   const sample = [
-    ["2026-06-03", "관리직", "생산", "서동철", 1, 8, "생산관리 총괄"],
-    ["2026-06-03", "간접직", "보전", "", 2, 8, "특근라인 설비대응"],
+    { date: "2026-06-03", name: "서동철", job_group: "관리직", team: "생산", headcount: 1, hours: 8, detail: "생산관리 총괄" },
+    { date: "2026-06-03", name: "", job_group: "간접직", team: "보전", headcount: 2, hours: 8, detail: "특근라인 설비대응" },
   ];
-  $("entryRows").innerHTML = sample.map((row) => `
-    <tr>
-      ${row.map((value, index) => `<td><input data-col="${index}" value="${value}"></td>`).join("")}
-    </tr>
-  `).join("");
+  state.employeeCandidates = {};
+  state.selectedEmployees = {};
+  $("entryRows").innerHTML = sample.map(renderEntryRow).join("");
 }
 
 async function renderSlides() {
@@ -139,30 +194,102 @@ async function loadBootstrap() {
 }
 
 function addEntryRow() {
-  const row = document.createElement("tr");
-  row.innerHTML = ["2026-06-03", "관리직", "", "", 1, 8, ""].map((value, index) => `<td><input data-col="${index}" value="${value}"></td>`).join("");
-  $("entryRows").appendChild(row);
+  $("entryRows").insertAdjacentHTML("beforeend", renderEntryRow());
+}
+
+function rowField(tr, field) {
+  return tr.querySelector(`[data-field="${field}"]`);
+}
+
+function rowValue(tr, field) {
+  return rowField(tr, field)?.value || "";
+}
+
+function setRowStatus(tr, message, level = "") {
+  const status = rowField(tr, "hr_status");
+  status.textContent = message;
+  status.className = `row-note ${level}`.trim();
+}
+
+function candidateLabel(candidate) {
+  const position = candidate.position || candidate.duty || "-";
+  return `${candidate.name} · ${candidate.factory || candidate.db_factory} · ${candidate.department} · ${position} · ${candidate.job_group}`;
+}
+
+function applyEmployeeToRow(tr, candidate) {
+  const key = tr.dataset.rowKey;
+  state.selectedEmployees[key] = candidate;
+  rowField(tr, "name").value = candidate.name;
+  rowField(tr, "job_group").value = candidate.job_group;
+  rowField(tr, "team").value = candidate.department || candidate.org_name || "";
+  rowField(tr, "position").value = candidate.position || candidate.duty || "";
+  setRowStatus(tr, `${candidate.factory || candidate.db_factory} · ${candidate.classification_reason}`, candidate.confidence);
+}
+
+async function searchEmployeeForRow(tr) {
+  const key = tr.dataset.rowKey;
+  const name = rowValue(tr, "name").trim();
+  delete state.selectedEmployees[key];
+  if (name.length < 2) {
+    setRowStatus(tr, "이름 2글자 이상", "low");
+    return;
+  }
+  setRowStatus(tr, "검색 중");
+  const params = new URLSearchParams({
+    q: name,
+    entity_code: $("entitySelect").value,
+    factory: $("factoryInput").value,
+  });
+  const result = await api(`/api/hr/employees/search?${params.toString()}`);
+  state.employeeCandidates[key] = result.items || [];
+  const select = rowField(tr, "employee_candidate");
+  if (!result.items?.length) {
+    select.innerHTML = `<option value="">후보 없음</option>`;
+    setRowStatus(tr, "HR 후보 없음", "low");
+    return;
+  }
+  select.innerHTML = `<option value="">후보 선택</option>` + result.items.map((candidate, index) => `
+    <option value="${index}">${escapeHtml(candidateLabel(candidate))}</option>
+  `).join("");
+  if (result.items.length === 1) {
+    select.value = "0";
+    applyEmployeeToRow(tr, result.items[0]);
+  } else {
+    setRowStatus(tr, `${result.items.length}명 후보`, "medium");
+  }
+}
+
+function applySelectedEmployee(tr) {
+  const key = tr.dataset.rowKey;
+  const index = Number(rowValue(tr, "employee_candidate"));
+  const candidate = state.employeeCandidates[key]?.[index];
+  if (candidate) {
+    applyEmployeeToRow(tr, candidate);
+  }
 }
 
 async function saveSubmission() {
   const rows = [...$("entryRows").querySelectorAll("tr")].map((tr, index) => {
-    const values = [...tr.querySelectorAll("input")].map((input) => input.value);
+    const employee = state.selectedEmployees[tr.dataset.rowKey];
     return {
       id: `new-${Date.now()}-${index}`,
-      date: values[0],
+      date: rowValue(tr, "date"),
       company: $("entitySelect").selectedOptions[0].textContent.split(" ")[0],
       source_factory: $("factoryInput").value,
-      job_group: values[1],
-      team: values[2],
-      name: values[3],
-      headcount: Number(values[4] || 0),
-      hours: Number(values[5] || 0),
+      target_factory: employee?.factory || "",
+      job_group: rowValue(tr, "job_group"),
+      team: rowValue(tr, "team"),
+      name: rowValue(tr, "name"),
+      position: rowValue(tr, "position"),
+      headcount: Number(rowValue(tr, "headcount") || 0),
+      hours: Number(rowValue(tr, "hours") || 0),
       category1: "특근대응",
-      category2: "자동분류 대기",
-      detail: values[6],
-      confidence: "low",
-      review_status: "needs_review",
-      source: "manual",
+      category2: employee ? "HR 인원매핑" : "자동분류 대기",
+      detail: rowValue(tr, "detail"),
+      reason: employee?.classification_reason || "",
+      confidence: employee?.confidence || "low",
+      review_status: employee?.confidence === "high" ? "mapped" : "needs_review",
+      source: employee ? "manual_hr" : "manual",
     };
   });
   await api("/api/submissions", {
@@ -201,6 +328,20 @@ $("exportExcelBtn").addEventListener("click", exportExcel);
 $("exportPptBtn").addEventListener("click", exportPpt);
 $("addEntryBtn").addEventListener("click", addEntryRow);
 $("saveSubmissionBtn").addEventListener("click", saveSubmission);
+$("entitySelect").addEventListener("change", updateFactoryOptions);
+$("entryRows").addEventListener("click", (event) => {
+  if (event.target.classList.contains("employee-search-btn")) {
+    searchEmployeeForRow(event.target.closest("tr")).catch((error) => {
+      console.error(error);
+      setRowStatus(event.target.closest("tr"), `검색 실패: ${error.message}`, "low");
+    });
+  }
+});
+$("entryRows").addEventListener("change", (event) => {
+  if (event.target.dataset.field === "employee_candidate") {
+    applySelectedEmployee(event.target.closest("tr"));
+  }
+});
 $("loadApprovalBtn").addEventListener("click", loadApprovalPreview);
 $("submissionSelect").addEventListener("change", loadApprovalPreview);
 $("fillDraftBtn").addEventListener("click", fillDraft);
