@@ -447,12 +447,17 @@ def index() -> FileResponse:
 
 @app.get("/health")
 def health() -> dict:
-    return {"ok": True, "version": APP_VERSION, "service": "overtime-reporting-web"}
+    return {
+        "ok": True,
+        "version": APP_VERSION,
+        "service": "overtime-reporting-web",
+        "features": ["hr_lookup", "template_copy", "approval_preview"],
+    }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview"]}
 
 
 @app.get("/api/bootstrap")

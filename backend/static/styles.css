@@ -285,35 +285,90 @@ input, select {
 }
 
 .compact table {
-  min-width: 1180px;
+  min-width: 1280px;
 }
 
-.employee-cell {
+.hr-workbench {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.hr-searchbar {
   display: grid;
-  gap: 6px;
-  min-width: 260px;
+  grid-template-columns: minmax(220px, 360px) 80px minmax(180px, 1fr);
+  gap: 10px;
+  align-items: end;
 }
 
-.inline-actions {
-  display: grid;
-  grid-template-columns: 58px minmax(170px, 1fr);
-  gap: 6px;
-}
-
-.candidate-select {
-  min-width: 0;
-}
-
-.row-note {
-  min-height: 18px;
+.lookup-state {
+  align-self: center;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.35;
 }
 
-.row-note.high { color: var(--accent); }
-.row-note.medium { color: var(--warn); }
-.row-note.low { color: #b91c1c; }
+.lookup-state.high { color: var(--accent); }
+.lookup-state.warn { color: var(--warn); }
+.lookup-state.bad { color: #b91c1c; }
+
+.employee-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.employee-result {
+  display: grid;
+  gap: 4px;
+  min-height: 76px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  text-align: left;
+}
+
+.employee-result:hover {
+  border-color: var(--accent);
+  background: #eefaf7;
+}
+
+.employee-result strong,
+.employee-result span,
+.employee-result em {
+  display: block;
+}
+
+.employee-result span {
+  color: #405060;
+  font-size: 13px;
+}
+
+.employee-result em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.empty-result {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 8px 2px;
+}
+
+.selected-row td {
+  background: #eefaf7;
+}
+
+input[readonly] {
+  background: #f8fafc;
+  color: #405060;
+}
 
 .slide-grid {
   display: grid;

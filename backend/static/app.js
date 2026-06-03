@@ -2,8 +2,9 @@ const state = {
   bootstrap: null,
   rows: [],
   nextRowId: 1,
-  employeeCandidates: {},
+  employeeResults: [],
   selectedEmployees: {},
+  selectedRowKey: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -29,7 +30,16 @@ async function api(path, options = {}) {
   });
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(text || response.statusText);
+    let detail = text || response.statusText;
+    try {
+      detail = JSON.parse(text).detail || detail;
+    } catch {
+      // Keep original text.
+    }
+    if (response.status === 404 && path.startsWith("/api/hr/")) {
+      throw new Error("HR 검색 API가 없습니다. 운영서버에서 git reset 후 FastAPI 서버를 재시작해야 합니다.");
+    }
+    throw new Error(detail);
   }
   return response.json();
 }
@@ -94,6 +104,9 @@ function updateFactoryOptions() {
   const current = $("factoryInput").value;
   $("factoryInput").innerHTML = options.map((factory) => `<option value="${escapeHtml(factory)}">${escapeHtml(factory)}</option>`).join("");
   $("factoryInput").value = options.includes(current) ? current : options[0];
+  if (!state.bootstrap?.config?.hr_factory_options) {
+    setLookupState("서버 재시작 필요: HR 공장 옵션이 아직 로드되지 않았습니다.", "bad");
+  }
 }
 
 function renderJobGroupOptions(selected = "관리직") {
@@ -108,20 +121,13 @@ function renderEntryRow(row = {}) {
   const key = makeRowKey();
   return `
     <tr data-row-key="${key}">
+      <td><input type="radio" name="selectedEntryRow" data-field="row_select" value="${key}"></td>
       <td><input data-field="date" value="${escapeHtml(row.date || "2026-06-03")}"></td>
-      <td>
-        <div class="employee-cell">
-          <input data-field="name" value="${escapeHtml(row.name || "")}">
-          <div class="inline-actions">
-            <button type="button" class="ghost small employee-search-btn">검색</button>
-            <select data-field="employee_candidate" class="candidate-select"><option value="">후보 없음</option></select>
-          </div>
-          <span data-field="hr_status" class="row-note">미검색</span>
-        </div>
-      </td>
+      <td><input data-field="name" value="${escapeHtml(row.name || "")}"></td>
       <td><select data-field="job_group">${renderJobGroupOptions(row.job_group || "관리직")}</select></td>
       <td><input data-field="team" value="${escapeHtml(row.team || "")}"></td>
       <td><input data-field="position" value="${escapeHtml(row.position || "")}"></td>
+      <td><input data-field="target_factory" value="${escapeHtml(row.target_factory || "")}" readonly></td>
       <td><input data-field="headcount" type="number" min="0" value="${escapeHtml(row.headcount ?? 1)}"></td>
       <td><input data-field="hours" type="number" min="0" step="0.5" value="${escapeHtml(row.hours ?? 8)}"></td>
       <td><input data-field="detail" value="${escapeHtml(row.detail || "")}"></td>
@@ -134,9 +140,13 @@ function renderEntryRows() {
     { date: "2026-06-03", name: "서동철", job_group: "관리직", team: "생산", headcount: 1, hours: 8, detail: "생산관리 총괄" },
     { date: "2026-06-03", name: "", job_group: "간접직", team: "보전", headcount: 2, hours: 8, detail: "특근라인 설비대응" },
   ];
-  state.employeeCandidates = {};
+  state.employeeResults = [];
   state.selectedEmployees = {};
   $("entryRows").innerHTML = sample.map(renderEntryRow).join("");
+  const firstRow = $("entryRows").querySelector("tr");
+  if (firstRow) {
+    selectEntryRow(firstRow.dataset.rowKey);
+  }
 }
 
 async function renderSlides() {
@@ -195,6 +205,8 @@ async function loadBootstrap() {
 
 function addEntryRow() {
   $("entryRows").insertAdjacentHTML("beforeend", renderEntryRow());
+  const row = $("entryRows").querySelector("tr:last-child");
+  selectEntryRow(row.dataset.rowKey);
 }
 
 function rowField(tr, field) {
@@ -205,15 +217,44 @@ function rowValue(tr, field) {
   return rowField(tr, field)?.value || "";
 }
 
-function setRowStatus(tr, message, level = "") {
-  const status = rowField(tr, "hr_status");
-  status.textContent = message;
-  status.className = `row-note ${level}`.trim();
+function selectedEntryRow() {
+  if (!state.selectedRowKey) return null;
+  return $("entryRows").querySelector(`tr[data-row-key="${state.selectedRowKey}"]`);
+}
+
+function selectEntryRow(rowKey) {
+  state.selectedRowKey = rowKey;
+  $("entryRows").querySelectorAll("tr").forEach((tr) => {
+    const selected = tr.dataset.rowKey === rowKey;
+    tr.classList.toggle("selected-row", selected);
+    const radio = rowField(tr, "row_select");
+    if (radio) radio.checked = selected;
+  });
+}
+
+function setLookupState(message, level = "") {
+  $("hrLookupState").textContent = message;
+  $("hrLookupState").className = `lookup-state ${level}`.trim();
 }
 
 function candidateLabel(candidate) {
   const position = candidate.position || candidate.duty || "-";
   return `${candidate.name} · ${candidate.factory || candidate.db_factory} · ${candidate.department} · ${position} · ${candidate.job_group}`;
+}
+
+function renderEmployeeResults(items = []) {
+  state.employeeResults = items;
+  if (!items.length) {
+    $("employeeResults").innerHTML = `<div class="empty-result">후보가 없습니다. 법인/공장 또는 이름을 확인하세요.</div>`;
+    return;
+  }
+  $("employeeResults").innerHTML = items.map((candidate, index) => `
+    <button type="button" class="employee-result" data-candidate-index="${index}">
+      <strong>${escapeHtml(candidate.name)}</strong>
+      <span>${escapeHtml(candidate.factory || candidate.db_factory)} · ${escapeHtml(candidate.department)} · ${escapeHtml(candidate.position || candidate.duty || "-")}</span>
+      <em>${escapeHtml(candidate.job_group)} / ${escapeHtml(candidate.classification_reason)}</em>
+    </button>
+  `).join("");
 }
 
 function applyEmployeeToRow(tr, candidate) {
@@ -223,48 +264,55 @@ function applyEmployeeToRow(tr, candidate) {
   rowField(tr, "job_group").value = candidate.job_group;
   rowField(tr, "team").value = candidate.department || candidate.org_name || "";
   rowField(tr, "position").value = candidate.position || candidate.duty || "";
-  setRowStatus(tr, `${candidate.factory || candidate.db_factory} · ${candidate.classification_reason}`, candidate.confidence);
+  rowField(tr, "target_factory").value = candidate.factory || candidate.db_factory || "";
+  setLookupState(`${candidateLabel(candidate)} 적용됨`, candidate.confidence);
 }
 
-async function searchEmployeeForRow(tr) {
-  const key = tr.dataset.rowKey;
-  const name = rowValue(tr, "name").trim();
-  delete state.selectedEmployees[key];
+async function searchEmployees() {
+  const name = $("employeeSearchInput").value.trim();
   if (name.length < 2) {
-    setRowStatus(tr, "이름 2글자 이상", "low");
+    setLookupState("이름을 2글자 이상 입력하세요.", "bad");
+    renderEmployeeResults([]);
     return;
   }
-  setRowStatus(tr, "검색 중");
+  const row = selectedEntryRow();
+  if (!row) {
+    setLookupState("먼저 적용할 입력 행을 선택하세요.", "bad");
+    return;
+  }
+  setLookupState("검색 중...");
   const params = new URLSearchParams({
     q: name,
     entity_code: $("entitySelect").value,
     factory: $("factoryInput").value,
   });
-  const result = await api(`/api/hr/employees/search?${params.toString()}`);
-  state.employeeCandidates[key] = result.items || [];
-  const select = rowField(tr, "employee_candidate");
-  if (!result.items?.length) {
-    select.innerHTML = `<option value="">후보 없음</option>`;
-    setRowStatus(tr, "HR 후보 없음", "low");
-    return;
-  }
-  select.innerHTML = `<option value="">후보 선택</option>` + result.items.map((candidate, index) => `
-    <option value="${index}">${escapeHtml(candidateLabel(candidate))}</option>
-  `).join("");
-  if (result.items.length === 1) {
-    select.value = "0";
-    applyEmployeeToRow(tr, result.items[0]);
-  } else {
-    setRowStatus(tr, `${result.items.length}명 후보`, "medium");
+  try {
+    const result = await api(`/api/hr/employees/search?${params.toString()}`);
+    renderEmployeeResults(result.items || []);
+    if (result.items?.length === 1) {
+      applyEmployeeToRow(row, result.items[0]);
+    } else if (result.items?.length) {
+      setLookupState(`${result.items.length}명 후보. 적용할 사람을 선택하세요.`, "warn");
+    } else {
+      setLookupState("검색 결과 없음", "bad");
+    }
+  } catch (error) {
+    renderEmployeeResults([]);
+    setLookupState(error.message, "bad");
   }
 }
 
-function applySelectedEmployee(tr) {
-  const key = tr.dataset.rowKey;
-  const index = Number(rowValue(tr, "employee_candidate"));
-  const candidate = state.employeeCandidates[key]?.[index];
+function applySelectedCandidate(index) {
+  const row = selectedEntryRow();
+  const candidate = state.employeeResults[index];
+  if (!row) {
+    setLookupState("먼저 적용할 입력 행을 선택하세요.", "bad");
+    return;
+  }
   if (candidate) {
-    applyEmployeeToRow(tr, candidate);
+    applyEmployeeToRow(row, candidate);
+  } else {
+    setLookupState("선택한 후보를 찾지 못했습니다.", "bad");
   }
 }
 
@@ -276,7 +324,7 @@ async function saveSubmission() {
       date: rowValue(tr, "date"),
       company: $("entitySelect").selectedOptions[0].textContent.split(" ")[0],
       source_factory: $("factoryInput").value,
-      target_factory: employee?.factory || "",
+      target_factory: rowValue(tr, "target_factory") || employee?.factory || "",
       job_group: rowValue(tr, "job_group"),
       team: rowValue(tr, "team"),
       name: rowValue(tr, "name"),
@@ -328,18 +376,37 @@ $("exportExcelBtn").addEventListener("click", exportExcel);
 $("exportPptBtn").addEventListener("click", exportPpt);
 $("addEntryBtn").addEventListener("click", addEntryRow);
 $("saveSubmissionBtn").addEventListener("click", saveSubmission);
-$("entitySelect").addEventListener("change", updateFactoryOptions);
+$("entitySelect").addEventListener("change", () => {
+  updateFactoryOptions();
+  renderEmployeeResults([]);
+  setLookupState("HR 조회 대기");
+});
+$("factoryInput").addEventListener("change", () => {
+  renderEmployeeResults([]);
+  setLookupState("HR 조회 대기");
+});
+$("employeeSearchBtn").addEventListener("click", searchEmployees);
+$("employeeSearchInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    searchEmployees();
+  }
+});
+$("employeeResults").addEventListener("click", (event) => {
+  const button = event.target.closest(".employee-result");
+  if (button) {
+    applySelectedCandidate(Number(button.dataset.candidateIndex));
+  }
+});
 $("entryRows").addEventListener("click", (event) => {
-  if (event.target.classList.contains("employee-search-btn")) {
-    searchEmployeeForRow(event.target.closest("tr")).catch((error) => {
-      console.error(error);
-      setRowStatus(event.target.closest("tr"), `검색 실패: ${error.message}`, "low");
-    });
+  const row = event.target.closest("tr");
+  if (row) {
+    selectEntryRow(row.dataset.rowKey);
   }
 });
 $("entryRows").addEventListener("change", (event) => {
-  if (event.target.dataset.field === "employee_candidate") {
-    applySelectedEmployee(event.target.closest("tr"));
+  if (event.target.dataset.field === "row_select") {
+    selectEntryRow(event.target.value);
   }
 });
 $("loadApprovalBtn").addEventListener("click", loadApprovalPreview);

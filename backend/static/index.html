@@ -100,11 +100,23 @@
                 <input id="submitterInput" value="샘플 담당자" />
               </label>
             </div>
+            <div class="hr-workbench">
+              <div class="hr-searchbar">
+                <label>인원 검색
+                  <input id="employeeSearchInput" placeholder="성명 2글자 이상" value="송인섭" />
+                </label>
+                <button id="employeeSearchBtn" type="button">검색</button>
+                <span id="hrLookupState" class="lookup-state">HR 조회 대기</span>
+              </div>
+              <div id="employeeResults" class="employee-results">
+                <div class="empty-result">검색 결과가 여기에 표시됩니다.</div>
+              </div>
+            </div>
             <div class="table-wrap compact">
               <table>
                 <thead>
                   <tr>
-                    <th>일자</th><th>성명 / HR</th><th>직군</th><th>팀</th><th>직급</th><th>인원</th><th>시간</th><th>세부내용</th>
+                    <th>선택</th><th>일자</th><th>성명</th><th>직군</th><th>팀</th><th>직급</th><th>귀속공장</th><th>인원</th><th>시간</th><th>세부내용</th>
                   </tr>
                 </thead>
                 <tbody id="entryRows"></tbody>
