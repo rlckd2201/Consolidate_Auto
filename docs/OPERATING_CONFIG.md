@@ -70,6 +70,17 @@ Live endpoints:
 - `GET /api/ai/gemini/status`
 - `POST /api/ai/gemini/analyze-evidence`
 
+`GET /api/ai/gemini/status` must show:
+
+```json
+{
+  "configured": true,
+  "key_status": "configured"
+}
+```
+
+If `key_status` is `placeholder_value`, `non_ascii_value`, `too_short`, or `missing`, restart the server with the real ASCII API key. Values such as `"실제 Gemini 키"` or `"<Gemini API 키>"` are rejected.
+
 Policy:
 - Gemini output is candidate evidence only.
 - Do not create final Excel/PPT directly from AI output.

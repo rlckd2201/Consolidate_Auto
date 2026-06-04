@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.2.1"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -284,7 +284,22 @@ def hr_db_configured() -> bool:
 
 
 def gemini_configured() -> bool:
-    return bool(os.environ.get("GEMINI_API_KEY"))
+    return gemini_key_status()["ok"]
+
+
+def gemini_key_status() -> dict:
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if not api_key:
+        return {"ok": False, "status": "missing"}
+    if "<" in api_key or ">" in api_key or "키" in api_key or "secret" in api_key.lower():
+        return {"ok": False, "status": "placeholder_value"}
+    try:
+        api_key.encode("ascii")
+    except UnicodeEncodeError:
+        return {"ok": False, "status": "non_ascii_value"}
+    if len(api_key.strip()) < 20:
+        return {"ok": False, "status": "too_short"}
+    return {"ok": True, "status": "configured"}
 
 
 def gemini_analysis_schema() -> dict:
@@ -376,8 +391,9 @@ Evidence:
 
 def call_gemini_json(prompt: str, schema: dict) -> dict:
     api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=503, detail="GEMINI_API_KEY environment variable is not configured")
+    key_status = gemini_key_status()
+    if not key_status["ok"]:
+        raise HTTPException(status_code=503, detail=f"GEMINI_API_KEY is not usable: {key_status['status']}")
     model = GEMINI_MODEL
     url = f"{GEMINI_API_BASE}/models/{model}:generateContent"
     request_body = {
@@ -760,6 +776,7 @@ def config() -> dict:
             "provider": "gemini",
             "model": GEMINI_MODEL,
             "configured": gemini_configured(),
+            "key_status": gemini_key_status()["status"],
             "policy": "candidate_evidence_only_no_final_report_without_human_lock",
         },
     }
@@ -767,11 +784,13 @@ def config() -> dict:
 
 @app.get("/api/ai/gemini/status")
 def gemini_status() -> dict:
+    key_status = gemini_key_status()
     return {
         "configured": gemini_configured(),
         "provider": "gemini",
         "model": GEMINI_MODEL,
         "api_base": GEMINI_API_BASE,
+        "key_status": key_status["status"],
         "policy": "candidate_evidence_only_no_final_report_without_human_lock",
     }
 
