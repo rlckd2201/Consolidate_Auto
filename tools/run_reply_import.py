@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -23,8 +24,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ai-url", default="", help="Full Gemini analyze endpoint URL, e.g. http://server:8090/api/ai/gemini/analyze-evidence")
     parser.add_argument("--max-ai-sources", type=int, default=24, help="Maximum evidence blocks to send to Gemini.")
     parser.add_argument("--ai-batch-size", type=int, default=3, help="Evidence blocks per Gemini request.")
+    parser.add_argument("--request-timeout", type=int, default=180, help="Seconds to wait for each Gemini request.")
+    parser.add_argument("--quiet", action="store_true", help="Suppress progress logs and print only the final JSON.")
     parser.add_argument("--print-summary", action="store_true", help="Print compact JSON summary.")
     return parser.parse_args()
+
+
+def progress(message: str, quiet: bool = False) -> None:
+    if quiet:
+        return
+    print(f"[{time.strftime('%H:%M:%S')}] {message}", flush=True)
 
 
 def select_ai_evidence(run: dict, max_items: int) -> list[dict]:
@@ -42,7 +51,7 @@ def select_ai_evidence(run: dict, max_items: int) -> list[dict]:
     )[:max_items]
 
 
-def post_json(url: str, body: dict) -> dict:
+def post_json(url: str, body: dict, timeout: int) -> dict:
     data = json.dumps(body, ensure_ascii=False).encode("utf-8")
     request = urllib.request.Request(
         url,
@@ -50,14 +59,30 @@ def post_json(url: str, body: dict) -> dict:
         method="POST",
         headers={"Content-Type": "application/json; charset=utf-8"},
     )
-    with urllib.request.urlopen(request, timeout=180) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
-def run_gemini_batches(run: dict, ai_url: str, period_label: str, max_sources: int, batch_size: int) -> None:
+def run_gemini_batches(
+    run: dict,
+    ai_url: str,
+    period_label: str,
+    max_sources: int,
+    batch_size: int,
+    request_timeout: int,
+    quiet: bool,
+) -> None:
     if not ai_url:
         raise ValueError("--ai-url is required when --allow-gemini is used")
+    if batch_size <= 0:
+        raise ValueError("--ai-batch-size must be greater than 0")
     evidence = select_ai_evidence(run, max_sources)
+    total_batches = (len(evidence) + batch_size - 1) // batch_size if evidence else 0
+    progress(
+        f"AI enabled: selected {len(evidence)} evidence block(s), "
+        f"batch_size={batch_size}, batches={total_batches}",
+        quiet,
+    )
     ai = run.setdefault("ai", {})
     ai.update(
         {
@@ -83,6 +108,19 @@ def run_gemini_batches(run: dict, ai_url: str, period_label: str, max_sources: i
     for start in range(0, len(evidence), batch_size):
         batch = evidence[start : start + batch_size]
         ai["batch_count"] += 1
+        batch_no = ai["batch_count"]
+        source_ids = [str(item.get("source_id", "")) for item in batch]
+        source_files = sorted({str(item.get("source_file", "")) for item in batch if item.get("source_file")})
+        source_label = ", ".join(source_ids)
+        file_label = " | ".join(source_files[:3])
+        if len(source_files) > 3:
+            file_label += f" (+{len(source_files) - 3} more)"
+        progress(
+            f"AI batch {batch_no}/{total_batches} start: "
+            f"{len(batch)} evidence [{source_label}] {file_label}",
+            quiet,
+        )
+        batch_started = time.perf_counter()
         body = {
             "period_label": period_label,
             "context": context,
@@ -98,22 +136,36 @@ def run_gemini_batches(run: dict, ai_url: str, period_label: str, max_sources: i
             ],
         }
         try:
-            result = post_json(ai_url, body)
+            result = post_json(ai_url, body, request_timeout)
         except urllib.error.HTTPError as exc:
+            elapsed = time.perf_counter() - batch_started
             detail = exc.read().decode("utf-8", errors="replace")
-            ai["errors"].append({"batch": ai["batch_count"], "status_code": exc.code, "detail": detail[:1000], "source_ids": [item.get("source_id") for item in batch]})
+            ai["errors"].append({"batch": batch_no, "status_code": exc.code, "detail": detail[:1000], "source_ids": [item.get("source_id") for item in batch]})
+            progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: HTTP {exc.code}", quiet)
             continue
         except Exception as exc:
-            ai["errors"].append({"batch": ai["batch_count"], "detail": f"{type(exc).__name__}: {str(exc)[:1000]}", "source_ids": [item.get("source_id") for item in batch]})
+            elapsed = time.perf_counter() - batch_started
+            ai["errors"].append({"batch": batch_no, "detail": f"{type(exc).__name__}: {str(exc)[:1000]}", "source_ids": [item.get("source_id") for item in batch]})
+            progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: {type(exc).__name__}", quiet)
             continue
         parsed = result.get("result", {})
+        before_candidates = len(ai["candidate_rows"])
         for row in parsed.get("candidate_rows", []):
-            ai["candidate_rows"].append({**row, "ai_batch": ai["batch_count"], "source_ids": [item.get("source_id") for item in batch]})
+            ai["candidate_rows"].append({**row, "ai_batch": batch_no, "source_ids": [item.get("source_id") for item in batch]})
         ai["source_assessment"].extend(parsed.get("source_assessment", []))
         ai["conflicts"].extend(parsed.get("conflicts", []))
         ai["questions_for_human"].extend(parsed.get("questions_for_human", []))
         ai["abstentions"].extend(parsed.get("abstentions", []))
         ai["usage_metadata"].append(result.get("usage_metadata", {}))
+        elapsed = time.perf_counter() - batch_started
+        usage = result.get("usage_metadata", {})
+        tokens = usage.get("totalTokenCount") or usage.get("total_tokens") or "-"
+        added = len(ai["candidate_rows"]) - before_candidates
+        progress(
+            f"AI batch {batch_no}/{total_batches} ok after {elapsed:.1f}s: "
+            f"+{added} candidate(s), total_candidates={len(ai['candidate_rows'])}, tokens={tokens}",
+            quiet,
+        )
     run["mode"] = "local_extract_plus_gemini"
     run["summary"]["ai_evidence_sent_count"] = ai["evidence_sent_count"]
     run["summary"]["ai_candidate_count"] = len(ai["candidate_rows"])
@@ -122,15 +174,44 @@ def run_gemini_batches(run: dict, ai_url: str, period_label: str, max_sources: i
 
 def main() -> int:
     args = parse_args()
+    started = time.perf_counter()
     reply_dir = Path(args.reply_dir).expanduser().resolve()
     out_dir = Path(args.out_dir).expanduser().resolve()
     if not reply_dir.exists():
         print(f"reply dir not found: {reply_dir}", file=sys.stderr)
         return 2
+    progress(f"reply import start: reply_dir={reply_dir}", args.quiet)
+    progress(f"output dir: {out_dir}", args.quiet)
+    progress("local extraction start", args.quiet)
     run = run_reply_import(reply_dir, args.period_label)
+    local_elapsed = time.perf_counter() - started
+    summary_counts = run.get("summary", {})
+    progress(
+        "local extraction done "
+        f"after {local_elapsed:.1f}s: "
+        f"files={summary_counts.get('file_count', 0)}, "
+        f"evidence={summary_counts.get('evidence_count', 0)}, "
+        f"current_period={summary_counts.get('current_period_evidence_count', 0)}, "
+        f"unsupported={summary_counts.get('unsupported_count', 0)}",
+        args.quiet,
+    )
     if args.allow_gemini:
-        run_gemini_batches(run, args.ai_url, args.period_label, args.max_ai_sources, args.ai_batch_size)
+        run_gemini_batches(
+            run,
+            args.ai_url,
+            args.period_label,
+            args.max_ai_sources,
+            args.ai_batch_size,
+            args.request_timeout,
+            args.quiet,
+        )
+    else:
+        progress("AI disabled: local evidence inventory only", args.quiet)
     paths = save_run(run, out_dir)
+    elapsed = time.perf_counter() - started
+    progress(f"saved run JSON: {paths['run_path']}", args.quiet)
+    progress(f"saved latest pointer: {paths['latest_path']}", args.quiet)
+    progress(f"reply import finished after {elapsed:.1f}s", args.quiet)
     summary = {
         "ok": True,
         "run_id": run["run_id"],
