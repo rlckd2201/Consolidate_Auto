@@ -9,7 +9,7 @@
       "source_file": "start_overtime_server.ps1",
       "source_location": "L1",
       "id": "start_overtime_server_ps1",
-      "community": 15,
+      "community": 10,
       "norm_label": "start_overtime_server.ps1"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1",
       "id": "backend_app_py",
-      "community": 1,
+      "community": 3,
       "norm_label": "app.py"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L124",
       "id": "backend_app_hremployeecandidate",
-      "community": 1,
+      "community": 3,
       "norm_label": "hremployeecandidate"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L168",
       "id": "backend_app_now",
-      "community": 3,
+      "community": 4,
       "norm_label": "_now()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L210",
       "id": "backend_app_load_state",
-      "community": 3,
+      "community": 4,
       "norm_label": "load_state()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L221",
       "id": "backend_app_save_state",
-      "community": 3,
+      "community": 4,
       "norm_label": "save_state()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L226",
       "id": "backend_app_apply_master_updates",
-      "community": 3,
+      "community": 4,
       "norm_label": "apply_master_updates()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L241",
       "id": "backend_app_all_rows",
-      "community": 3,
+      "community": 4,
       "norm_label": "all_rows()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L248",
       "id": "backend_app_summarize",
-      "community": 3,
+      "community": 4,
       "norm_label": "summarize()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L274",
       "id": "backend_app_split_counts",
-      "community": 13,
+      "community": 4,
       "norm_label": "split_counts()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L281",
       "id": "backend_app_hr_db_configured",
-      "community": 1,
+      "community": 3,
       "norm_label": "hr_db_configured()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L286",
       "id": "backend_app_gemini_configured",
-      "community": 12,
+      "community": 8,
       "norm_label": "gemini_configured()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L290",
       "id": "backend_app_gemini_key_status",
-      "community": 12,
+      "community": 8,
       "norm_label": "gemini_key_status()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L527",
       "id": "backend_app_hr_connection",
-      "community": 1,
+      "community": 3,
       "norm_label": "hr_connection()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L545",
       "id": "backend_app_production_department",
-      "community": 1,
+      "community": 3,
       "norm_label": "production_department()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L552",
       "id": "backend_app_classify_hr_employee",
-      "community": 1,
+      "community": 3,
       "norm_label": "classify_hr_employee()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L566",
       "id": "backend_app_entity_code_from_hr",
-      "community": 1,
+      "community": 3,
       "norm_label": "entity_code_from_hr()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L581",
       "id": "backend_app_display_factory_from_hr",
-      "community": 1,
+      "community": 3,
       "norm_label": "display_factory_from_hr()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L589",
       "id": "backend_app_hr_candidate_from_row",
-      "community": 1,
+      "community": 3,
       "norm_label": "hr_candidate_from_row()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L615",
       "id": "backend_app_add_entity_filters",
-      "community": 1,
+      "community": 3,
       "norm_label": "add_entity_filters()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L637",
       "id": "backend_app_choose_template",
-      "community": 1,
+      "community": 3,
       "norm_label": "choose_template()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L650",
       "id": "backend_app_copy_template_output",
-      "community": 1,
+      "community": 3,
       "norm_label": "copy_template_output()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L664",
       "id": "backend_app_build_approval_title",
-      "community": 13,
+      "community": 4,
       "norm_label": "build_approval_title()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L668",
       "id": "backend_app_build_approval_body",
-      "community": 13,
+      "community": 4,
       "norm_label": "build_approval_body()"
     },
     {
@@ -369,7 +369,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L717",
       "id": "backend_app_index",
-      "community": 1,
+      "community": 3,
       "norm_label": "index()"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L722",
       "id": "backend_app_health",
-      "community": 1,
+      "community": 3,
       "norm_label": "health()"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L732",
       "id": "backend_app_version",
-      "community": 1,
+      "community": 3,
       "norm_label": "version()"
     },
     {
@@ -396,7 +396,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L737",
       "id": "backend_app_bootstrap",
-      "community": 3,
+      "community": 4,
       "norm_label": "bootstrap()"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L750",
       "id": "backend_app_config",
-      "community": 12,
+      "community": 8,
       "norm_label": "config()"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L786",
       "id": "backend_app_gemini_status",
-      "community": 12,
+      "community": 8,
       "norm_label": "gemini_status()"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L812",
       "id": "backend_app_import_latest",
-      "community": 0,
+      "community": 1,
       "norm_label": "import_latest()"
     },
     {
@@ -441,7 +441,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L825",
       "id": "backend_app_import_run",
-      "community": 0,
+      "community": 1,
       "norm_label": "import_run()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L839",
       "id": "backend_app_hr_status",
-      "community": 1,
+      "community": 3,
       "norm_label": "hr_status()"
     },
     {
@@ -459,7 +459,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L850",
       "id": "backend_app_search_hr_employees",
-      "community": 1,
+      "community": 3,
       "norm_label": "search_hr_employees()"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L927",
       "id": "backend_app_templates",
-      "community": 1,
+      "community": 3,
       "norm_label": "templates()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L939",
       "id": "backend_app_dashboard",
-      "community": 3,
+      "community": 4,
       "norm_label": "dashboard()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L946",
       "id": "backend_app_submissions",
-      "community": 3,
+      "community": 4,
       "norm_label": "submissions()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L951",
       "id": "backend_app_create_submission",
-      "community": 3,
+      "community": 4,
       "norm_label": "create_submission()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L971",
       "id": "backend_app_report_preview",
-      "community": 3,
+      "community": 4,
       "norm_label": "report_preview()"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L988",
       "id": "backend_app_export_excel_stub",
-      "community": 1,
+      "community": 3,
       "norm_label": "export_excel_stub()"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L993",
       "id": "backend_app_export_ppt_stub",
-      "community": 1,
+      "community": 3,
       "norm_label": "export_ppt_stub()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L998",
       "id": "backend_app_approval_preview",
-      "community": 13,
+      "community": 4,
       "norm_label": "approval_preview()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1015",
       "id": "backend_app_fill_approval_draft_stub",
-      "community": 3,
+      "community": 4,
       "norm_label": "fill_approval_draft_stub()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L1",
       "id": "backend_reply_import_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "reply_import.py"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L73",
       "id": "backend_reply_import_now_id",
-      "community": 0,
+      "community": 1,
       "norm_label": "now_id()"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L77",
       "id": "backend_reply_import_norm",
-      "community": 0,
+      "community": 1,
       "norm_label": "norm()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L90",
       "id": "backend_reply_import_rel",
-      "community": 0,
+      "community": 1,
       "norm_label": "rel()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L97",
       "id": "backend_reply_import_row_to_text",
-      "community": 0,
+      "community": 1,
       "norm_label": "row_to_text()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L101",
       "id": "backend_reply_import_contains_any",
-      "community": 0,
+      "community": 1,
       "norm_label": "contains_any()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L106",
       "id": "backend_reply_import_hits",
-      "community": 0,
+      "community": 1,
       "norm_label": "hits()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L111",
       "id": "backend_reply_import_role_guess",
-      "community": 0,
+      "community": 1,
       "norm_label": "role_guess()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L129",
       "id": "backend_reply_import_extract_factory",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_factory()"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L139",
       "id": "backend_reply_import_extract_date",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_date()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L164",
       "id": "backend_reply_import_guess_category",
-      "community": 0,
+      "community": 1,
       "norm_label": "guess_category()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L171",
       "id": "backend_reply_import_normalize_job_group",
-      "community": 0,
+      "community": 1,
       "norm_label": "normalize_job_group()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L181",
       "id": "backend_reply_import_import_dependency_status",
-      "community": 0,
+      "community": 1,
       "norm_label": "import_dependency_status()"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L192",
       "id": "backend_reply_import_file_inventory",
-      "community": 0,
+      "community": 1,
       "norm_label": "file_inventory()"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L212",
       "id": "backend_reply_import_build_evidence",
-      "community": 0,
+      "community": 1,
       "norm_label": "build_evidence()"
     },
     {
@@ -684,7 +684,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L232",
       "id": "backend_reply_import_extract_xlsx",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_xlsx()"
     },
     {
@@ -693,7 +693,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L287",
       "id": "backend_reply_import_extract_pdf",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_pdf()"
     },
     {
@@ -702,7 +702,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L316",
       "id": "backend_reply_import_extract_pptx",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_pptx()"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L353",
       "id": "backend_reply_import_local_candidates_from_evidence",
-      "community": 0,
+      "community": 1,
       "norm_label": "local_candidates_from_evidence()"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L412",
       "id": "backend_reply_import_run_reply_import",
-      "community": 0,
+      "community": 1,
       "norm_label": "run_reply_import()"
     },
     {
@@ -729,7 +729,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L491",
       "id": "backend_reply_import_save_run",
-      "community": 0,
+      "community": 1,
       "norm_label": "save_run()"
     },
     {
@@ -738,7 +738,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L501",
       "id": "backend_reply_import_load_latest",
-      "community": 0,
+      "community": 1,
       "norm_label": "load_latest()"
     },
     {
@@ -747,7 +747,7 @@
       "source_file": "backend\\__init__.py",
       "source_location": "L1",
       "id": "backend_init_py",
-      "community": 14,
+      "community": 9,
       "norm_label": "__init__.py"
     },
     {
@@ -755,7 +755,7 @@
       "file_type": "rationale",
       "source_file": "backend\\__init__.py",
       "source_location": "L1",
-      "community": 14,
+      "community": 9,
       "norm_label": "overtime reporting web backend.",
       "id": "backend_init_rationale_1"
     },
@@ -765,7 +765,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L1",
       "id": "backend_static_app_js",
-      "community": 4,
+      "community": 0,
       "norm_label": "app.js"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L11",
       "id": "static_app",
-      "community": 11,
+      "community": 0,
       "norm_label": "$()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L14",
       "id": "static_app_escapehtml",
-      "community": 4,
+      "community": 0,
       "norm_label": "escapehtml()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L23",
       "id": "static_app_fmtcount",
-      "community": 7,
+      "community": 0,
       "norm_label": "fmtcount()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L27",
       "id": "static_app_api",
-      "community": 10,
+      "community": 0,
       "norm_label": "api()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L48",
       "id": "static_app_switchview",
-      "community": 7,
+      "community": 0,
       "norm_label": "switchview()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L53",
       "id": "static_app_flattenrows",
-      "community": 7,
+      "community": 0,
       "norm_label": "flattenrows()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L57",
       "id": "static_app_renderbars",
-      "community": 7,
+      "community": 0,
       "norm_label": "renderbars()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L69",
       "id": "static_app_renderreviewrows",
-      "community": 7,
+      "community": 0,
       "norm_label": "renderreviewrows()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L89",
       "id": "static_app_renderentities",
-      "community": 11,
+      "community": 0,
       "norm_label": "renderentities()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L96",
       "id": "static_app_rendersubmissionselect",
-      "community": 7,
+      "community": 0,
       "norm_label": "rendersubmissionselect()"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L102",
       "id": "static_app_fmtimportcounts",
-      "community": 4,
+      "community": 0,
       "norm_label": "fmtimportcounts()"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L106",
       "id": "static_app_renderimportrun",
-      "community": 4,
+      "community": 0,
       "norm_label": "renderimportrun()"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L145",
       "id": "static_app_loadimportlatest",
-      "community": 4,
+      "community": 0,
       "norm_label": "loadimportlatest()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L155",
       "id": "static_app_runimport",
-      "community": 4,
+      "community": 0,
       "norm_label": "runimport()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L169",
       "id": "static_app_updatefactoryoptions",
-      "community": 11,
+      "community": 0,
       "norm_label": "updatefactoryoptions()"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L180",
       "id": "static_app_renderjobgroupoptions",
-      "community": 4,
+      "community": 0,
       "norm_label": "renderjobgroupoptions()"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L184",
       "id": "static_app_makerowkey",
-      "community": 4,
+      "community": 0,
       "norm_label": "makerowkey()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L188",
       "id": "static_app_renderentryrow",
-      "community": 4,
+      "community": 0,
       "norm_label": "renderentryrow()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L206",
       "id": "static_app_renderentryrows",
-      "community": 11,
+      "community": 0,
       "norm_label": "renderentryrows()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L220",
       "id": "static_app_renderslides",
-      "community": 10,
+      "community": 0,
       "norm_label": "renderslides()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L234",
       "id": "static_app_loadapprovalpreview",
-      "community": 10,
+      "community": 0,
       "norm_label": "loadapprovalpreview()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L255",
       "id": "static_app_loadbootstrap",
-      "community": 7,
+      "community": 0,
       "norm_label": "loadbootstrap()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L275",
       "id": "static_app_addentryrow",
-      "community": 11,
+      "community": 0,
       "norm_label": "addentryrow()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L281",
       "id": "static_app_rowfield",
-      "community": 4,
+      "community": 0,
       "norm_label": "rowfield()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L285",
       "id": "static_app_rowvalue",
-      "community": 4,
+      "community": 0,
       "norm_label": "rowvalue()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L289",
       "id": "static_app_selectedentryrow",
-      "community": 8,
+      "community": 0,
       "norm_label": "selectedentryrow()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L294",
       "id": "static_app_selectentryrow",
-      "community": 11,
+      "community": 0,
       "norm_label": "selectentryrow()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L304",
       "id": "static_app_setlookupstate",
-      "community": 8,
+      "community": 0,
       "norm_label": "setlookupstate()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L309",
       "id": "static_app_candidatelabel",
-      "community": 8,
+      "community": 0,
       "norm_label": "candidatelabel()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L314",
       "id": "static_app_renderemployeeresults",
-      "community": 8,
+      "community": 0,
       "norm_label": "renderemployeeresults()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L329",
       "id": "static_app_applyemployeetorow",
-      "community": 8,
+      "community": 0,
       "norm_label": "applyemployeetorow()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L340",
       "id": "static_app_searchemployees",
-      "community": 8,
+      "community": 0,
       "norm_label": "searchemployees()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L374",
       "id": "static_app_applyselectedcandidate",
-      "community": 8,
+      "community": 0,
       "norm_label": "applyselectedcandidate()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L388",
       "id": "static_app_savesubmission",
-      "community": 7,
+      "community": 0,
       "norm_label": "savesubmission()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L426",
       "id": "static_app_exportexcel",
-      "community": 10,
+      "community": 0,
       "norm_label": "exportexcel()"
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L431",
       "id": "static_app_exportppt",
-      "community": 10,
+      "community": 0,
       "norm_label": "exportppt()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L436",
       "id": "static_app_filldraft",
-      "community": 10,
+      "community": 0,
       "norm_label": "filldraft()"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "deploy\\start_operating_server.ps1",
       "source_location": "L1",
       "id": "deploy_start_operating_server_ps1",
-      "community": 16,
+      "community": 11,
       "norm_label": "start_operating_server.ps1"
     },
     {
@@ -1116,7 +1116,7 @@
       "source_file": "deploy\\update_from_github.ps1",
       "source_location": "L1",
       "id": "deploy_update_from_github_ps1",
-      "community": 17,
+      "community": 12,
       "norm_label": "update_from_github.ps1"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L1",
       "id": "tools_hr_db_probe_py",
-      "community": 9,
+      "community": 7,
       "norm_label": "hr_db_probe.py"
     },
     {
@@ -1134,7 +1134,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L14",
       "id": "tools_hr_db_probe_connect",
-      "community": 9,
+      "community": 7,
       "norm_label": "_connect()"
     },
     {
@@ -1143,7 +1143,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L28",
       "id": "tools_hr_db_probe_fetchall",
-      "community": 9,
+      "community": 7,
       "norm_label": "_fetchall()"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L33",
       "id": "tools_hr_db_probe_fetchone",
-      "community": 9,
+      "community": 7,
       "norm_label": "_fetchone()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L38",
       "id": "tools_hr_db_probe_mask_name",
-      "community": 9,
+      "community": 7,
       "norm_label": "_mask_name()"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L46",
       "id": "tools_hr_db_probe_candidate_columns",
-      "community": 9,
+      "community": 7,
       "norm_label": "_candidate_columns()"
     },
     {
@@ -1179,7 +1179,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L73",
       "id": "tools_hr_db_probe_main",
-      "community": 9,
+      "community": 7,
       "norm_label": "main()"
     },
     {
@@ -1195,7 +1195,7 @@
       "label": "parse_args()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L18",
+      "source_location": "L19",
       "id": "tools_run_reply_import_parse_args",
       "community": 2,
       "norm_label": "parse_args()"
@@ -1204,7 +1204,7 @@
       "label": "progress()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L39",
+      "source_location": "L42",
       "id": "tools_run_reply_import_progress",
       "community": 2,
       "norm_label": "progress()"
@@ -1213,7 +1213,7 @@
       "label": "count_by()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L45",
+      "source_location": "L48",
       "id": "tools_run_reply_import_count_by",
       "community": 2,
       "norm_label": "count_by()"
@@ -1222,7 +1222,7 @@
       "label": "source_sort_key()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L53",
+      "source_location": "L56",
       "id": "tools_run_reply_import_source_sort_key",
       "community": 2,
       "norm_label": "source_sort_key()"
@@ -1231,7 +1231,7 @@
       "label": "sheet_relevance_penalty()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L68",
+      "source_location": "L71",
       "id": "tools_run_reply_import_sheet_relevance_penalty",
       "community": 2,
       "norm_label": "sheet_relevance_penalty()"
@@ -1240,7 +1240,7 @@
       "label": "evidence_rank()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L89",
+      "source_location": "L92",
       "id": "tools_run_reply_import_evidence_rank",
       "community": 2,
       "norm_label": "evidence_rank()"
@@ -1249,7 +1249,7 @@
       "label": "is_auxiliary_evidence()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L100",
+      "source_location": "L103",
       "id": "tools_run_reply_import_is_auxiliary_evidence",
       "community": 2,
       "norm_label": "is_auxiliary_evidence()"
@@ -1258,7 +1258,7 @@
       "label": "select_ai_evidence()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L120",
+      "source_location": "L123",
       "id": "tools_run_reply_import_select_ai_evidence",
       "community": 2,
       "norm_label": "select_ai_evidence()"
@@ -1267,7 +1267,7 @@
       "label": "normalized_category()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L146",
+      "source_location": "L149",
       "id": "tools_run_reply_import_normalized_category",
       "community": 2,
       "norm_label": "normalized_category()"
@@ -1276,7 +1276,7 @@
       "label": "normalize_candidate_row()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L159",
+      "source_location": "L162",
       "id": "tools_run_reply_import_normalize_candidate_row",
       "community": 2,
       "norm_label": "normalize_candidate_row()"
@@ -1285,16 +1285,43 @@
       "label": "post_json()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L166",
+      "source_location": "L169",
       "id": "tools_run_reply_import_post_json",
       "community": 2,
       "norm_label": "post_json()"
     },
     {
+      "label": "gemini_cache_key()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L181",
+      "id": "tools_run_reply_import_gemini_cache_key",
+      "community": 2,
+      "norm_label": "gemini_cache_key()"
+    },
+    {
+      "label": "load_ai_cache()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L201",
+      "id": "tools_run_reply_import_load_ai_cache",
+      "community": 2,
+      "norm_label": "load_ai_cache()"
+    },
+    {
+      "label": "save_ai_cache()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L210",
+      "id": "tools_run_reply_import_save_ai_cache",
+      "community": 2,
+      "norm_label": "save_ai_cache()"
+    },
+    {
       "label": "post_gemini_batch()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L178",
+      "source_location": "L231",
       "id": "tools_run_reply_import_post_gemini_batch",
       "community": 2,
       "norm_label": "post_gemini_batch()"
@@ -1303,7 +1330,7 @@
       "label": "gemini_context()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L228",
+      "source_location": "L289",
       "id": "tools_run_reply_import_gemini_context",
       "community": 2,
       "norm_label": "gemini_context()"
@@ -1312,7 +1339,7 @@
       "label": "append_gemini_result()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L237",
+      "source_location": "L298",
       "id": "tools_run_reply_import_append_gemini_result",
       "community": 2,
       "norm_label": "append_gemini_result()"
@@ -1321,7 +1348,7 @@
       "label": "update_ai_summary()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L250",
+      "source_location": "L311",
       "id": "tools_run_reply_import_update_ai_summary",
       "community": 2,
       "norm_label": "update_ai_summary()"
@@ -1330,7 +1357,7 @@
       "label": "retry_failed_gemini_batches()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L259",
+      "source_location": "L320",
       "id": "tools_run_reply_import_retry_failed_gemini_batches",
       "community": 2,
       "norm_label": "retry_failed_gemini_batches()"
@@ -1339,7 +1366,7 @@
       "label": "run_gemini_batches()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L343",
+      "source_location": "L407",
       "id": "tools_run_reply_import_run_gemini_batches",
       "community": 2,
       "norm_label": "run_gemini_batches()"
@@ -1348,7 +1375,7 @@
       "label": "main()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L486",
+      "source_location": "L518",
       "id": "tools_run_reply_import_main",
       "community": 2,
       "norm_label": "main()"
@@ -4947,7 +4974,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_parse_args",
@@ -4959,7 +4986,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L39",
+      "source_location": "L42",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_progress",
@@ -4971,7 +4998,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L45",
+      "source_location": "L48",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_count_by",
@@ -4983,7 +5010,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L53",
+      "source_location": "L56",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_source_sort_key",
@@ -4995,7 +5022,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L68",
+      "source_location": "L71",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_sheet_relevance_penalty",
@@ -5007,7 +5034,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L89",
+      "source_location": "L92",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_evidence_rank",
@@ -5019,7 +5046,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L100",
+      "source_location": "L103",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_is_auxiliary_evidence",
@@ -5031,7 +5058,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L120",
+      "source_location": "L123",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_select_ai_evidence",
@@ -5043,7 +5070,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L146",
+      "source_location": "L149",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_normalized_category",
@@ -5055,7 +5082,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L159",
+      "source_location": "L162",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_normalize_candidate_row",
@@ -5067,7 +5094,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L166",
+      "source_location": "L169",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_post_json",
@@ -5079,7 +5106,43 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L178",
+      "source_location": "L181",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_gemini_cache_key",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_gemini_cache_key",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L201",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_load_ai_cache",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_load_ai_cache",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L210",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_save_ai_cache",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_save_ai_cache",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L231",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_post_gemini_batch",
@@ -5091,7 +5154,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L228",
+      "source_location": "L289",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_gemini_context",
@@ -5103,7 +5166,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L237",
+      "source_location": "L298",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_append_gemini_result",
@@ -5115,7 +5178,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L250",
+      "source_location": "L311",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_update_ai_summary",
@@ -5127,7 +5190,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L259",
+      "source_location": "L320",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_retry_failed_gemini_batches",
@@ -5139,7 +5202,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L343",
+      "source_location": "L407",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_run_gemini_batches",
@@ -5151,7 +5214,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L486",
+      "source_location": "L518",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_main",
@@ -5163,7 +5226,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L487",
+      "source_location": "L519",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_parse_args",
@@ -5175,7 +5238,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L213",
+      "source_location": "L246",
       "weight": 1.0,
       "_src": "tools_run_reply_import_post_gemini_batch",
       "_tgt": "tools_run_reply_import_progress",
@@ -5187,7 +5250,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L274",
+      "source_location": "L336",
       "weight": 1.0,
       "_src": "tools_run_reply_import_retry_failed_gemini_batches",
       "_tgt": "tools_run_reply_import_progress",
@@ -5199,7 +5262,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L362",
+      "source_location": "L427",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_progress",
@@ -5211,7 +5274,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L495",
+      "source_location": "L528",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_progress",
@@ -5223,7 +5286,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L256",
+      "source_location": "L317",
       "weight": 1.0,
       "_src": "tools_run_reply_import_update_ai_summary",
       "_tgt": "tools_run_reply_import_count_by",
@@ -5235,7 +5298,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L368",
+      "source_location": "L433",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_count_by",
@@ -5247,7 +5310,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L94",
+      "source_location": "L97",
       "weight": 1.0,
       "_src": "tools_run_reply_import_evidence_rank",
       "_tgt": "tools_run_reply_import_sheet_relevance_penalty",
@@ -5259,7 +5322,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L124",
+      "source_location": "L127",
       "weight": 1.0,
       "_src": "tools_run_reply_import_select_ai_evidence",
       "_tgt": "tools_run_reply_import_is_auxiliary_evidence",
@@ -5271,7 +5334,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L360",
+      "source_location": "L425",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_select_ai_evidence",
@@ -5283,7 +5346,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L162",
+      "source_location": "L165",
       "weight": 1.0,
       "_src": "tools_run_reply_import_normalize_candidate_row",
       "_tgt": "tools_run_reply_import_normalized_category",
@@ -5295,7 +5358,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L241",
+      "source_location": "L302",
       "weight": 1.0,
       "_src": "tools_run_reply_import_append_gemini_result",
       "_tgt": "tools_run_reply_import_normalize_candidate_row",
@@ -5307,7 +5370,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L464",
+      "source_location": "L496",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_normalize_candidate_row",
@@ -5319,7 +5382,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L207",
+      "source_location": "L266",
       "weight": 1.0,
       "_src": "tools_run_reply_import_post_gemini_batch",
       "_tgt": "tools_run_reply_import_post_json",
@@ -5331,19 +5394,43 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L428",
+      "source_location": "L243",
       "weight": 1.0,
-      "_src": "tools_run_reply_import_run_gemini_batches",
-      "_tgt": "tools_run_reply_import_post_json",
-      "source": "tools_run_reply_import_post_json",
-      "target": "tools_run_reply_import_run_gemini_batches",
+      "_src": "tools_run_reply_import_post_gemini_batch",
+      "_tgt": "tools_run_reply_import_gemini_cache_key",
+      "source": "tools_run_reply_import_gemini_cache_key",
+      "target": "tools_run_reply_import_post_gemini_batch",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L307",
+      "source_location": "L244",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_post_gemini_batch",
+      "_tgt": "tools_run_reply_import_load_ai_cache",
+      "source": "tools_run_reply_import_load_ai_cache",
+      "target": "tools_run_reply_import_post_gemini_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L267",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_post_gemini_batch",
+      "_tgt": "tools_run_reply_import_save_ai_cache",
+      "source": "tools_run_reply_import_save_ai_cache",
+      "target": "tools_run_reply_import_post_gemini_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L369",
       "weight": 1.0,
       "_src": "tools_run_reply_import_retry_failed_gemini_batches",
       "_tgt": "tools_run_reply_import_post_gemini_batch",
@@ -5355,7 +5442,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L284",
+      "source_location": "L476",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_run_gemini_batches",
+      "_tgt": "tools_run_reply_import_post_gemini_batch",
+      "source": "tools_run_reply_import_post_gemini_batch",
+      "target": "tools_run_reply_import_run_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L346",
       "weight": 1.0,
       "_src": "tools_run_reply_import_retry_failed_gemini_batches",
       "_tgt": "tools_run_reply_import_gemini_context",
@@ -5367,7 +5466,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L324",
+      "source_location": "L387",
       "weight": 1.0,
       "_src": "tools_run_reply_import_retry_failed_gemini_batches",
       "_tgt": "tools_run_reply_import_append_gemini_result",
@@ -5379,7 +5478,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L275",
+      "source_location": "L337",
       "weight": 1.0,
       "_src": "tools_run_reply_import_retry_failed_gemini_batches",
       "_tgt": "tools_run_reply_import_update_ai_summary",
@@ -5391,7 +5490,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L500",
+      "source_location": "L533",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_retry_failed_gemini_batches",
@@ -5403,7 +5502,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L548",
+      "source_location": "L582",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_run_gemini_batches",

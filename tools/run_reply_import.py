@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -30,6 +31,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ai-retries", type=int, default=2, help="Retry count for transient Gemini batch failures.")
     parser.add_argument("--ai-retry-delay", type=float, default=5.0, help="Initial seconds to wait before retrying a failed Gemini batch.")
     parser.add_argument("--retry-split-sources", action="store_true", help="When retrying a saved run, retry each failed source id as its own Gemini request.")
+    parser.add_argument("--ai-cache-dir", default="", help="Directory for Gemini response cache. Defaults to <out-dir>\\ai_cache.")
+    parser.add_argument("--no-ai-cache", action="store_true", help="Disable Gemini response cache.")
     parser.add_argument("--request-timeout", type=int, default=180, help="Seconds to wait for each Gemini request.")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress logs and print only the final JSON.")
     parser.add_argument("--print-summary", action="store_true", help="Print compact JSON summary.")
@@ -175,17 +178,73 @@ def post_json(url: str, body: dict, timeout: int) -> dict:
         return json.loads(response.read().decode("utf-8"))
 
 
+def gemini_cache_key(period_label: str, context: dict, batch: list[dict]) -> str:
+    payload = {
+        "cache_version": "gemini-overtime-evidence-v1",
+        "period_label": period_label,
+        "context": context,
+        "evidence": [
+            {
+                "source_id": item.get("source_id", ""),
+                "source_file": item.get("source_file", ""),
+                "source_sheet_or_page": item.get("source_sheet_or_page", ""),
+                "source_location": item.get("source_location", ""),
+                "text_sha256": hashlib.sha256(str(item.get("text", "")).encode("utf-8")).hexdigest(),
+            }
+            for item in batch
+        ],
+    }
+    encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def load_ai_cache(cache_dir: Path | None, key: str) -> dict | None:
+    if cache_dir is None:
+        return None
+    path = cache_dir / f"{key}.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8")).get("response")
+
+
+def save_ai_cache(cache_dir: Path | None, key: str, result: dict, batch: list[dict]) -> None:
+    if cache_dir is None:
+        return
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    path = cache_dir / f"{key}.json"
+    source_ids = [item.get("source_id", "") for item in batch]
+    path.write_text(
+        json.dumps(
+            {
+                "cache_key": key,
+                "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "source_ids": source_ids,
+                "response": result,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+
 def post_gemini_batch(
     ai_url: str,
     period_label: str,
     context: dict,
     batch: list[dict],
+    cache_dir: Path | None,
     request_timeout: int,
     retries: int,
     retry_delay: float,
     quiet: bool,
     label: str,
-) -> tuple[dict | None, dict | None, float]:
+) -> tuple[dict | None, dict | None, float, bool]:
+    cache_key = gemini_cache_key(period_label, context, batch)
+    cached = load_ai_cache(cache_dir, cache_key)
+    if cached is not None:
+        progress(f"{label} cache hit: {cache_key[:12]}", quiet)
+        return cached, None, 0.0, True
     body = {
         "period_label": period_label,
         "context": context,
@@ -204,7 +263,9 @@ def post_gemini_batch(
     last_error: dict | None = None
     for attempt in range(1, retries + 2):
         try:
-            return post_json(ai_url, body, request_timeout), None, time.perf_counter() - started
+            result = post_json(ai_url, body, request_timeout)
+            save_ai_cache(cache_dir, cache_key, result, batch)
+            return result, None, time.perf_counter() - started, False
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
             last_error = {"status_code": exc.code, "detail": detail[:1000]}
@@ -222,7 +283,7 @@ def post_gemini_batch(
                 time.sleep(delay)
                 continue
             break
-    return None, last_error, time.perf_counter() - started
+    return None, last_error, time.perf_counter() - started, False
 
 
 def gemini_context() -> dict:
@@ -260,6 +321,7 @@ def retry_failed_gemini_batches(
     run: dict,
     ai_url: str,
     period_label: str,
+    cache_dir: Path | None,
     request_timeout: int,
     retries: int,
     retry_delay: float,
@@ -304,11 +366,12 @@ def retry_failed_gemini_batches(
         batch_no = unit.get("batch", index)
         source_label = ", ".join(source_ids)
         progress(f"retry batch {index}/{len(retry_units)} original={batch_no}: [{source_label}]", quiet)
-        result, last_error, elapsed = post_gemini_batch(
+        result, last_error, elapsed, cache_hit = post_gemini_batch(
             ai_url,
             period_label,
             context,
             batch,
+            cache_dir,
             request_timeout,
             retries,
             retry_delay,
@@ -325,7 +388,8 @@ def retry_failed_gemini_batches(
         ai["usage_metadata"].append(result.get("usage_metadata", {}))
         usage = result.get("usage_metadata", {})
         tokens = usage.get("totalTokenCount") or usage.get("total_tokens") or "-"
-        progress(f"retry batch {index}/{len(retry_units)} ok after {elapsed:.1f}s: +{added} candidate(s), tokens={tokens}", quiet)
+        cache_label = " cache" if cache_hit else ""
+        progress(f"retry batch {index}/{len(retry_units)} ok{cache_label} after {elapsed:.1f}s: +{added} candidate(s), tokens={tokens}", quiet)
     ai["errors"] = remaining_errors
     retry_history = ai.setdefault("retry_history", [])
     retry_history.append(
@@ -348,6 +412,7 @@ def run_gemini_batches(
     batch_size: int,
     selection: str,
     include_auxiliary: bool,
+    cache_dir: Path | None,
     retries: int,
     retry_delay: float,
     request_timeout: int,
@@ -383,6 +448,8 @@ def run_gemini_batches(
             "selection": selection,
             "include_auxiliary_sources": include_auxiliary,
             "evidence_folder_counts": count_by(evidence, "source_folder"),
+            "cache_enabled": cache_dir is not None,
+            "cache_dir": str(cache_dir) if cache_dir else "",
         }
     )
     context = {
@@ -406,54 +473,19 @@ def run_gemini_batches(
             f"{len(batch)} evidence [{source_label}] {file_label}",
             quiet,
         )
-        batch_started = time.perf_counter()
-        body = {
-            "period_label": period_label,
-            "context": context,
-            "evidence": [
-                {
-                    "source_id": item.get("source_id", ""),
-                    "source_file": item.get("source_file", ""),
-                    "source_sheet_or_page": item.get("source_sheet_or_page", ""),
-                    "source_location": item.get("source_location", ""),
-                    "text": item.get("text", ""),
-                }
-                for item in batch
-            ],
-        }
-        result: dict | None = None
-        last_error: dict | None = None
-        for attempt in range(1, retries + 2):
-            try:
-                result = post_json(ai_url, body, request_timeout)
-                break
-            except urllib.error.HTTPError as exc:
-                detail = exc.read().decode("utf-8", errors="replace")
-                last_error = {"status_code": exc.code, "detail": detail[:1000]}
-                if attempt <= retries:
-                    delay = retry_delay * attempt
-                    progress(
-                        f"AI batch {batch_no}/{total_batches} retry {attempt}/{retries} "
-                        f"after HTTP {exc.code}; waiting {delay:.1f}s",
-                        quiet,
-                    )
-                    time.sleep(delay)
-                    continue
-                break
-            except Exception as exc:
-                last_error = {"detail": f"{type(exc).__name__}: {str(exc)[:1000]}"}
-                if attempt <= retries:
-                    delay = retry_delay * attempt
-                    progress(
-                        f"AI batch {batch_no}/{total_batches} retry {attempt}/{retries} "
-                        f"after {type(exc).__name__}; waiting {delay:.1f}s",
-                        quiet,
-                    )
-                    time.sleep(delay)
-                    continue
-                break
+        result, last_error, elapsed, cache_hit = post_gemini_batch(
+            ai_url,
+            period_label,
+            context,
+            batch,
+            cache_dir,
+            request_timeout,
+            retries,
+            retry_delay,
+            quiet,
+            f"AI batch {batch_no}/{total_batches}",
+        )
         if result is None:
-            elapsed = time.perf_counter() - batch_started
             ai["errors"].append({"batch": batch_no, **(last_error or {}), "source_ids": [item.get("source_id") for item in batch]})
             status = f"HTTP {last_error.get('status_code')}" if last_error and last_error.get("status_code") else (last_error or {}).get("detail", "unknown error")
             progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: {status}", quiet)
@@ -467,12 +499,12 @@ def run_gemini_batches(
         ai["questions_for_human"].extend(parsed.get("questions_for_human", []))
         ai["abstentions"].extend(parsed.get("abstentions", []))
         ai["usage_metadata"].append(result.get("usage_metadata", {}))
-        elapsed = time.perf_counter() - batch_started
         usage = result.get("usage_metadata", {})
         tokens = usage.get("totalTokenCount") or usage.get("total_tokens") or "-"
         added = len(ai["candidate_rows"]) - before_candidates
+        cache_label = " cache" if cache_hit else ""
         progress(
-            f"AI batch {batch_no}/{total_batches} ok after {elapsed:.1f}s: "
+            f"AI batch {batch_no}/{total_batches} ok{cache_label} after {elapsed:.1f}s: "
             f"+{added} candidate(s), total_candidates={len(ai['candidate_rows'])}, tokens={tokens}",
             quiet,
         )
@@ -487,6 +519,7 @@ def main() -> int:
     args = parse_args()
     started = time.perf_counter()
     out_dir = Path(args.out_dir).expanduser().resolve()
+    cache_dir = None if args.no_ai_cache else Path(args.ai_cache_dir).expanduser().resolve() if args.ai_cache_dir else out_dir / "ai_cache"
     if args.retry_run:
         retry_path = Path(args.retry_run).expanduser().resolve()
         if not retry_path.exists():
@@ -501,6 +534,7 @@ def main() -> int:
             run,
             args.ai_url,
             args.period_label,
+            cache_dir,
             args.request_timeout,
             args.ai_retries,
             args.ai_retry_delay,
@@ -553,6 +587,7 @@ def main() -> int:
             args.ai_batch_size,
             args.ai_selection,
             args.include_auxiliary_ai_sources,
+            cache_dir,
             args.ai_retries,
             args.ai_retry_delay,
             args.request_timeout,
