@@ -1,7 +1,7 @@
 # Graph Report - overtime_web  (2026-06-04)
 
 ## Corpus Check
-- 9 files · ~10,478 words
+- 9 files · ~10,538 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -65,28 +65,28 @@ Cohesion: 0.23
 Nodes (17): append_gemini_result(), count_by(), evidence_rank(), gemini_context(), is_auxiliary_evidence(), main(), normalize_candidate_row(), normalized_category() (+9 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.31
-Nodes (11): all_rows(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now(), report_preview() (+3 more)
+Cohesion: 0.27
+Nodes (12): all_rows(), apply_master_updates(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now() (+4 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.29
-Nodes (10): apply_master_updates(), LegalEntity, OvertimeRow, Period, ReplyImportRunRequest, _seed_state(), State, Submission (+2 more)
+Cohesion: 0.35
+Nodes (10): escapeHtml(), fmtImportCounts(), loadImportLatest(), makeRowKey(), renderEntryRow(), renderImportRun(), renderJobGroupOptions(), rowField() (+2 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.38
-Nodes (10): $(), applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), renderEntities(), searchEmployees(), selectedEntryRow() (+2 more)
+Cohesion: 0.33
+Nodes (9): LegalEntity, OvertimeRow, Period, ReplyImportRunRequest, _seed_state(), State, Submission, SubmissionCreate (+1 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.39
-Nodes (8): addEntryRow(), makeRowKey(), renderEntryRow(), renderEntryRows(), renderJobGroupOptions(), rowField(), rowValue(), selectEntryRow()
-
-### Community 7 - "Community 7"
 Cohesion: 0.32
 Nodes (8): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), gemini_analysis_schema(), GeminiEvidenceAnalyzeRequest, GeminiEvidenceItem, run_gemini_import_batches(), selected_ai_evidence()
 
-### Community 8 - "Community 8"
+### Community 7 - "Community 7"
 Cohesion: 0.25
-Nodes (8): api(), exportExcel(), exportPpt(), fillDraft(), loadApprovalPreview(), renderSlides(), saveSubmission(), switchView()
+Nodes (8): flattenRows(), fmtCount(), loadBootstrap(), renderBars(), renderReviewRows(), renderSubmissionSelect(), saveSubmission(), switchView()
+
+### Community 8 - "Community 8"
+Cohesion: 0.43
+Nodes (7): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), searchEmployees(), selectedEntryRow(), setLookupState()
 
 ### Community 9 - "Community 9"
 Cohesion: 0.52
@@ -94,19 +94,19 @@ Nodes (6): _candidate_columns(), _connect(), _fetchall(), _fetchone(), main(), _
 
 ### Community 10 - "Community 10"
 Cohesion: 0.33
-Nodes (6): flattenRows(), fmtCount(), loadBootstrap(), renderBars(), renderReviewRows(), renderSubmissionSelect()
+Nodes (6): api(), exportExcel(), exportPpt(), fillDraft(), loadApprovalPreview(), renderSlides()
 
 ### Community 11 - "Community 11"
-Cohesion: 0.5
-Nodes (5): escapeHtml(), fmtImportCounts(), loadImportLatest(), renderImportRun(), runImport()
+Cohesion: 0.53
+Nodes (6): $(), addEntryRow(), renderEntities(), renderEntryRows(), selectEntryRow(), updateFactoryOptions()
 
 ### Community 12 - "Community 12"
-Cohesion: 0.67
-Nodes (4): approval_preview(), build_approval_body(), build_approval_title(), split_counts()
-
-### Community 13 - "Community 13"
 Cohesion: 0.83
 Nodes (4): config(), gemini_configured(), gemini_key_status(), gemini_status()
+
+### Community 13 - "Community 13"
+Cohesion: 0.67
+Nodes (4): approval_preview(), build_approval_body(), build_approval_title(), split_counts()
 
 ### Community 14 - "Community 14"
 Cohesion: 1.0
@@ -121,7 +121,7 @@ Nodes (1): Overtime reporting web backend.
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `import_run()` connect `Community 0` to `Community 1`, `Community 13`, `Community 7`?**
+- **Why does `import_run()` connect `Community 0` to `Community 1`, `Community 12`, `Community 6`?**
   _High betweenness centrality (0.194) - this node is a cross-community bridge._
 - **Why does `run_reply_import()` connect `Community 0` to `Community 2`?**
   _High betweenness centrality (0.149) - this node is a cross-community bridge._

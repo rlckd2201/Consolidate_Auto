@@ -29,6 +29,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--include-auxiliary-ai-sources", action="store_true", help="Include auxiliary files such as 52-hour status workbooks in Gemini input.")
     parser.add_argument("--ai-retries", type=int, default=2, help="Retry count for transient Gemini batch failures.")
     parser.add_argument("--ai-retry-delay", type=float, default=5.0, help="Initial seconds to wait before retrying a failed Gemini batch.")
+    parser.add_argument("--retry-split-sources", action="store_true", help="When retrying a saved run, retry each failed source id as its own Gemini request.")
     parser.add_argument("--request-timeout", type=int, default=180, help="Seconds to wait for each Gemini request.")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress logs and print only the final JSON.")
     parser.add_argument("--print-summary", action="store_true", help="Print compact JSON summary.")
@@ -262,6 +263,7 @@ def retry_failed_gemini_batches(
     request_timeout: int,
     retries: int,
     retry_delay: float,
+    split_sources: bool,
     quiet: bool,
 ) -> None:
     if not ai_url:
@@ -280,14 +282,28 @@ def retry_failed_gemini_batches(
     ai.setdefault("usage_metadata", [])
     evidence_by_id = {item.get("source_id"): item for item in run.get("evidence_items", [])}
     context = gemini_context()
-    remaining_errors: list[dict] = []
-    progress(f"retry failed Gemini batches: {len(errors)} batch(es)", quiet)
-    for index, error in enumerate(errors, start=1):
+    retry_units: list[dict] = []
+    for error_index, error in enumerate(errors, start=1):
         source_ids = [source_id for source_id in error.get("source_ids", []) if source_id in evidence_by_id]
+        batch_no = error.get("batch", error_index)
+        if split_sources:
+            for source_id in source_ids:
+                retry_units.append({"batch": batch_no, "source_ids": [source_id]})
+        else:
+            retry_units.append({"batch": batch_no, "source_ids": source_ids})
+
+    remaining_errors: list[dict] = []
+    progress(
+        f"retry failed Gemini batches: {len(errors)} failed batch(es), "
+        f"{len(retry_units)} retry request(s), split_sources={split_sources}",
+        quiet,
+    )
+    for index, unit in enumerate(retry_units, start=1):
+        source_ids = unit["source_ids"]
         batch = [evidence_by_id[source_id] for source_id in source_ids]
-        batch_no = error.get("batch", index)
+        batch_no = unit.get("batch", index)
         source_label = ", ".join(source_ids)
-        progress(f"retry batch {index}/{len(errors)} original={batch_no}: [{source_label}]", quiet)
+        progress(f"retry batch {index}/{len(retry_units)} original={batch_no}: [{source_label}]", quiet)
         result, last_error, elapsed = post_gemini_batch(
             ai_url,
             period_label,
@@ -297,19 +313,19 @@ def retry_failed_gemini_batches(
             retries,
             retry_delay,
             quiet,
-            f"retry batch {index}/{len(errors)}",
+            f"retry batch {index}/{len(retry_units)}",
         )
         if result is None:
             remaining_errors.append({"batch": batch_no, **(last_error or {}), "source_ids": source_ids})
             status = f"HTTP {last_error.get('status_code')}" if last_error and last_error.get("status_code") else (last_error or {}).get("detail", "unknown error")
-            progress(f"retry batch {index}/{len(errors)} error after {elapsed:.1f}s: {status}", quiet)
+            progress(f"retry batch {index}/{len(retry_units)} error after {elapsed:.1f}s: {status}", quiet)
             continue
         parsed = result.get("result", {})
         added = append_gemini_result(ai, parsed, batch, f"retry-{batch_no}")
         ai["usage_metadata"].append(result.get("usage_metadata", {}))
         usage = result.get("usage_metadata", {})
         tokens = usage.get("totalTokenCount") or usage.get("total_tokens") or "-"
-        progress(f"retry batch {index}/{len(errors)} ok after {elapsed:.1f}s: +{added} candidate(s), tokens={tokens}", quiet)
+        progress(f"retry batch {index}/{len(retry_units)} ok after {elapsed:.1f}s: +{added} candidate(s), tokens={tokens}", quiet)
     ai["errors"] = remaining_errors
     retry_history = ai.setdefault("retry_history", [])
     retry_history.append(
@@ -488,6 +504,7 @@ def main() -> int:
             args.request_timeout,
             args.ai_retries,
             args.ai_retry_delay,
+            args.retry_split_sources,
             args.quiet,
         )
         paths = save_run(run, out_dir)
