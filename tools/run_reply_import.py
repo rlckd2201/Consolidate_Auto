@@ -26,6 +26,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ai-batch-size", type=int, default=3, help="Evidence blocks per Gemini request.")
     parser.add_argument("--ai-selection", choices=["balanced", "ordered"], default="balanced", help="How to choose evidence blocks for Gemini.")
     parser.add_argument("--include-auxiliary-ai-sources", action="store_true", help="Include auxiliary files such as 52-hour status workbooks in Gemini input.")
+    parser.add_argument("--ai-retries", type=int, default=2, help="Retry count for transient Gemini batch failures.")
+    parser.add_argument("--ai-retry-delay", type=float, default=5.0, help="Initial seconds to wait before retrying a failed Gemini batch.")
     parser.add_argument("--request-timeout", type=int, default=180, help="Seconds to wait for each Gemini request.")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress logs and print only the final JSON.")
     parser.add_argument("--print-summary", action="store_true", help="Print compact JSON summary.")
@@ -96,6 +98,8 @@ def evidence_rank(item: dict) -> tuple[int, int, int, str, str]:
 def is_auxiliary_evidence(item: dict) -> bool:
     source_file = str(item.get("source_file", ""))
     sheet = str(item.get("source_sheet_or_page", ""))
+    if "식수" in sheet:
+        return True
     if "주 52시간" in source_file and "특근" not in source_file:
         return True
     if "52시간" in source_file and "특근" not in source_file:
@@ -137,6 +141,26 @@ def select_ai_evidence(run: dict, max_items: int, selection: str = "balanced", i
     return selected
 
 
+def normalized_category(row: dict) -> str:
+    value = str(row.get("category_guess") or row.get("job_group") or "").strip().lower()
+    if not value:
+        return "검토필요"
+    if any(token in value for token in ("non_production", "비생산", "관리직")):
+        return "비생산"
+    if any(token in value for token in ("indirect", "간접", "보전", "품질", "물류")):
+        return "간접직"
+    if any(token in value for token in ("direct", "직접", "production", "생산")):
+        return "직접직"
+    return "검토필요"
+
+
+def normalize_candidate_row(row: dict) -> dict:
+    normalized = dict(row)
+    normalized["category_raw"] = row.get("category_guess", "")
+    normalized["category_normalized"] = normalized_category(row)
+    return normalized
+
+
 def post_json(url: str, body: dict, timeout: int) -> dict:
     data = json.dumps(body, ensure_ascii=False).encode("utf-8")
     request = urllib.request.Request(
@@ -157,6 +181,8 @@ def run_gemini_batches(
     batch_size: int,
     selection: str,
     include_auxiliary: bool,
+    retries: int,
+    retry_delay: float,
     request_timeout: int,
     quiet: bool,
 ) -> None:
@@ -228,23 +254,47 @@ def run_gemini_batches(
                 for item in batch
             ],
         }
-        try:
-            result = post_json(ai_url, body, request_timeout)
-        except urllib.error.HTTPError as exc:
+        result: dict | None = None
+        last_error: dict | None = None
+        for attempt in range(1, retries + 2):
+            try:
+                result = post_json(ai_url, body, request_timeout)
+                break
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace")
+                last_error = {"status_code": exc.code, "detail": detail[:1000]}
+                if attempt <= retries:
+                    delay = retry_delay * attempt
+                    progress(
+                        f"AI batch {batch_no}/{total_batches} retry {attempt}/{retries} "
+                        f"after HTTP {exc.code}; waiting {delay:.1f}s",
+                        quiet,
+                    )
+                    time.sleep(delay)
+                    continue
+                break
+            except Exception as exc:
+                last_error = {"detail": f"{type(exc).__name__}: {str(exc)[:1000]}"}
+                if attempt <= retries:
+                    delay = retry_delay * attempt
+                    progress(
+                        f"AI batch {batch_no}/{total_batches} retry {attempt}/{retries} "
+                        f"after {type(exc).__name__}; waiting {delay:.1f}s",
+                        quiet,
+                    )
+                    time.sleep(delay)
+                    continue
+                break
+        if result is None:
             elapsed = time.perf_counter() - batch_started
-            detail = exc.read().decode("utf-8", errors="replace")
-            ai["errors"].append({"batch": batch_no, "status_code": exc.code, "detail": detail[:1000], "source_ids": [item.get("source_id") for item in batch]})
-            progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: HTTP {exc.code}", quiet)
-            continue
-        except Exception as exc:
-            elapsed = time.perf_counter() - batch_started
-            ai["errors"].append({"batch": batch_no, "detail": f"{type(exc).__name__}: {str(exc)[:1000]}", "source_ids": [item.get("source_id") for item in batch]})
-            progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: {type(exc).__name__}", quiet)
+            ai["errors"].append({"batch": batch_no, **(last_error or {}), "source_ids": [item.get("source_id") for item in batch]})
+            status = f"HTTP {last_error.get('status_code')}" if last_error and last_error.get("status_code") else (last_error or {}).get("detail", "unknown error")
+            progress(f"AI batch {batch_no}/{total_batches} error after {elapsed:.1f}s: {status}", quiet)
             continue
         parsed = result.get("result", {})
         before_candidates = len(ai["candidate_rows"])
         for row in parsed.get("candidate_rows", []):
-            ai["candidate_rows"].append({**row, "ai_batch": batch_no, "source_ids": [item.get("source_id") for item in batch]})
+            ai["candidate_rows"].append(normalize_candidate_row({**row, "ai_batch": batch_no, "source_ids": [item.get("source_id") for item in batch]}))
         ai["source_assessment"].extend(parsed.get("source_assessment", []))
         ai["conflicts"].extend(parsed.get("conflicts", []))
         ai["questions_for_human"].extend(parsed.get("questions_for_human", []))
@@ -263,6 +313,7 @@ def run_gemini_batches(
     run["summary"]["ai_evidence_sent_count"] = ai["evidence_sent_count"]
     run["summary"]["ai_candidate_count"] = len(ai["candidate_rows"])
     run["summary"]["ai_error_count"] = len(ai["errors"])
+    run["summary"]["ai_normalized_category_counts"] = count_by(ai["candidate_rows"], "category_normalized")
 
 
 def main() -> int:
@@ -297,6 +348,8 @@ def main() -> int:
             args.ai_batch_size,
             args.ai_selection,
             args.include_auxiliary_ai_sources,
+            args.ai_retries,
+            args.ai_retry_delay,
             args.request_timeout,
             args.quiet,
         )
