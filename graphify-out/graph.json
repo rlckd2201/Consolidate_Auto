@@ -27,7 +27,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L55",
       "id": "backend_app_period",
-      "community": 5,
+      "community": 4,
       "norm_label": "period"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "",
       "source_location": "",
       "id": "basemodel",
-      "community": 5,
+      "community": 4,
       "norm_label": "basemodel"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L65",
       "id": "backend_app_legalentity",
-      "community": 5,
+      "community": 4,
       "norm_label": "legalentity"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L75",
       "id": "backend_app_overtimerow",
-      "community": 5,
+      "community": 4,
       "norm_label": "overtimerow"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L96",
       "id": "backend_app_submission",
-      "community": 5,
+      "community": 4,
       "norm_label": "submission"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L110",
       "id": "backend_app_submissioncreate",
-      "community": 5,
+      "community": 4,
       "norm_label": "submissioncreate"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L118",
       "id": "backend_app_state",
-      "community": 5,
+      "community": 4,
       "norm_label": "state"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L145",
       "id": "backend_app_geminievidenceitem",
-      "community": 2,
+      "community": 7,
       "norm_label": "geminievidenceitem"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L153",
       "id": "backend_app_geminievidenceanalyzerequest",
-      "community": 2,
+      "community": 7,
       "norm_label": "geminievidenceanalyzerequest"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L160",
       "id": "backend_app_replyimportrunrequest",
-      "community": 5,
+      "community": 4,
       "norm_label": "replyimportrunrequest"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L168",
       "id": "backend_app_now",
-      "community": 9,
+      "community": 3,
       "norm_label": "_now()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L172",
       "id": "backend_app_seed_state",
-      "community": 5,
+      "community": 4,
       "norm_label": "_seed_state()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L210",
       "id": "backend_app_load_state",
-      "community": 9,
+      "community": 3,
       "norm_label": "load_state()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L221",
       "id": "backend_app_save_state",
-      "community": 9,
+      "community": 3,
       "norm_label": "save_state()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L226",
       "id": "backend_app_apply_master_updates",
-      "community": 5,
+      "community": 4,
       "norm_label": "apply_master_updates()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L241",
       "id": "backend_app_all_rows",
-      "community": 12,
+      "community": 3,
       "norm_label": "all_rows()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L248",
       "id": "backend_app_summarize",
-      "community": 12,
+      "community": 3,
       "norm_label": "summarize()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L274",
       "id": "backend_app_split_counts",
-      "community": 13,
+      "community": 12,
       "norm_label": "split_counts()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L286",
       "id": "backend_app_gemini_configured",
-      "community": 2,
+      "community": 13,
       "norm_label": "gemini_configured()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L290",
       "id": "backend_app_gemini_key_status",
-      "community": 2,
+      "community": 13,
       "norm_label": "gemini_key_status()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L305",
       "id": "backend_app_gemini_analysis_schema",
-      "community": 2,
+      "community": 7,
       "norm_label": "gemini_analysis_schema()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L351",
       "id": "backend_app_build_gemini_prompt",
-      "community": 2,
+      "community": 7,
       "norm_label": "build_gemini_prompt()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L392",
       "id": "backend_app_call_gemini_json",
-      "community": 2,
+      "community": 7,
       "norm_label": "call_gemini_json()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L444",
       "id": "backend_app_selected_ai_evidence",
-      "community": 2,
+      "community": 7,
       "norm_label": "selected_ai_evidence()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L459",
       "id": "backend_app_run_gemini_import_batches",
-      "community": 2,
+      "community": 7,
       "norm_label": "run_gemini_import_batches()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L664",
       "id": "backend_app_build_approval_title",
-      "community": 13,
+      "community": 12,
       "norm_label": "build_approval_title()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L668",
       "id": "backend_app_build_approval_body",
-      "community": 13,
+      "community": 12,
       "norm_label": "build_approval_body()"
     },
     {
@@ -396,7 +396,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L737",
       "id": "backend_app_bootstrap",
-      "community": 12,
+      "community": 3,
       "norm_label": "bootstrap()"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L750",
       "id": "backend_app_config",
-      "community": 2,
+      "community": 13,
       "norm_label": "config()"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L786",
       "id": "backend_app_gemini_status",
-      "community": 2,
+      "community": 13,
       "norm_label": "gemini_status()"
     },
     {
@@ -423,7 +423,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L799",
       "id": "backend_app_analyze_evidence_with_gemini",
-      "community": 2,
+      "community": 7,
       "norm_label": "analyze_evidence_with_gemini()"
     },
     {
@@ -441,7 +441,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L825",
       "id": "backend_app_import_run",
-      "community": 2,
+      "community": 0,
       "norm_label": "import_run()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L939",
       "id": "backend_app_dashboard",
-      "community": 12,
+      "community": 3,
       "norm_label": "dashboard()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L946",
       "id": "backend_app_submissions",
-      "community": 9,
+      "community": 3,
       "norm_label": "submissions()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L951",
       "id": "backend_app_create_submission",
-      "community": 9,
+      "community": 3,
       "norm_label": "create_submission()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L971",
       "id": "backend_app_report_preview",
-      "community": 12,
+      "community": 3,
       "norm_label": "report_preview()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L998",
       "id": "backend_app_approval_preview",
-      "community": 13,
+      "community": 12,
       "norm_label": "approval_preview()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1015",
       "id": "backend_app_fill_approval_draft_stub",
-      "community": 9,
+      "community": 3,
       "norm_label": "fill_approval_draft_stub()"
     },
     {
@@ -729,7 +729,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L491",
       "id": "backend_reply_import_save_run",
-      "community": 2,
+      "community": 0,
       "norm_label": "save_run()"
     },
     {
@@ -765,7 +765,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L1",
       "id": "backend_static_app_js",
-      "community": 4,
+      "community": 6,
       "norm_label": "app.js"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L11",
       "id": "static_app",
-      "community": 10,
+      "community": 5,
       "norm_label": "$()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L14",
       "id": "static_app_escapehtml",
-      "community": 4,
+      "community": 11,
       "norm_label": "escapehtml()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L23",
       "id": "static_app_fmtcount",
-      "community": 6,
+      "community": 10,
       "norm_label": "fmtcount()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L27",
       "id": "static_app_api",
-      "community": 11,
+      "community": 8,
       "norm_label": "api()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L48",
       "id": "static_app_switchview",
-      "community": 6,
+      "community": 8,
       "norm_label": "switchview()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L53",
       "id": "static_app_flattenrows",
-      "community": 6,
+      "community": 10,
       "norm_label": "flattenrows()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L57",
       "id": "static_app_renderbars",
-      "community": 6,
+      "community": 10,
       "norm_label": "renderbars()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L69",
       "id": "static_app_renderreviewrows",
-      "community": 6,
+      "community": 10,
       "norm_label": "renderreviewrows()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L89",
       "id": "static_app_renderentities",
-      "community": 10,
+      "community": 5,
       "norm_label": "renderentities()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L96",
       "id": "static_app_rendersubmissionselect",
-      "community": 6,
+      "community": 10,
       "norm_label": "rendersubmissionselect()"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L102",
       "id": "static_app_fmtimportcounts",
-      "community": 4,
+      "community": 11,
       "norm_label": "fmtimportcounts()"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L106",
       "id": "static_app_renderimportrun",
-      "community": 4,
+      "community": 11,
       "norm_label": "renderimportrun()"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L145",
       "id": "static_app_loadimportlatest",
-      "community": 4,
+      "community": 11,
       "norm_label": "loadimportlatest()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L155",
       "id": "static_app_runimport",
-      "community": 4,
+      "community": 11,
       "norm_label": "runimport()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L169",
       "id": "static_app_updatefactoryoptions",
-      "community": 10,
+      "community": 5,
       "norm_label": "updatefactoryoptions()"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L180",
       "id": "static_app_renderjobgroupoptions",
-      "community": 4,
+      "community": 6,
       "norm_label": "renderjobgroupoptions()"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L184",
       "id": "static_app_makerowkey",
-      "community": 4,
+      "community": 6,
       "norm_label": "makerowkey()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L188",
       "id": "static_app_renderentryrow",
-      "community": 4,
+      "community": 6,
       "norm_label": "renderentryrow()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L206",
       "id": "static_app_renderentryrows",
-      "community": 10,
+      "community": 6,
       "norm_label": "renderentryrows()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L220",
       "id": "static_app_renderslides",
-      "community": 11,
+      "community": 8,
       "norm_label": "renderslides()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L234",
       "id": "static_app_loadapprovalpreview",
-      "community": 11,
+      "community": 8,
       "norm_label": "loadapprovalpreview()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L255",
       "id": "static_app_loadbootstrap",
-      "community": 6,
+      "community": 10,
       "norm_label": "loadbootstrap()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L275",
       "id": "static_app_addentryrow",
-      "community": 10,
+      "community": 6,
       "norm_label": "addentryrow()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L281",
       "id": "static_app_rowfield",
-      "community": 4,
+      "community": 6,
       "norm_label": "rowfield()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L285",
       "id": "static_app_rowvalue",
-      "community": 4,
+      "community": 6,
       "norm_label": "rowvalue()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L289",
       "id": "static_app_selectedentryrow",
-      "community": 7,
+      "community": 5,
       "norm_label": "selectedentryrow()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L294",
       "id": "static_app_selectentryrow",
-      "community": 10,
+      "community": 6,
       "norm_label": "selectentryrow()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L304",
       "id": "static_app_setlookupstate",
-      "community": 7,
+      "community": 5,
       "norm_label": "setlookupstate()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L309",
       "id": "static_app_candidatelabel",
-      "community": 7,
+      "community": 5,
       "norm_label": "candidatelabel()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L314",
       "id": "static_app_renderemployeeresults",
-      "community": 7,
+      "community": 5,
       "norm_label": "renderemployeeresults()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L329",
       "id": "static_app_applyemployeetorow",
-      "community": 7,
+      "community": 5,
       "norm_label": "applyemployeetorow()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L340",
       "id": "static_app_searchemployees",
-      "community": 7,
+      "community": 5,
       "norm_label": "searchemployees()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L374",
       "id": "static_app_applyselectedcandidate",
-      "community": 7,
+      "community": 5,
       "norm_label": "applyselectedcandidate()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L388",
       "id": "static_app_savesubmission",
-      "community": 6,
+      "community": 8,
       "norm_label": "savesubmission()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L426",
       "id": "static_app_exportexcel",
-      "community": 11,
+      "community": 8,
       "norm_label": "exportexcel()"
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L431",
       "id": "static_app_exportppt",
-      "community": 11,
+      "community": 8,
       "norm_label": "exportppt()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L436",
       "id": "static_app_filldraft",
-      "community": 11,
+      "community": 8,
       "norm_label": "filldraft()"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L1",
       "id": "tools_hr_db_probe_py",
-      "community": 8,
+      "community": 9,
       "norm_label": "hr_db_probe.py"
     },
     {
@@ -1134,7 +1134,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L14",
       "id": "tools_hr_db_probe_connect",
-      "community": 8,
+      "community": 9,
       "norm_label": "_connect()"
     },
     {
@@ -1143,7 +1143,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L28",
       "id": "tools_hr_db_probe_fetchall",
-      "community": 8,
+      "community": 9,
       "norm_label": "_fetchall()"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L33",
       "id": "tools_hr_db_probe_fetchone",
-      "community": 8,
+      "community": 9,
       "norm_label": "_fetchone()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L38",
       "id": "tools_hr_db_probe_mask_name",
-      "community": 8,
+      "community": 9,
       "norm_label": "_mask_name()"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L46",
       "id": "tools_hr_db_probe_candidate_columns",
-      "community": 8,
+      "community": 9,
       "norm_label": "_candidate_columns()"
     },
     {
@@ -1179,7 +1179,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L73",
       "id": "tools_hr_db_probe_main",
-      "community": 8,
+      "community": 9,
       "norm_label": "main()"
     },
     {
@@ -1188,7 +1188,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L1",
       "id": "tools_run_reply_import_py",
-      "community": 3,
+      "community": 2,
       "norm_label": "run_reply_import.py"
     },
     {
@@ -1197,115 +1197,160 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L18",
       "id": "tools_run_reply_import_parse_args",
-      "community": 3,
+      "community": 2,
       "norm_label": "parse_args()"
     },
     {
       "label": "progress()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "id": "tools_run_reply_import_progress",
-      "community": 3,
+      "community": 2,
       "norm_label": "progress()"
     },
     {
       "label": "count_by()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "id": "tools_run_reply_import_count_by",
-      "community": 3,
+      "community": 2,
       "norm_label": "count_by()"
     },
     {
       "label": "source_sort_key()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L51",
+      "source_location": "L52",
       "id": "tools_run_reply_import_source_sort_key",
-      "community": 3,
+      "community": 2,
       "norm_label": "source_sort_key()"
     },
     {
       "label": "sheet_relevance_penalty()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L66",
+      "source_location": "L67",
       "id": "tools_run_reply_import_sheet_relevance_penalty",
-      "community": 3,
+      "community": 2,
       "norm_label": "sheet_relevance_penalty()"
     },
     {
       "label": "evidence_rank()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L87",
+      "source_location": "L88",
       "id": "tools_run_reply_import_evidence_rank",
-      "community": 3,
+      "community": 2,
       "norm_label": "evidence_rank()"
     },
     {
       "label": "is_auxiliary_evidence()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "id": "tools_run_reply_import_is_auxiliary_evidence",
-      "community": 3,
+      "community": 2,
       "norm_label": "is_auxiliary_evidence()"
     },
     {
       "label": "select_ai_evidence()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L118",
+      "source_location": "L119",
       "id": "tools_run_reply_import_select_ai_evidence",
-      "community": 3,
+      "community": 2,
       "norm_label": "select_ai_evidence()"
     },
     {
       "label": "normalized_category()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L144",
+      "source_location": "L145",
       "id": "tools_run_reply_import_normalized_category",
-      "community": 3,
+      "community": 2,
       "norm_label": "normalized_category()"
     },
     {
       "label": "normalize_candidate_row()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L157",
+      "source_location": "L158",
       "id": "tools_run_reply_import_normalize_candidate_row",
-      "community": 3,
+      "community": 2,
       "norm_label": "normalize_candidate_row()"
     },
     {
       "label": "post_json()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L164",
+      "source_location": "L165",
       "id": "tools_run_reply_import_post_json",
-      "community": 3,
+      "community": 2,
       "norm_label": "post_json()"
+    },
+    {
+      "label": "post_gemini_batch()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L177",
+      "id": "tools_run_reply_import_post_gemini_batch",
+      "community": 2,
+      "norm_label": "post_gemini_batch()"
+    },
+    {
+      "label": "gemini_context()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L227",
+      "id": "tools_run_reply_import_gemini_context",
+      "community": 2,
+      "norm_label": "gemini_context()"
+    },
+    {
+      "label": "append_gemini_result()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L236",
+      "id": "tools_run_reply_import_append_gemini_result",
+      "community": 2,
+      "norm_label": "append_gemini_result()"
+    },
+    {
+      "label": "update_ai_summary()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L249",
+      "id": "tools_run_reply_import_update_ai_summary",
+      "community": 2,
+      "norm_label": "update_ai_summary()"
+    },
+    {
+      "label": "retry_failed_gemini_batches()",
+      "file_type": "code",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L258",
+      "id": "tools_run_reply_import_retry_failed_gemini_batches",
+      "community": 2,
+      "norm_label": "retry_failed_gemini_batches()"
     },
     {
       "label": "run_gemini_batches()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L176",
+      "source_location": "L327",
       "id": "tools_run_reply_import_run_gemini_batches",
-      "community": 3,
+      "community": 2,
       "norm_label": "run_gemini_batches()"
     },
     {
       "label": "main()",
       "file_type": "code",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L319",
+      "source_location": "L470",
       "id": "tools_run_reply_import_main",
-      "community": 3,
+      "community": 2,
       "norm_label": "main()"
     }
   ],
@@ -4914,7 +4959,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_progress",
@@ -4926,7 +4971,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_count_by",
@@ -4938,7 +4983,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_source_sort_key",
@@ -4950,7 +4995,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L66",
+      "source_location": "L67",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_sheet_relevance_penalty",
@@ -4962,7 +5007,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L87",
+      "source_location": "L88",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_evidence_rank",
@@ -4974,7 +5019,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_is_auxiliary_evidence",
@@ -4986,7 +5031,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L118",
+      "source_location": "L119",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_select_ai_evidence",
@@ -4998,7 +5043,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L144",
+      "source_location": "L145",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_normalized_category",
@@ -5010,7 +5055,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L157",
+      "source_location": "L158",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_normalize_candidate_row",
@@ -5022,7 +5067,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L164",
+      "source_location": "L165",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_post_json",
@@ -5034,7 +5079,67 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L176",
+      "source_location": "L177",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_post_gemini_batch",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_post_gemini_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L227",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_gemini_context",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_gemini_context",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L236",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_append_gemini_result",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_append_gemini_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L249",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_update_ai_summary",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_update_ai_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L258",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_py",
+      "_tgt": "tools_run_reply_import_retry_failed_gemini_batches",
+      "source": "tools_run_reply_import_py",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L327",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_run_gemini_batches",
@@ -5046,7 +5151,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L319",
+      "source_location": "L470",
       "weight": 1.0,
       "_src": "tools_run_reply_import_py",
       "_tgt": "tools_run_reply_import_main",
@@ -5058,7 +5163,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L320",
+      "source_location": "L471",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_parse_args",
@@ -5070,7 +5175,31 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L195",
+      "source_location": "L212",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_post_gemini_batch",
+      "_tgt": "tools_run_reply_import_progress",
+      "source": "tools_run_reply_import_progress",
+      "target": "tools_run_reply_import_post_gemini_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L272",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_retry_failed_gemini_batches",
+      "_tgt": "tools_run_reply_import_progress",
+      "source": "tools_run_reply_import_progress",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L346",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_progress",
@@ -5082,7 +5211,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L327",
+      "source_location": "L479",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_progress",
@@ -5094,7 +5223,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L201",
+      "source_location": "L255",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_update_ai_summary",
+      "_tgt": "tools_run_reply_import_count_by",
+      "source": "tools_run_reply_import_count_by",
+      "target": "tools_run_reply_import_update_ai_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L352",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_count_by",
@@ -5106,7 +5247,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L92",
+      "source_location": "L93",
       "weight": 1.0,
       "_src": "tools_run_reply_import_evidence_rank",
       "_tgt": "tools_run_reply_import_sheet_relevance_penalty",
@@ -5118,7 +5259,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L122",
+      "source_location": "L123",
       "weight": 1.0,
       "_src": "tools_run_reply_import_select_ai_evidence",
       "_tgt": "tools_run_reply_import_is_auxiliary_evidence",
@@ -5130,7 +5271,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L193",
+      "source_location": "L344",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_select_ai_evidence",
@@ -5142,7 +5283,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L160",
+      "source_location": "L161",
       "weight": 1.0,
       "_src": "tools_run_reply_import_normalize_candidate_row",
       "_tgt": "tools_run_reply_import_normalized_category",
@@ -5154,7 +5295,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L297",
+      "source_location": "L240",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_append_gemini_result",
+      "_tgt": "tools_run_reply_import_normalize_candidate_row",
+      "source": "tools_run_reply_import_normalize_candidate_row",
+      "target": "tools_run_reply_import_append_gemini_result",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L448",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_normalize_candidate_row",
@@ -5166,7 +5319,19 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L261",
+      "source_location": "L206",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_post_gemini_batch",
+      "_tgt": "tools_run_reply_import_post_json",
+      "source": "tools_run_reply_import_post_json",
+      "target": "tools_run_reply_import_post_gemini_batch",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L412",
       "weight": 1.0,
       "_src": "tools_run_reply_import_run_gemini_batches",
       "_tgt": "tools_run_reply_import_post_json",
@@ -5178,7 +5343,67 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "tools\\run_reply_import.py",
-      "source_location": "L343",
+      "source_location": "L291",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_retry_failed_gemini_batches",
+      "_tgt": "tools_run_reply_import_post_gemini_batch",
+      "source": "tools_run_reply_import_post_gemini_batch",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L282",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_retry_failed_gemini_batches",
+      "_tgt": "tools_run_reply_import_gemini_context",
+      "source": "tools_run_reply_import_gemini_context",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L308",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_retry_failed_gemini_batches",
+      "_tgt": "tools_run_reply_import_append_gemini_result",
+      "source": "tools_run_reply_import_append_gemini_result",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L273",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_retry_failed_gemini_batches",
+      "_tgt": "tools_run_reply_import_update_ai_summary",
+      "source": "tools_run_reply_import_update_ai_summary",
+      "target": "tools_run_reply_import_retry_failed_gemini_batches",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L484",
+      "weight": 1.0,
+      "_src": "tools_run_reply_import_main",
+      "_tgt": "tools_run_reply_import_retry_failed_gemini_batches",
+      "source": "tools_run_reply_import_retry_failed_gemini_batches",
+      "target": "tools_run_reply_import_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "tools\\run_reply_import.py",
+      "source_location": "L531",
       "weight": 1.0,
       "_src": "tools_run_reply_import_main",
       "_tgt": "tools_run_reply_import_run_gemini_batches",

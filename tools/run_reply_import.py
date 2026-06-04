@@ -17,6 +17,7 @@ from backend.reply_import import run_reply_import, save_run  # noqa: E402
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run reply-material import pipeline locally.")
+    parser.add_argument("--retry-run", default="", help="Existing import run JSON whose failed Gemini batches should be retried.")
     parser.add_argument("--reply-dir", default=str(REPO_ROOT.parent / "회신자료"), help="Reply-material folder to scan.")
     parser.add_argument("--out-dir", default=str(REPO_ROOT.parent / "reply_import_runs"), help="Output directory for run JSON.")
     parser.add_argument("--period-label", default="2026년 5월 5주차", help="Period label passed into the import run.")
@@ -173,6 +174,156 @@ def post_json(url: str, body: dict, timeout: int) -> dict:
         return json.loads(response.read().decode("utf-8"))
 
 
+def post_gemini_batch(
+    ai_url: str,
+    period_label: str,
+    context: dict,
+    batch: list[dict],
+    request_timeout: int,
+    retries: int,
+    retry_delay: float,
+    quiet: bool,
+    label: str,
+) -> tuple[dict | None, dict | None, float]:
+    body = {
+        "period_label": period_label,
+        "context": context,
+        "evidence": [
+            {
+                "source_id": item.get("source_id", ""),
+                "source_file": item.get("source_file", ""),
+                "source_sheet_or_page": item.get("source_sheet_or_page", ""),
+                "source_location": item.get("source_location", ""),
+                "text": item.get("text", ""),
+            }
+            for item in batch
+        ],
+    }
+    started = time.perf_counter()
+    last_error: dict | None = None
+    for attempt in range(1, retries + 2):
+        try:
+            return post_json(ai_url, body, request_timeout), None, time.perf_counter() - started
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            last_error = {"status_code": exc.code, "detail": detail[:1000]}
+            if attempt <= retries:
+                delay = retry_delay * attempt
+                progress(f"{label} retry {attempt}/{retries} after HTTP {exc.code}; waiting {delay:.1f}s", quiet)
+                time.sleep(delay)
+                continue
+            break
+        except Exception as exc:
+            last_error = {"detail": f"{type(exc).__name__}: {str(exc)[:1000]}"}
+            if attempt <= retries:
+                delay = retry_delay * attempt
+                progress(f"{label} retry {attempt}/{retries} after {type(exc).__name__}; waiting {delay:.1f}s", quiet)
+                time.sleep(delay)
+                continue
+            break
+    return None, last_error, time.perf_counter() - started
+
+
+def gemini_context() -> dict:
+    return {
+        "rule_1": "AI output is candidate evidence only; never final report truth.",
+        "rule_2": "관리직은 비생산으로 본다.",
+        "rule_3": "직접직은 실제 생산부서만 해당한다. 생산관리/생산기술은 직접직으로 단정하지 않는다.",
+        "rule_4": "source_factory와 target_factory가 불명확하면 target_factory를 비우거나 N/A로 두고 검토 필요 사유를 남긴다.",
+    }
+
+
+def append_gemini_result(ai: dict, parsed: dict, batch: list[dict], batch_label: int | str) -> int:
+    before_candidates = len(ai["candidate_rows"])
+    for row in parsed.get("candidate_rows", []):
+        ai["candidate_rows"].append(
+            normalize_candidate_row({**row, "ai_batch": batch_label, "source_ids": [item.get("source_id") for item in batch]})
+        )
+    ai["source_assessment"].extend(parsed.get("source_assessment", []))
+    ai["conflicts"].extend(parsed.get("conflicts", []))
+    ai["questions_for_human"].extend(parsed.get("questions_for_human", []))
+    ai["abstentions"].extend(parsed.get("abstentions", []))
+    return len(ai["candidate_rows"]) - before_candidates
+
+
+def update_ai_summary(run: dict) -> None:
+    ai = run.setdefault("ai", {})
+    run.setdefault("summary", {})
+    run["summary"]["ai_evidence_sent_count"] = ai.get("evidence_sent_count", 0)
+    run["summary"]["ai_candidate_count"] = len(ai.get("candidate_rows", []))
+    run["summary"]["ai_error_count"] = len(ai.get("errors", []))
+    run["summary"]["ai_normalized_category_counts"] = count_by(ai.get("candidate_rows", []), "category_normalized")
+
+
+def retry_failed_gemini_batches(
+    run: dict,
+    ai_url: str,
+    period_label: str,
+    request_timeout: int,
+    retries: int,
+    retry_delay: float,
+    quiet: bool,
+) -> None:
+    if not ai_url:
+        raise ValueError("--ai-url is required with --retry-run")
+    ai = run.setdefault("ai", {})
+    errors = list(ai.get("errors", []))
+    if not errors:
+        progress("no failed Gemini batches to retry", quiet)
+        update_ai_summary(run)
+        return
+    ai.setdefault("candidate_rows", [])
+    ai.setdefault("source_assessment", [])
+    ai.setdefault("conflicts", [])
+    ai.setdefault("questions_for_human", [])
+    ai.setdefault("abstentions", [])
+    ai.setdefault("usage_metadata", [])
+    evidence_by_id = {item.get("source_id"): item for item in run.get("evidence_items", [])}
+    context = gemini_context()
+    remaining_errors: list[dict] = []
+    progress(f"retry failed Gemini batches: {len(errors)} batch(es)", quiet)
+    for index, error in enumerate(errors, start=1):
+        source_ids = [source_id for source_id in error.get("source_ids", []) if source_id in evidence_by_id]
+        batch = [evidence_by_id[source_id] for source_id in source_ids]
+        batch_no = error.get("batch", index)
+        source_label = ", ".join(source_ids)
+        progress(f"retry batch {index}/{len(errors)} original={batch_no}: [{source_label}]", quiet)
+        result, last_error, elapsed = post_gemini_batch(
+            ai_url,
+            period_label,
+            context,
+            batch,
+            request_timeout,
+            retries,
+            retry_delay,
+            quiet,
+            f"retry batch {index}/{len(errors)}",
+        )
+        if result is None:
+            remaining_errors.append({"batch": batch_no, **(last_error or {}), "source_ids": source_ids})
+            status = f"HTTP {last_error.get('status_code')}" if last_error and last_error.get("status_code") else (last_error or {}).get("detail", "unknown error")
+            progress(f"retry batch {index}/{len(errors)} error after {elapsed:.1f}s: {status}", quiet)
+            continue
+        parsed = result.get("result", {})
+        added = append_gemini_result(ai, parsed, batch, f"retry-{batch_no}")
+        ai["usage_metadata"].append(result.get("usage_metadata", {}))
+        usage = result.get("usage_metadata", {})
+        tokens = usage.get("totalTokenCount") or usage.get("total_tokens") or "-"
+        progress(f"retry batch {index}/{len(errors)} ok after {elapsed:.1f}s: +{added} candidate(s), tokens={tokens}", quiet)
+    ai["errors"] = remaining_errors
+    retry_history = ai.setdefault("retry_history", [])
+    retry_history.append(
+        {
+            "started_from_errors": len(errors),
+            "remaining_errors": len(remaining_errors),
+            "candidate_count_after_retry": len(ai.get("candidate_rows", [])),
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+    )
+    run["mode"] = "local_extract_plus_gemini_retry_failed"
+    update_ai_summary(run)
+
+
 def run_gemini_batches(
     run: dict,
     ai_url: str,
@@ -319,8 +470,45 @@ def run_gemini_batches(
 def main() -> int:
     args = parse_args()
     started = time.perf_counter()
-    reply_dir = Path(args.reply_dir).expanduser().resolve()
     out_dir = Path(args.out_dir).expanduser().resolve()
+    if args.retry_run:
+        retry_path = Path(args.retry_run).expanduser().resolve()
+        if not retry_path.exists():
+            print(f"retry run not found: {retry_path}", file=sys.stderr)
+            return 2
+        progress(f"retry run load: {retry_path}", args.quiet)
+        run = json.loads(retry_path.read_text(encoding="utf-8"))
+        original_run_id = str(run.get("run_id", retry_path.stem))
+        run["parent_run_id"] = run.get("parent_run_id") or original_run_id
+        run["run_id"] = f"{original_run_id}_retry_{time.strftime('%Y%m%d_%H%M%S')}"
+        retry_failed_gemini_batches(
+            run,
+            args.ai_url,
+            args.period_label,
+            args.request_timeout,
+            args.ai_retries,
+            args.ai_retry_delay,
+            args.quiet,
+        )
+        paths = save_run(run, out_dir)
+        elapsed = time.perf_counter() - started
+        progress(f"saved retry run JSON: {paths['run_path']}", args.quiet)
+        progress(f"saved latest pointer: {paths['latest_path']}", args.quiet)
+        progress(f"retry finished after {elapsed:.1f}s", args.quiet)
+        summary = {
+            "ok": True,
+            "run_id": run["run_id"],
+            "parent_run_id": run.get("parent_run_id"),
+            "summary": run["summary"],
+            "paths": paths,
+        }
+        if args.print_summary:
+            print(json.dumps(summary, ensure_ascii=False, indent=2))
+        else:
+            print(json.dumps(summary, ensure_ascii=False))
+        return 0
+
+    reply_dir = Path(args.reply_dir).expanduser().resolve()
     if not reply_dir.exists():
         print(f"reply dir not found: {reply_dir}", file=sys.stderr)
         return 2
