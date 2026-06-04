@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import socket
 import urllib.error
 import urllib.request
 from datetime import datetime
@@ -20,7 +21,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.1.1"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -393,6 +394,10 @@ def call_gemini_json(prompt: str, schema: dict) -> dict:
         raise HTTPException(status_code=502, detail=f"Gemini HTTP {exc.code}: {detail[:1000]}") from exc
     except urllib.error.URLError as exc:
         raise HTTPException(status_code=502, detail=f"Gemini request failed: {exc.reason}") from exc
+    except (TimeoutError, socket.timeout) as exc:
+        raise HTTPException(status_code=502, detail="Gemini request timed out. Check outbound HTTPS/firewall/proxy from the operating server.") from exc
+    except OSError as exc:
+        raise HTTPException(status_code=502, detail=f"Gemini network error: {type(exc).__name__}: {str(exc)[:500]}") from exc
 
     try:
         text = raw["candidates"][0]["content"]["parts"][0]["text"]
@@ -674,8 +679,13 @@ def gemini_status() -> dict:
 def analyze_evidence_with_gemini(payload: GeminiEvidenceAnalyzeRequest) -> dict:
     if not payload.evidence:
         raise HTTPException(status_code=400, detail="evidence is required")
-    prompt = build_gemini_prompt(payload)
-    return call_gemini_json(prompt, gemini_analysis_schema())
+    try:
+        prompt = build_gemini_prompt(payload)
+        return call_gemini_json(prompt, gemini_analysis_schema())
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Gemini analysis failed: {type(exc).__name__}: {str(exc)[:500]}") from exc
 
 
 @app.get("/api/hr/status")
