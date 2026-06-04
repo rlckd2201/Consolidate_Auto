@@ -24,6 +24,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ai-url", default="", help="Full Gemini analyze endpoint URL, e.g. http://server:8090/api/ai/gemini/analyze-evidence")
     parser.add_argument("--max-ai-sources", type=int, default=24, help="Maximum evidence blocks to send to Gemini.")
     parser.add_argument("--ai-batch-size", type=int, default=3, help="Evidence blocks per Gemini request.")
+    parser.add_argument("--ai-selection", choices=["balanced", "ordered"], default="balanced", help="How to choose evidence blocks for Gemini.")
+    parser.add_argument("--include-auxiliary-ai-sources", action="store_true", help="Include auxiliary files such as 52-hour status workbooks in Gemini input.")
     parser.add_argument("--request-timeout", type=int, default=180, help="Seconds to wait for each Gemini request.")
     parser.add_argument("--quiet", action="store_true", help="Suppress progress logs and print only the final JSON.")
     parser.add_argument("--print-summary", action="store_true", help="Print compact JSON summary.")
@@ -36,19 +38,103 @@ def progress(message: str, quiet: bool = False) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {message}", flush=True)
 
 
-def select_ai_evidence(run: dict, max_items: int) -> list[dict]:
+def count_by(items: list[dict], key: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in items:
+        value = str(item.get(key) or "기타")
+        counts[value] = counts.get(value, 0) + 1
+    return counts
+
+
+def source_sort_key(value: str) -> tuple[int, str]:
+    order = {
+        "D1공장": 1,
+        "D2공장": 2,
+        "D3공장": 3,
+        "P1공장": 4,
+        "P2공장": 5,
+        "P3공장": 6,
+        "P4공장": 7,
+        "일강1공장": 8,
+        "일강2공장": 9,
+    }
+    return (order.get(value, 99), value)
+
+
+def sheet_relevance_penalty(item: dict) -> int:
+    sheet = str(item.get("source_sheet_or_page", ""))
+    source_file = str(item.get("source_file", ""))
+    text = f"{source_file} {sheet}"
+    if "전주" in sheet:
+        return 9
+    if "예제" in sheet or "sample" in text.lower():
+        return 9
+    if "CEO" in sheet or "보고" in sheet:
+        return 7
+    if "52시간" in sheet:
+        return 5
+    if any(token in sheet for token in ("5.30", "5.31", "6.3", "토", "일", "수")):
+        return 0
+    if "공장" in sheet:
+        return 1
+    if any(token in sheet for token in ("관리직", "근무", "특근", "계획", "상세")):
+        return 2
+    return 3
+
+
+def evidence_rank(item: dict) -> tuple[int, int, int, str, str]:
+    priority = {"xlsx_sheet": 0, "pdf_page": 1, "pptx_slide": 2}
+    return (
+        priority.get(item.get("source_type", ""), 9),
+        0 if item.get("current_period") else 1,
+        sheet_relevance_penalty(item),
+        item.get("source_file", ""),
+        item.get("source_sheet_or_page", ""),
+    )
+
+
+def is_auxiliary_evidence(item: dict) -> bool:
+    source_file = str(item.get("source_file", ""))
+    sheet = str(item.get("source_sheet_or_page", ""))
+    if "주 52시간" in source_file and "특근" not in source_file:
+        return True
+    if "52시간" in source_file and "특근" not in source_file:
+        return True
+    if "전주" in sheet:
+        return True
+    if "CEO" in sheet:
+        return True
+    if sheet == "예제":
+        return True
+    if sheet.endswith("주") and sheet[:-1].isdigit():
+        return True
+    return False
+
+
+def select_ai_evidence(run: dict, max_items: int, selection: str = "balanced", include_auxiliary: bool = False) -> list[dict]:
     current = [item for item in run.get("evidence_items", []) if item.get("current_period")]
     pool = current or run.get("evidence_items", [])
-    priority = {"xlsx_sheet": 0, "pdf_page": 1, "pptx_slide": 2}
-    return sorted(
-        pool,
-        key=lambda item: (
-            priority.get(item.get("source_type", ""), 9),
-            0 if item.get("current_period") else 1,
-            item.get("source_path", ""),
-            item.get("source_sheet_or_page", ""),
-        ),
-    )[:max_items]
+    if not include_auxiliary:
+        pool = [item for item in pool if not is_auxiliary_evidence(item)]
+    pool = sorted(pool, key=evidence_rank)
+    if selection == "ordered":
+        return pool[:max_items]
+
+    groups: dict[str, list[dict]] = {}
+    for item in pool:
+        group = item.get("source_folder") or "기타"
+        groups.setdefault(group, []).append(item)
+    selected: list[dict] = []
+    group_names = sorted(groups, key=source_sort_key)
+    while len(selected) < max_items and group_names:
+        next_group_names: list[str] = []
+        for group in group_names:
+            if groups[group] and len(selected) < max_items:
+                selected.append(groups[group].pop(0))
+            if groups[group]:
+                next_group_names.append(group)
+        group_names = next_group_names
+    return selected
 
 
 def post_json(url: str, body: dict, timeout: int) -> dict:
@@ -69,6 +155,8 @@ def run_gemini_batches(
     period_label: str,
     max_sources: int,
     batch_size: int,
+    selection: str,
+    include_auxiliary: bool,
     request_timeout: int,
     quiet: bool,
 ) -> None:
@@ -76,13 +164,15 @@ def run_gemini_batches(
         raise ValueError("--ai-url is required when --allow-gemini is used")
     if batch_size <= 0:
         raise ValueError("--ai-batch-size must be greater than 0")
-    evidence = select_ai_evidence(run, max_sources)
+    evidence = select_ai_evidence(run, max_sources, selection, include_auxiliary)
     total_batches = (len(evidence) + batch_size - 1) // batch_size if evidence else 0
     progress(
         f"AI enabled: selected {len(evidence)} evidence block(s), "
+        f"selection={selection}, include_auxiliary={include_auxiliary}, "
         f"batch_size={batch_size}, batches={total_batches}",
         quiet,
     )
+    progress(f"AI evidence folders: {count_by(evidence, 'source_folder')}", quiet)
     ai = run.setdefault("ai", {})
     ai.update(
         {
@@ -97,6 +187,9 @@ def run_gemini_batches(
             "usage_metadata": [],
             "batch_count": 0,
             "evidence_sent_count": len(evidence),
+            "selection": selection,
+            "include_auxiliary_sources": include_auxiliary,
+            "evidence_folder_counts": count_by(evidence, "source_folder"),
         }
     )
     context = {
@@ -202,6 +295,8 @@ def main() -> int:
             args.period_label,
             args.max_ai_sources,
             args.ai_batch_size,
+            args.ai_selection,
+            args.include_auxiliary_ai_sources,
             args.request_timeout,
             args.quiet,
         )
