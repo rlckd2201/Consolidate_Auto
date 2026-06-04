@@ -15,13 +15,15 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
+from backend.reply_import import load_latest, run_reply_import, save_run
+
 try:
     import pymysql
 except ImportError:  # pragma: no cover - dependency is optional until HR lookup is used.
     pymysql = None
 
 
-APP_VERSION = "0.1.1"
+APP_VERSION = "0.2.0"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -32,6 +34,8 @@ DEFAULT_TEMPLATE_DIR = ROOT.parent.parent / "보고자료"
 DEFAULT_OUTPUT_ROOT = Path(os.environ.get("APPDATA", str(ROOT))) / "Consolidate_Auto"
 TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPLATE_DIR)))
 OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
+REPLY_DIR = Path(os.environ.get("CONSOLIDATE_REPLY_DIR", str(ROOT.parent.parent / "회신자료")))
+IMPORT_RUN_DIR = OUTPUT_ROOT / "import_runs"
 HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta")
@@ -151,6 +155,14 @@ class GeminiEvidenceAnalyzeRequest(BaseModel):
     period_label: str = ""
     context: dict[str, str] = Field(default_factory=dict)
     evidence: list[GeminiEvidenceItem]
+
+
+class ReplyImportRunRequest(BaseModel):
+    reply_dir: str = ""
+    period_label: str = "2026년 5월 5주차"
+    allow_gemini: bool = False
+    max_ai_sources: int = Field(default=24, ge=0, le=120)
+    ai_batch_size: int = Field(default=3, ge=1, le=8)
 
 
 def _now() -> str:
@@ -413,6 +425,89 @@ def call_gemini_json(prompt: str, schema: dict) -> dict:
     }
 
 
+def selected_ai_evidence(run: dict, max_items: int) -> list[dict]:
+    current = [item for item in run.get("evidence_items", []) if item.get("current_period")]
+    pool = current or run.get("evidence_items", [])
+    priority = {"xlsx_sheet": 0, "pdf_page": 1, "pptx_slide": 2}
+    return sorted(
+        pool,
+        key=lambda item: (
+            priority.get(item.get("source_type", ""), 9),
+            0 if item.get("current_period") else 1,
+            item.get("source_path", ""),
+            item.get("source_sheet_or_page", ""),
+        ),
+    )[:max_items]
+
+
+def run_gemini_import_batches(run: dict, period_label: str, max_ai_sources: int, batch_size: int) -> None:
+    ai = run.setdefault("ai", {})
+    ai.update(
+        {
+            "enabled": True,
+            "model": GEMINI_MODEL,
+            "candidate_rows": [],
+            "source_assessment": [],
+            "conflicts": [],
+            "questions_for_human": [],
+            "abstentions": [],
+            "errors": [],
+            "usage_metadata": [],
+            "batch_count": 0,
+            "evidence_sent_count": 0,
+        }
+    )
+    evidence = selected_ai_evidence(run, max_ai_sources)
+    ai["evidence_sent_count"] = len(evidence)
+    context = {
+        "rule_1": "AI output is candidate evidence only; never final report truth.",
+        "rule_2": "관리직은 비생산으로 본다.",
+        "rule_3": "직접직은 실제 생산부서만 해당한다. 생산관리/생산기술은 직접직으로 단정하지 않는다.",
+        "rule_4": "source_factory와 target_factory가 불명확하면 target_factory를 비우거나 N/A로 두고 검토 필요 사유를 남긴다.",
+    }
+    for start in range(0, len(evidence), batch_size):
+        batch = evidence[start : start + batch_size]
+        ai["batch_count"] += 1
+        payload = GeminiEvidenceAnalyzeRequest(
+            period_label=period_label,
+            context=context,
+            evidence=[
+                GeminiEvidenceItem(
+                    source_id=item.get("source_id", ""),
+                    source_file=item.get("source_file", ""),
+                    source_sheet_or_page=item.get("source_sheet_or_page", ""),
+                    source_location=item.get("source_location", ""),
+                    text=item.get("text", ""),
+                )
+                for item in batch
+            ],
+        )
+        try:
+            result = call_gemini_json(build_gemini_prompt(payload), gemini_analysis_schema())
+        except HTTPException as exc:
+            ai["errors"].append(
+                {
+                    "batch": ai["batch_count"],
+                    "status_code": exc.status_code,
+                    "detail": exc.detail,
+                    "source_ids": [item.get("source_id") for item in batch],
+                }
+            )
+            continue
+        parsed = result.get("result", {})
+        for row in parsed.get("candidate_rows", []):
+            ai["candidate_rows"].append({**row, "ai_batch": ai["batch_count"], "source_ids": [item.get("source_id") for item in batch]})
+        ai["source_assessment"].extend(parsed.get("source_assessment", []))
+        ai["conflicts"].extend(parsed.get("conflicts", []))
+        ai["questions_for_human"].extend(parsed.get("questions_for_human", []))
+        ai["abstentions"].extend(parsed.get("abstentions", []))
+        ai["usage_metadata"].append(result.get("usage_metadata", {}))
+    run["mode"] = "local_extract_plus_gemini"
+    run["summary"]["ai_evidence_sent_count"] = ai["evidence_sent_count"]
+    run["summary"]["ai_candidate_count"] = len(ai["candidate_rows"])
+    run["summary"]["ai_error_count"] = len(ai["errors"])
+
+
 def hr_connection():
     if pymysql is None:
         raise HTTPException(status_code=503, detail="pymysql dependency is not installed")
@@ -613,13 +708,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline"]}
 
 
 @app.get("/api/bootstrap")
@@ -641,6 +736,12 @@ def config() -> dict:
         "template_dir": str(TEMPLATE_DIR),
         "template_dir_exists": TEMPLATE_DIR.exists(),
         "output_root": str(OUTPUT_ROOT),
+        "reply_import": {
+            "default_reply_dir": str(REPLY_DIR),
+            "default_reply_dir_exists": REPLY_DIR.exists(),
+            "import_run_dir": str(IMPORT_RUN_DIR),
+            "policy": "local_extract_first_gemini_requires_explicit_allow",
+        },
         "hr_db": {
             "host": os.environ.get("HR_DB_HOST", ""),
             "port": os.environ.get("HR_DB_PORT", "3306"),
@@ -686,6 +787,33 @@ def analyze_evidence_with_gemini(payload: GeminiEvidenceAnalyzeRequest) -> dict:
         raise
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Gemini analysis failed: {type(exc).__name__}: {str(exc)[:500]}") from exc
+
+
+@app.get("/api/import/latest")
+def import_latest() -> dict:
+    latest = load_latest(IMPORT_RUN_DIR)
+    if not latest:
+        return {
+            "ok": False,
+            "message": "import run result not found",
+            "import_run_dir": str(IMPORT_RUN_DIR),
+            "default_reply_dir": str(REPLY_DIR),
+        }
+    return {"ok": True, "run": latest, "import_run_dir": str(IMPORT_RUN_DIR)}
+
+
+@app.post("/api/import/run")
+def import_run(payload: ReplyImportRunRequest) -> dict:
+    reply_dir = Path(payload.reply_dir).expanduser() if payload.reply_dir else REPLY_DIR
+    if not reply_dir.exists():
+        raise HTTPException(status_code=404, detail=f"reply_dir not found: {reply_dir}")
+    run = run_reply_import(reply_dir, payload.period_label)
+    if payload.allow_gemini:
+        if not gemini_configured():
+            raise HTTPException(status_code=503, detail="GEMINI_API_KEY environment variable is not configured")
+        run_gemini_import_batches(run, payload.period_label, payload.max_ai_sources, payload.ai_batch_size)
+    paths = save_run(run, IMPORT_RUN_DIR)
+    return {"ok": True, "run": run, "paths": paths}
 
 
 @app.get("/api/hr/status")

@@ -194,6 +194,59 @@ p {
   font-size: 13px;
 }
 
+.muted {
+  color: var(--muted);
+}
+
+.bad {
+  color: #b91c1c;
+}
+
+.import-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.import-summary {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(90px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.import-summary div {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px;
+  background: #fbfcfd;
+}
+
+.import-summary strong,
+.import-summary span {
+  display: block;
+}
+
+.import-summary strong {
+  font-size: 20px;
+}
+
+.import-summary span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.import-summary p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.import-table table {
+  min-width: 1180px;
+}
+
 .bars {
   display: grid;
   gap: 8px;

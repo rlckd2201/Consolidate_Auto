@@ -75,3 +75,63 @@ Policy:
 - Do not create final Excel/PPT directly from AI output.
 - Final reporting requires a human-confirmed locked dataset.
 - Do not send real employee names, HR details, or confidential overtime evidence to an external API unless the organization approves that data transfer.
+
+## Reply Material Import Pipeline
+
+Use environment variables to point the server at the reply-material folder if it is not beside the app root.
+
+```powershell
+$env:CONSOLIDATE_REPLY_DIR = "C:\path\to\회신자료"
+```
+
+Default local development path:
+- sibling `회신자료` folder beside `overtime_web`.
+
+Operating server note:
+- If reply materials are not copied to the operating server, set `CONSOLIDATE_REPLY_DIR` to the copied folder before server start.
+
+Live endpoints:
+- `GET /api/import/latest`
+- `POST /api/import/run`
+
+`POST /api/import/run` body:
+
+```json
+{
+  "period_label": "2026년 5월 5주차",
+  "allow_gemini": false,
+  "max_ai_sources": 24,
+  "ai_batch_size": 3
+}
+```
+
+Behavior:
+- `allow_gemini:false`: reads all reply files locally, indexes evidence blocks, stores JSON under `CONSOLIDATE_OUTPUT_ROOT\import_runs`.
+- `allow_gemini:true`: sends selected evidence blocks to Gemini and appends candidate rows to the import run.
+- Legacy `.xls` files remain unsupported until they are resaved as `.xlsx` or a controlled Excel COM conversion path is added.
+
+Local CLI dry-run:
+
+```powershell
+cd "C:\Users\user\Desktop\개발파일\취합업무 자동화\overtime_web"
+
+& "C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" -X utf8 `
+  .\tools\run_reply_import.py `
+  --reply-dir "..\회신자료" `
+  --out-dir "..\reply_import_runs" `
+  --print-summary
+```
+
+Local CLI through operating-server Gemini endpoint:
+
+```powershell
+& "C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" -X utf8 `
+  .\tools\run_reply_import.py `
+  --reply-dir "..\회신자료" `
+  --out-dir "..\reply_import_runs" `
+  --allow-gemini `
+  --ai-url "http://172.17.39.121:8090/api/ai/gemini/analyze-evidence" `
+  --max-ai-sources 24 `
+  --ai-batch-size 3 `
+  --print-summary
+```

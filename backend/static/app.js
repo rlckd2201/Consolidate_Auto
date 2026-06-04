@@ -5,6 +5,7 @@ const state = {
   employeeResults: [],
   selectedEmployees: {},
   selectedRowKey: null,
+  importRun: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -96,6 +97,73 @@ function renderSubmissionSelect(submissions) {
   $("submissionSelect").innerHTML = submissions.map((submission) => `
     <option value="${submission.id}">${submission.id} · ${submission.factory} · ${submission.submitter}</option>
   `).join("");
+}
+
+function fmtImportCounts(counts = {}) {
+  return Object.entries(counts).map(([key, value]) => `${key} ${value}`).join(" · ") || "-";
+}
+
+function renderImportRun(run) {
+  state.importRun = run;
+  if (!run) {
+    $("importStatus").textContent = "실행 전";
+    $("importSummary").innerHTML = `<span class="muted">아직 import 결과가 없습니다.</span>`;
+    $("importCandidateRows").innerHTML = "";
+    return;
+  }
+  const summary = run.summary || {};
+  const ai = run.ai || {};
+  $("importStatus").textContent = `${run.run_id} · ${run.mode}`;
+  $("importSummary").innerHTML = `
+    <div><strong>${summary.file_count ?? 0}</strong><span>파일</span></div>
+    <div><strong>${summary.evidence_count ?? 0}</strong><span>근거 블록</span></div>
+    <div><strong>${summary.current_period_evidence_count ?? 0}</strong><span>해당기간 근거</span></div>
+    <div><strong>${summary.local_candidate_count ?? 0}</strong><span>로컬 후보</span></div>
+    <div><strong>${summary.ai_candidate_count ?? 0}</strong><span>AI 후보</span></div>
+    <div><strong>${summary.unsupported_count ?? 0}</strong><span>XLS 등 미지원</span></div>
+    <p>확장자: ${escapeHtml(fmtImportCounts(summary.extension_counts))}</p>
+    <p>추출상태: ${escapeHtml(fmtImportCounts(summary.extract_status_counts))}</p>
+    ${ai.errors?.length ? `<p class="bad">AI 오류 ${ai.errors.length}건: ${escapeHtml(ai.errors[0].detail || "")}</p>` : ""}
+  `;
+  const localRows = (run.local_candidate_rows || []).map((row) => ({ ...row, row_kind: "local" }));
+  const aiRows = (ai.candidate_rows || []).map((row) => ({ ...row, row_kind: "gemini" }));
+  const rows = [...aiRows, ...localRows].slice(0, 120);
+  $("importCandidateRows").innerHTML = rows.map((row) => `
+    <tr>
+      <td>${escapeHtml(row.row_kind)}</td>
+      <td>${escapeHtml(row.source_id || row.source_ids?.join(", ") || "-")}</td>
+      <td>${escapeHtml(row.source_factory || "-")} → ${escapeHtml(row.target_factory || "검토")}</td>
+      <td>${escapeHtml(row.team || row.name || "-")}</td>
+      <td>${escapeHtml(row.headcount || "-")}</td>
+      <td>${escapeHtml(row.hours || "-")}</td>
+      <td>${escapeHtml(row.detail || row.category_guess || "-")}</td>
+      <td>${escapeHtml(row.needs_review_reason || row.confidence || "-")}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="8">후보 행 없음. 근거 블록을 먼저 확인하세요.</td></tr>`;
+}
+
+async function loadImportLatest() {
+  try {
+    const result = await api("/api/import/latest");
+    renderImportRun(result.run);
+  } catch (error) {
+    $("importStatus").textContent = "조회 실패";
+    $("importSummary").innerHTML = `<p class="bad">${escapeHtml(error.message)}</p>`;
+  }
+}
+
+async function runImport(allowGemini = false) {
+  $("importStatus").textContent = allowGemini ? "Gemini 후보 생성 중..." : "로컬 색인 중...";
+  $("importSummary").innerHTML = `<span class="muted">회신자료를 읽는 중입니다.</span>`;
+  const result = await api("/api/import/run", {
+    method: "POST",
+    body: JSON.stringify({
+      allow_gemini: allowGemini,
+      max_ai_sources: allowGemini ? 24 : 0,
+      ai_batch_size: 3,
+    }),
+  });
+  renderImportRun(result.run);
 }
 
 function updateFactoryOptions() {
@@ -201,6 +269,7 @@ async function loadBootstrap() {
   renderEntryRows();
   await renderSlides();
   await loadApprovalPreview();
+  await loadImportLatest();
 }
 
 function addEntryRow() {
@@ -374,6 +443,14 @@ document.querySelectorAll(".nav-btn").forEach((btn) => btn.addEventListener("cli
 $("refreshBtn").addEventListener("click", loadBootstrap);
 $("exportExcelBtn").addEventListener("click", exportExcel);
 $("exportPptBtn").addEventListener("click", exportPpt);
+$("runImportBtn").addEventListener("click", () => runImport(false).catch((error) => {
+  $("importStatus").textContent = "로컬 색인 실패";
+  $("importSummary").innerHTML = `<p class="bad">${escapeHtml(error.message)}</p>`;
+}));
+$("runImportAiBtn").addEventListener("click", () => runImport(true).catch((error) => {
+  $("importStatus").textContent = "Gemini 실행 실패";
+  $("importSummary").innerHTML = `<p class="bad">${escapeHtml(error.message)}</p>`;
+}));
 $("addEntryBtn").addEventListener("click", addEntryRow);
 $("saveSubmissionBtn").addEventListener("click", saveSubmission);
 $("entitySelect").addEventListener("change", () => {
