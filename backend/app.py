@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import urllib.error
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -30,6 +32,8 @@ DEFAULT_OUTPUT_ROOT = Path(os.environ.get("APPDATA", str(ROOT))) / "Consolidate_
 TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPLATE_DIR)))
 OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
 HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta")
 
 HR_ENTITY_RULES = {
     "daeseung": {"label": "대승", "binum": "1", "factories": ["D1공장", "D2공장", "D3공장"]},
@@ -131,6 +135,21 @@ class HREmployeeCandidate(BaseModel):
     job_group: Literal["직접직", "간접직", "관리직"]
     classification_reason: str
     confidence: Literal["high", "medium", "low"] = "high"
+
+
+class GeminiEvidenceItem(BaseModel):
+    source_id: str = ""
+    source_file: str = ""
+    source_sheet_or_page: str = ""
+    source_location: str = ""
+    text: str
+
+
+class GeminiEvidenceAnalyzeRequest(BaseModel):
+    task: str = "overtime_reply_evidence_triage"
+    period_label: str = ""
+    context: dict[str, str] = Field(default_factory=dict)
+    evidence: list[GeminiEvidenceItem]
 
 
 def _now() -> str:
@@ -249,6 +268,144 @@ def split_counts(rows: list[OvertimeRow]) -> dict[str, int]:
 def hr_db_configured() -> bool:
     required = ("HR_DB_HOST", "HR_DB_USER", "HR_DB_PASSWORD")
     return all(os.environ.get(key) for key in required)
+
+
+def gemini_configured() -> bool:
+    return bool(os.environ.get("GEMINI_API_KEY"))
+
+
+def gemini_analysis_schema() -> dict:
+    candidate_row_schema = {
+        "type": "object",
+        "properties": {
+            "date": {"type": "string"},
+            "source_factory": {"type": "string"},
+            "target_factory": {"type": "string"},
+            "team": {"type": "string"},
+            "name": {"type": "string"},
+            "job_group": {"type": "string"},
+            "headcount": {"type": "string"},
+            "hours": {"type": "string"},
+            "detail": {"type": "string"},
+            "category_guess": {"type": "string"},
+            "confidence": {"type": "string"},
+            "evidence": {"type": "string"},
+            "needs_review_reason": {"type": "string"},
+        },
+        "required": ["date", "source_factory", "target_factory", "team", "name", "job_group", "headcount", "hours", "detail", "category_guess", "confidence", "evidence", "needs_review_reason"],
+    }
+    source_schema = {
+        "type": "object",
+        "properties": {
+            "source_id": {"type": "string"},
+            "source_type": {"type": "string"},
+            "role_guess": {"type": "string"},
+            "confidence": {"type": "string"},
+            "evidence": {"type": "string"},
+            "warning": {"type": "string"},
+        },
+        "required": ["source_id", "source_type", "role_guess", "confidence", "evidence", "warning"],
+    }
+    return {
+        "type": "object",
+        "properties": {
+            "summary": {"type": "string"},
+            "source_assessment": {"type": "array", "items": source_schema},
+            "candidate_rows": {"type": "array", "items": candidate_row_schema},
+            "conflicts": {"type": "array", "items": {"type": "string"}},
+            "questions_for_human": {"type": "array", "items": {"type": "string"}},
+            "abstentions": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["summary", "source_assessment", "candidate_rows", "conflicts", "questions_for_human", "abstentions"],
+    }
+
+
+def build_gemini_prompt(payload: GeminiEvidenceAnalyzeRequest) -> str:
+    evidence_blocks = []
+    for index, item in enumerate(payload.evidence, start=1):
+        text = item.text.strip()
+        if len(text) > 8000:
+            text = text[:8000] + "\n...[truncated]"
+        source_id = item.source_id or f"source-{index:03d}"
+        evidence_blocks.append(
+            "\n".join(
+                [
+                    f"[{source_id}]",
+                    f"file: {item.source_file}",
+                    f"sheet_or_page: {item.source_sheet_or_page}",
+                    f"location: {item.source_location}",
+                    "content:",
+                    text,
+                ]
+            )
+        )
+    context_lines = [f"- {key}: {value}" for key, value in payload.context.items()]
+    return f"""
+You are analyzing Korean weekly overtime reply materials for a reporting workflow.
+Your job is not to create final report truth. Your job is to propose evidence-backed candidate rows and explicitly abstain when the evidence is weak.
+
+Safety rules:
+- Never invent a final value.
+- If a number could mean headcount, hours, M/H, quantity, line count, or something else, keep it ambiguous and explain why.
+- Mark anything that could cause false reporting as needs review.
+- Prefer source evidence, arithmetic reconciliation, headers, row labels, sheet/file context, and known report categories.
+- Output only JSON matching the schema.
+
+Period: {payload.period_label or "(not provided)"}
+Task: {payload.task}
+Context:
+{chr(10).join(context_lines) if context_lines else "- none"}
+
+Evidence:
+{chr(10).join(evidence_blocks)}
+""".strip()
+
+
+def call_gemini_json(prompt: str, schema: dict) -> dict:
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="GEMINI_API_KEY environment variable is not configured")
+    model = GEMINI_MODEL
+    url = f"{GEMINI_API_BASE}/models/{model}:generateContent"
+    request_body = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "temperature": 0.1,
+            "responseMimeType": "application/json",
+            "responseJsonSchema": schema,
+        },
+    }
+    data = json.dumps(request_body, ensure_ascii=False).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=75) as response:
+            raw = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise HTTPException(status_code=502, detail=f"Gemini HTTP {exc.code}: {detail[:1000]}") from exc
+    except urllib.error.URLError as exc:
+        raise HTTPException(status_code=502, detail=f"Gemini request failed: {exc.reason}") from exc
+
+    try:
+        text = raw["candidates"][0]["content"]["parts"][0]["text"]
+        parsed = json.loads(text)
+    except (KeyError, IndexError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=502, detail="Gemini response did not contain valid JSON") from exc
+    return {
+        "ok": True,
+        "model": model,
+        "result": parsed,
+        "usage_metadata": raw.get("usageMetadata", {}),
+        "safety_note": "AI output is candidate evidence only. Final report generation requires human-confirmed locked data.",
+    }
 
 
 def hr_connection():
@@ -451,13 +608,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage"]}
 
 
 @app.get("/api/bootstrap")
@@ -493,7 +650,32 @@ def config() -> dict:
             code: values["factories"]
             for code, values in HR_ENTITY_RULES.items()
         },
+        "ai": {
+            "provider": "gemini",
+            "model": GEMINI_MODEL,
+            "configured": gemini_configured(),
+            "policy": "candidate_evidence_only_no_final_report_without_human_lock",
+        },
     }
+
+
+@app.get("/api/ai/gemini/status")
+def gemini_status() -> dict:
+    return {
+        "configured": gemini_configured(),
+        "provider": "gemini",
+        "model": GEMINI_MODEL,
+        "api_base": GEMINI_API_BASE,
+        "policy": "candidate_evidence_only_no_final_report_without_human_lock",
+    }
+
+
+@app.post("/api/ai/gemini/analyze-evidence")
+def analyze_evidence_with_gemini(payload: GeminiEvidenceAnalyzeRequest) -> dict:
+    if not payload.evidence:
+        raise HTTPException(status_code=400, detail="evidence is required")
+    prompt = build_gemini_prompt(payload)
+    return call_gemini_json(prompt, gemini_analysis_schema())
 
 
 @app.get("/api/hr/status")

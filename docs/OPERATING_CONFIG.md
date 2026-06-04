@@ -56,3 +56,22 @@ Live read-only endpoints:
 ## Business Numbers
 - 더원: `421-86-02723`
 - 제이엠: `125-81-54876`
+
+## Gemini AI Evidence Triage
+
+Use environment variables. Do not commit API keys.
+
+```powershell
+$env:GEMINI_API_KEY = "<secret>"
+$env:GEMINI_MODEL = "gemini-2.5-flash"
+```
+
+Live endpoints:
+- `GET /api/ai/gemini/status`
+- `POST /api/ai/gemini/analyze-evidence`
+
+Policy:
+- Gemini output is candidate evidence only.
+- Do not create final Excel/PPT directly from AI output.
+- Final reporting requires a human-confirmed locked dataset.
+- Do not send real employee names, HR details, or confidential overtime evidence to an external API unless the organization approves that data transfer.

@@ -1,11 +1,11 @@
 # Graph Report - overtime_web  (2026-06-04)
 
 ## Corpus Check
-- 7 files · ~5,292 words
+- 7 files · ~5,945 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 91 nodes · 197 edges · 13 communities detected
+- 99 nodes · 212 edges · 12 communities detected
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
@@ -22,7 +22,6 @@
 - [[_COMMUNITY_Community 9|Community 9]]
 - [[_COMMUNITY_Community 10|Community 10]]
 - [[_COMMUNITY_Community 11|Community 11]]
-- [[_COMMUNITY_Community 12|Community 12]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `$()` - 17 edges
@@ -38,41 +37,41 @@
 
 ## Surprising Connections (you probably didn't know these)
 - `HREmployeeCandidate` --inherits--> `BaseModel`  [EXTRACTED]
-  backend\app.py →   _Bridges community 1 → community 8_
+  backend\app.py →   _Bridges community 2 → community 7_
 - `create_submission()` --calls--> `Submission`  [EXTRACTED]
-  backend\app.py → backend\app.py  _Bridges community 1 → community 0_
-- `approval_preview()` --calls--> `load_state()`  [EXTRACTED]
-  backend\app.py → backend\app.py  _Bridges community 0 → community 11_
+  backend\app.py → backend\app.py  _Bridges community 2 → community 0_
+- `config()` --calls--> `hr_db_configured()`  [EXTRACTED]
+  backend\app.py → backend\app.py  _Bridges community 8 → community 10_
 - `search_hr_employees()` --calls--> `hr_candidate_from_row()`  [EXTRACTED]
-  backend\app.py → backend\app.py  _Bridges community 8 → community 7_
+  backend\app.py → backend\app.py  _Bridges community 7 → community 8_
 - `bootstrap()` --calls--> `config()`  [EXTRACTED]
-  backend\app.py → backend\app.py  _Bridges community 0 → community 7_
+  backend\app.py → backend\app.py  _Bridges community 0 → community 10_
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.31
-Nodes (11): all_rows(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now(), report_preview() (+3 more)
+Cohesion: 0.22
+Nodes (15): all_rows(), approval_preview(), bootstrap(), build_approval_body(), build_approval_title(), create_submission(), dashboard(), fill_approval_draft_stub() (+7 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.33
-Nodes (9): apply_master_updates(), LegalEntity, OvertimeRow, Period, _seed_state(), State, Submission, SubmissionCreate (+1 more)
+Cohesion: 0.26
+Nodes (13): $(), applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), fillDraft(), renderEmployeeResults(), renderEntities(), renderReviewRows() (+5 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.31
-Nodes (4): choose_template(), copy_template_output(), export_excel_stub(), export_ppt_stub()
+Cohesion: 0.25
+Nodes (11): apply_master_updates(), GeminiEvidenceAnalyzeRequest, GeminiEvidenceItem, LegalEntity, OvertimeRow, Period, _seed_state(), State (+3 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.25
-Nodes (8): api(), exportExcel(), exportPpt(), fillDraft(), loadApprovalPreview(), renderSlides(), saveSubmission(), switchView()
+Cohesion: 0.24
+Nodes (11): api(), exportExcel(), exportPpt(), flattenRows(), fmtCount(), loadApprovalPreview(), loadBootstrap(), renderBars() (+3 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.48
-Nodes (6): escapeHtml(), makeRowKey(), renderEntryRow(), renderJobGroupOptions(), rowField(), rowValue()
+Cohesion: 0.36
+Nodes (9): addEntryRow(), escapeHtml(), makeRowKey(), renderEntryRow(), renderEntryRows(), renderJobGroupOptions(), rowField(), rowValue() (+1 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.43
-Nodes (7): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), searchEmployees(), selectedEntryRow(), setLookupState()
+Cohesion: 0.31
+Nodes (4): choose_template(), copy_template_output(), export_excel_stub(), export_ppt_stub()
 
 ### Community 6 - "Community 6"
 Cohesion: 0.52
@@ -80,42 +79,38 @@ Nodes (6): _candidate_columns(), _connect(), _fetchall(), _fetchone(), main(), _
 
 ### Community 7 - "Community 7"
 Cohesion: 0.33
-Nodes (6): add_entity_filters(), config(), hr_connection(), hr_db_configured(), hr_status(), search_hr_employees()
-
-### Community 8 - "Community 8"
-Cohesion: 0.33
 Nodes (6): classify_hr_employee(), display_factory_from_hr(), entity_code_from_hr(), hr_candidate_from_row(), HREmployeeCandidate, production_department()
 
+### Community 8 - "Community 8"
+Cohesion: 0.4
+Nodes (5): add_entity_filters(), hr_connection(), hr_db_configured(), hr_status(), search_hr_employees()
+
 ### Community 9 - "Community 9"
-Cohesion: 0.33
-Nodes (6): flattenRows(), fmtCount(), loadBootstrap(), renderBars(), renderReviewRows(), renderSubmissionSelect()
+Cohesion: 0.5
+Nodes (4): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), gemini_analysis_schema()
 
 ### Community 10 - "Community 10"
-Cohesion: 0.53
-Nodes (6): $(), addEntryRow(), renderEntities(), renderEntryRows(), selectEntryRow(), updateFactoryOptions()
+Cohesion: 0.67
+Nodes (3): config(), gemini_configured(), gemini_status()
 
 ### Community 11 - "Community 11"
-Cohesion: 0.67
-Nodes (4): approval_preview(), build_approval_body(), build_approval_title(), split_counts()
-
-### Community 12 - "Community 12"
 Cohesion: 1.0
 Nodes (1): Overtime reporting web backend.
 
 ## Knowledge Gaps
 - **1 isolated node(s):** `Overtime reporting web backend.`
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 12`** (2 nodes): `__init__.py`, `Overtime reporting web backend.`
+- **Thin community `Community 11`** (2 nodes): `__init__.py`, `Overtime reporting web backend.`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `$()` connect `Community 10` to `Community 9`, `Community 3`, `Community 4`, `Community 5`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `loadBootstrap()` connect `Community 9` to `Community 10`, `Community 3`, `Community 4`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
-- **Why does `load_state()` connect `Community 0` to `Community 1`, `Community 2`, `Community 11`?**
+- **Why does `$()` connect `Community 1` to `Community 3`, `Community 4`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `loadBootstrap()` connect `Community 3` to `Community 1`, `Community 4`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `load_state()` connect `Community 0` to `Community 2`, `Community 5`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `Overtime reporting web backend.` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
