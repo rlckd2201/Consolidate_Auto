@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.2.3"
+APP_VERSION = "0.2.4"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -724,13 +724,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus"]}
 
 
 @app.get("/api/bootstrap")
@@ -973,13 +973,42 @@ def report_preview() -> dict:
     period = state.periods[0]
     rows = all_rows(state)
     summary = summarize(rows, period)
+    date_items = [{"label": date, "value": value} for date, value in sorted(summary["by_date"].items())]
+    category_items = [{"label": key, "value": value} for key, value in sorted(summary["by_category"].items(), key=lambda item: item[1], reverse=True)]
+    factory_items = [{"label": key, "value": value} for key, value in sorted(summary["by_factory"].items(), key=lambda item: item[1], reverse=True)]
     return {
         "period": period.model_dump(),
         "summary": summary,
+        "primary_goal": "보고자료 PPT 1~3페이지 완성",
         "slides": [
-            {"slide": 2, "title": "주말 특근현황", "items": [{"label": "전체 특근인원", "value": summary["total_headcount"]}, {"label": "주말 특근현황", "value": summary["weekend_headcount"]}]},
-            {"slide": 3, "title": "공장별 비생산부문 특근업무 세부", "items": [{"label": key, "value": value} for key, value in summary["by_category"].items()]},
-            {"slide": 4, "title": "해외출장/재물조사 등 특이사항", "items": [{"label": row.source_factory, "value": row.detail} for row in rows if row.category2 in {"재물조사", "해외출장"}]},
+            {
+                "slide": 1,
+                "title": "표지",
+                "items": [
+                    {"label": "보고명", "value": f"비생산부문 주말 특근현황 보고 [ {period.label.replace('2026년 ', '')} ]"},
+                    {"label": "기준기간", "value": f"{period.start_date} ~ {period.end_date}"},
+                    {"label": "작성부서", "value": "경영기획본부"},
+                ],
+            },
+            {
+                "slide": 2,
+                "title": "비생산부문 주말 특근 종합현황",
+                "items": [
+                    {"label": "전체 특근인원", "value": summary["total_headcount"]},
+                    {"label": "주말 특근현황", "value": summary["weekend_headcount"]},
+                    {"label": "6/3 포함 참고", "value": summary["reference_headcount"]},
+                    *date_items,
+                    *category_items[:10],
+                ],
+            },
+            {
+                "slide": 3,
+                "title": "공장별 비생산부문 특근업무 세부",
+                "items": [
+                    *factory_items,
+                    *category_items[:10],
+                ],
+            },
         ],
     }
 

@@ -99,7 +99,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L145",
       "id": "backend_app_geminievidenceitem",
-      "community": 9,
+      "community": 5,
       "norm_label": "geminievidenceitem"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L153",
       "id": "backend_app_geminievidenceanalyzerequest",
-      "community": 9,
+      "community": 5,
       "norm_label": "geminievidenceanalyzerequest"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L226",
       "id": "backend_app_apply_master_updates",
-      "community": 6,
+      "community": 7,
       "norm_label": "apply_master_updates()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L274",
       "id": "backend_app_split_counts",
-      "community": 12,
+      "community": 13,
       "norm_label": "split_counts()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L286",
       "id": "backend_app_gemini_configured",
-      "community": 13,
+      "community": 5,
       "norm_label": "gemini_configured()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L290",
       "id": "backend_app_gemini_key_status",
-      "community": 13,
+      "community": 5,
       "norm_label": "gemini_key_status()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L305",
       "id": "backend_app_gemini_analysis_schema",
-      "community": 9,
+      "community": 5,
       "norm_label": "gemini_analysis_schema()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L351",
       "id": "backend_app_build_gemini_prompt",
-      "community": 9,
+      "community": 5,
       "norm_label": "build_gemini_prompt()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L392",
       "id": "backend_app_call_gemini_json",
-      "community": 9,
+      "community": 5,
       "norm_label": "call_gemini_json()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L444",
       "id": "backend_app_selected_ai_evidence",
-      "community": 9,
+      "community": 5,
       "norm_label": "selected_ai_evidence()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L459",
       "id": "backend_app_run_gemini_import_batches",
-      "community": 9,
+      "community": 5,
       "norm_label": "run_gemini_import_batches()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L664",
       "id": "backend_app_build_approval_title",
-      "community": 12,
+      "community": 13,
       "norm_label": "build_approval_title()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L668",
       "id": "backend_app_build_approval_body",
-      "community": 12,
+      "community": 13,
       "norm_label": "build_approval_body()"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L750",
       "id": "backend_app_config",
-      "community": 13,
+      "community": 5,
       "norm_label": "config()"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L786",
       "id": "backend_app_gemini_status",
-      "community": 13,
+      "community": 5,
       "norm_label": "gemini_status()"
     },
     {
@@ -423,7 +423,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L799",
       "id": "backend_app_analyze_evidence_with_gemini",
-      "community": 9,
+      "community": 5,
       "norm_label": "analyze_evidence_with_gemini()"
     },
     {
@@ -511,7 +511,7 @@
       "label": "export_excel_stub()",
       "file_type": "code",
       "source_file": "backend\\app.py",
-      "source_location": "L988",
+      "source_location": "L1017",
       "id": "backend_app_export_excel_stub",
       "community": 2,
       "norm_label": "export_excel_stub()"
@@ -520,7 +520,7 @@
       "label": "export_ppt_stub()",
       "file_type": "code",
       "source_file": "backend\\app.py",
-      "source_location": "L993",
+      "source_location": "L1022",
       "id": "backend_app_export_ppt_stub",
       "community": 2,
       "norm_label": "export_ppt_stub()"
@@ -529,16 +529,16 @@
       "label": "approval_preview()",
       "file_type": "code",
       "source_file": "backend\\app.py",
-      "source_location": "L998",
+      "source_location": "L1027",
       "id": "backend_app_approval_preview",
-      "community": 12,
+      "community": 13,
       "norm_label": "approval_preview()"
     },
     {
       "label": "fill_approval_draft_stub()",
       "file_type": "code",
       "source_file": "backend\\app.py",
-      "source_location": "L1015",
+      "source_location": "L1044",
       "id": "backend_app_fill_approval_draft_stub",
       "community": 6,
       "norm_label": "fill_approval_draft_stub()"
@@ -765,7 +765,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L1",
       "id": "backend_static_app_js",
-      "community": 3,
+      "community": 4,
       "norm_label": "app.js"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L12",
       "id": "static_app",
-      "community": 5,
+      "community": 3,
       "norm_label": "$()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L17",
       "id": "static_app_escapehtml",
-      "community": 10,
+      "community": 11,
       "norm_label": "escapehtml()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L26",
       "id": "static_app_fmtcount",
-      "community": 4,
+      "community": 3,
       "norm_label": "fmtcount()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L30",
       "id": "static_app_api",
-      "community": 4,
+      "community": 3,
       "norm_label": "api()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L51",
       "id": "static_app_switchview",
-      "community": 4,
+      "community": 3,
       "norm_label": "switchview()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L56",
       "id": "static_app_flattenrows",
-      "community": 4,
+      "community": 3,
       "norm_label": "flattenrows()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L60",
       "id": "static_app_renderbars",
-      "community": 4,
+      "community": 3,
       "norm_label": "renderbars()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L72",
       "id": "static_app_renderreviewrows",
-      "community": 4,
+      "community": 3,
       "norm_label": "renderreviewrows()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L92",
       "id": "static_app_renderentities",
-      "community": 5,
+      "community": 8,
       "norm_label": "renderentities()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L99",
       "id": "static_app_rendersubmissionselect",
-      "community": 4,
+      "community": 3,
       "norm_label": "rendersubmissionselect()"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L105",
       "id": "static_app_fmtimportcounts",
-      "community": 10,
+      "community": 11,
       "norm_label": "fmtimportcounts()"
     },
     {
@@ -873,7 +873,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L109",
       "id": "static_app_normalizedimportcategory",
-      "community": 8,
+      "community": 9,
       "norm_label": "normalizedimportcategory()"
     },
     {
@@ -882,7 +882,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L113",
       "id": "static_app_cleanimportvalue",
-      "community": 8,
+      "community": 9,
       "norm_label": "cleanimportvalue()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L119",
       "id": "static_app_isblankimportvalue",
-      "community": 8,
+      "community": 9,
       "norm_label": "isblankimportvalue()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L123",
       "id": "static_app_numberimportvalue",
-      "community": 8,
+      "community": 9,
       "norm_label": "numberimportvalue()"
     },
     {
@@ -909,7 +909,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L130",
       "id": "static_app_candidateevidenceids",
-      "community": 3,
+      "community": 4,
       "norm_label": "candidateevidenceids()"
     },
     {
@@ -918,7 +918,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L136",
       "id": "static_app_importreviewkey",
-      "community": 3,
+      "community": 4,
       "norm_label": "importreviewkey()"
     },
     {
@@ -927,7 +927,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L141",
       "id": "static_app_loadimportreview",
-      "community": 3,
+      "community": 4,
       "norm_label": "loadimportreview()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L149",
       "id": "static_app_saveimportreview",
-      "community": 3,
+      "community": 4,
       "norm_label": "saveimportreview()"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L155",
       "id": "static_app_genericgeminireason",
-      "community": 8,
+      "community": 9,
       "norm_label": "genericgeminireason()"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L166",
       "id": "static_app_importnoisereason",
-      "community": 8,
+      "community": 9,
       "norm_label": "importnoisereason()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L186",
       "id": "static_app_importwarnings",
-      "community": 8,
+      "community": 9,
       "norm_label": "importwarnings()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L202",
       "id": "static_app_importrowneedsreview",
-      "community": 8,
+      "community": 9,
       "norm_label": "importrowneedsreview()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L210",
       "id": "static_app_defaultimportaction",
-      "community": 8,
+      "community": 9,
       "norm_label": "defaultimportaction()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L216",
       "id": "static_app_evidencebyid",
-      "community": 3,
+      "community": 10,
       "norm_label": "evidencebyid()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L220",
       "id": "static_app_buildimporterrorrows",
-      "community": 3,
+      "community": 10,
       "norm_label": "buildimporterrorrows()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L244",
       "id": "static_app_importdisplayrows",
-      "community": 3,
+      "community": 10,
       "norm_label": "importdisplayrows()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L278",
       "id": "static_app_countimportrows",
-      "community": 10,
+      "community": 11,
       "norm_label": "countimportrows()"
     },
     {
@@ -1026,7 +1026,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L289",
       "id": "static_app_renderimporttoolbar",
-      "community": 10,
+      "community": 11,
       "norm_label": "renderimporttoolbar()"
     },
     {
@@ -1035,7 +1035,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L322",
       "id": "static_app_applyimportfilters",
-      "community": 3,
+      "community": 10,
       "norm_label": "applyimportfilters()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L356",
       "id": "static_app_sourcelabel",
-      "community": 3,
+      "community": 4,
       "norm_label": "sourcelabel()"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L365",
       "id": "static_app_importinput",
-      "community": 10,
+      "community": 11,
       "norm_label": "importinput()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L369",
       "id": "static_app_renderimportreviewrows",
-      "community": 3,
+      "community": 10,
       "norm_label": "renderimportreviewrows()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L410",
       "id": "static_app_renderimportrun",
-      "community": 10,
+      "community": 11,
       "norm_label": "renderimportrun()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L443",
       "id": "static_app_loadimportlatest",
-      "community": 10,
+      "community": 11,
       "norm_label": "loadimportlatest()"
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L454",
       "id": "static_app_runimport",
-      "community": 10,
+      "community": 3,
       "norm_label": "runimport()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L468",
       "id": "static_app_updatefactoryoptions",
-      "community": 5,
+      "community": 8,
       "norm_label": "updatefactoryoptions()"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L479",
       "id": "static_app_renderjobgroupoptions",
-      "community": 3,
+      "community": 4,
       "norm_label": "renderjobgroupoptions()"
     },
     {
@@ -1116,7 +1116,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L483",
       "id": "static_app_makerowkey",
-      "community": 3,
+      "community": 4,
       "norm_label": "makerowkey()"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L487",
       "id": "static_app_renderentryrow",
-      "community": 3,
+      "community": 4,
       "norm_label": "renderentryrow()"
     },
     {
@@ -1134,7 +1134,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L505",
       "id": "static_app_renderentryrows",
-      "community": 5,
+      "community": 4,
       "norm_label": "renderentryrows()"
     },
     {
@@ -1143,7 +1143,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L519",
       "id": "static_app_renderslides",
-      "community": 4,
+      "community": 3,
       "norm_label": "renderslides()"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L533",
       "id": "static_app_loadapprovalpreview",
-      "community": 4,
+      "community": 3,
       "norm_label": "loadapprovalpreview()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L554",
       "id": "static_app_loadbootstrap",
-      "community": 4,
+      "community": 3,
       "norm_label": "loadbootstrap()"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L574",
       "id": "static_app_addentryrow",
-      "community": 5,
+      "community": 4,
       "norm_label": "addentryrow()"
     },
     {
@@ -1179,7 +1179,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L580",
       "id": "static_app_rowfield",
-      "community": 3,
+      "community": 4,
       "norm_label": "rowfield()"
     },
     {
@@ -1188,7 +1188,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L584",
       "id": "static_app_rowvalue",
-      "community": 3,
+      "community": 4,
       "norm_label": "rowvalue()"
     },
     {
@@ -1197,7 +1197,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L588",
       "id": "static_app_selectedentryrow",
-      "community": 5,
+      "community": 8,
       "norm_label": "selectedentryrow()"
     },
     {
@@ -1206,7 +1206,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L593",
       "id": "static_app_selectentryrow",
-      "community": 5,
+      "community": 4,
       "norm_label": "selectentryrow()"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L603",
       "id": "static_app_setlookupstate",
-      "community": 5,
+      "community": 8,
       "norm_label": "setlookupstate()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L608",
       "id": "static_app_candidatelabel",
-      "community": 5,
+      "community": 8,
       "norm_label": "candidatelabel()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L613",
       "id": "static_app_renderemployeeresults",
-      "community": 5,
+      "community": 8,
       "norm_label": "renderemployeeresults()"
     },
     {
@@ -1242,7 +1242,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L628",
       "id": "static_app_applyemployeetorow",
-      "community": 5,
+      "community": 8,
       "norm_label": "applyemployeetorow()"
     },
     {
@@ -1251,7 +1251,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L639",
       "id": "static_app_searchemployees",
-      "community": 5,
+      "community": 8,
       "norm_label": "searchemployees()"
     },
     {
@@ -1260,7 +1260,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L673",
       "id": "static_app_applyselectedcandidate",
-      "community": 5,
+      "community": 8,
       "norm_label": "applyselectedcandidate()"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L687",
       "id": "static_app_savesubmission",
-      "community": 4,
+      "community": 3,
       "norm_label": "savesubmission()"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L725",
       "id": "static_app_exportexcel",
-      "community": 4,
+      "community": 3,
       "norm_label": "exportexcel()"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L730",
       "id": "static_app_exportppt",
-      "community": 4,
+      "community": 3,
       "norm_label": "exportppt()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L735",
       "id": "static_app_filldraft",
-      "community": 4,
+      "community": 3,
       "norm_label": "filldraft()"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L741",
       "id": "static_app_refreshimportrowsonly",
-      "community": 3,
+      "community": 10,
       "norm_label": "refreshimportrowsonly()"
     },
     {
@@ -1314,7 +1314,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L747",
       "id": "static_app_handleimportfilterchange",
-      "community": 3,
+      "community": 10,
       "norm_label": "handleimportfilterchange()"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L766",
       "id": "static_app_handleimportreviewchange",
-      "community": 3,
+      "community": 4,
       "norm_label": "handleimportreviewchange()"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L1",
       "id": "tools_hr_db_probe_py",
-      "community": 11,
+      "community": 12,
       "norm_label": "hr_db_probe.py"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L14",
       "id": "tools_hr_db_probe_connect",
-      "community": 11,
+      "community": 12,
       "norm_label": "_connect()"
     },
     {
@@ -1368,7 +1368,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L28",
       "id": "tools_hr_db_probe_fetchall",
-      "community": 11,
+      "community": 12,
       "norm_label": "_fetchall()"
     },
     {
@@ -1377,7 +1377,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L33",
       "id": "tools_hr_db_probe_fetchone",
-      "community": 11,
+      "community": 12,
       "norm_label": "_fetchone()"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L38",
       "id": "tools_hr_db_probe_mask_name",
-      "community": 11,
+      "community": 12,
       "norm_label": "_mask_name()"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L46",
       "id": "tools_hr_db_probe_candidate_columns",
-      "community": 11,
+      "community": 12,
       "norm_label": "_candidate_columns()"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L73",
       "id": "tools_hr_db_probe_main",
-      "community": 11,
+      "community": 12,
       "norm_label": "main()"
     },
     {
@@ -2247,7 +2247,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L988",
+      "source_location": "L1017",
       "weight": 1.0,
       "_src": "backend_app_py",
       "_tgt": "backend_app_export_excel_stub",
@@ -2259,7 +2259,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L993",
+      "source_location": "L1022",
       "weight": 1.0,
       "_src": "backend_app_py",
       "_tgt": "backend_app_export_ppt_stub",
@@ -2271,7 +2271,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L998",
+      "source_location": "L1027",
       "weight": 1.0,
       "_src": "backend_app_py",
       "_tgt": "backend_app_approval_preview",
@@ -2283,7 +2283,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1015",
+      "source_location": "L1044",
       "weight": 1.0,
       "_src": "backend_app_py",
       "_tgt": "backend_app_fill_approval_draft_stub",
@@ -2559,7 +2559,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1021",
+      "source_location": "L1050",
       "weight": 1.0,
       "_src": "backend_app_fill_approval_draft_stub",
       "_tgt": "backend_app_now",
@@ -2667,7 +2667,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L999",
+      "source_location": "L1028",
       "weight": 1.0,
       "_src": "backend_app_approval_preview",
       "_tgt": "backend_app_load_state",
@@ -2679,7 +2679,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1016",
+      "source_location": "L1045",
       "weight": 1.0,
       "_src": "backend_app_fill_approval_draft_stub",
       "_tgt": "backend_app_load_state",
@@ -2703,7 +2703,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1022",
+      "source_location": "L1051",
       "weight": 1.0,
       "_src": "backend_app_fill_approval_draft_stub",
       "_tgt": "backend_app_save_state",
@@ -3123,7 +3123,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L989",
+      "source_location": "L1018",
       "weight": 1.0,
       "_src": "backend_app_export_excel_stub",
       "_tgt": "backend_app_copy_template_output",
@@ -3135,7 +3135,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L994",
+      "source_location": "L1023",
       "weight": 1.0,
       "_src": "backend_app_export_ppt_stub",
       "_tgt": "backend_app_copy_template_output",
@@ -3159,7 +3159,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1007",
+      "source_location": "L1036",
       "weight": 1.0,
       "_src": "backend_app_approval_preview",
       "_tgt": "backend_app_build_approval_title",
@@ -3171,7 +3171,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "backend\\app.py",
-      "source_location": "L1008",
+      "source_location": "L1037",
       "weight": 1.0,
       "_src": "backend_app_approval_preview",
       "_tgt": "backend_app_build_approval_body",

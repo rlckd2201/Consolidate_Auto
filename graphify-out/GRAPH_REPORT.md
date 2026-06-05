@@ -1,7 +1,7 @@
 # Graph Report - overtime_web  (2026-06-05)
 
 ## Corpus Check
-- 9 files · ~11,949 words
+- 9 files · ~12,019 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -65,48 +65,48 @@ Cohesion: 0.17
 Nodes (15): add_entity_filters(), choose_template(), classify_hr_employee(), copy_template_output(), display_factory_from_hr(), entity_code_from_hr(), export_excel_stub(), export_ppt_stub() (+7 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.19
-Nodes (18): applyImportFilters(), buildImportErrorRows(), candidateEvidenceIds(), evidenceById(), handleImportFilterChange(), handleImportReviewChange(), importDisplayRows(), importReviewKey() (+10 more)
+Cohesion: 0.21
+Nodes (16): $(), api(), exportExcel(), exportPpt(), fillDraft(), flattenRows(), fmtCount(), loadApprovalPreview() (+8 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.18
-Nodes (14): api(), exportExcel(), exportPpt(), fillDraft(), flattenRows(), fmtCount(), loadApprovalPreview(), loadBootstrap() (+6 more)
+Cohesion: 0.23
+Nodes (14): addEntryRow(), candidateEvidenceIds(), handleImportReviewChange(), importReviewKey(), loadImportReview(), makeRowKey(), renderEntryRow(), renderEntryRows() (+6 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.28
-Nodes (13): $(), addEntryRow(), applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), renderEntities(), renderEntryRows() (+5 more)
+Cohesion: 0.23
+Nodes (12): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), config(), gemini_analysis_schema(), gemini_configured(), gemini_key_status(), gemini_status() (+4 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.27
-Nodes (12): all_rows(), apply_master_updates(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now() (+4 more)
+Cohesion: 0.31
+Nodes (11): all_rows(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now(), report_preview() (+3 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.33
-Nodes (9): LegalEntity, OvertimeRow, Period, ReplyImportRunRequest, _seed_state(), State, Submission, SubmissionCreate (+1 more)
+Cohesion: 0.29
+Nodes (10): apply_master_updates(), LegalEntity, OvertimeRow, Period, ReplyImportRunRequest, _seed_state(), State, Submission (+2 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.31
+Nodes (9): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), renderEntities(), searchEmployees(), selectedEntryRow(), setLookupState() (+1 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.39
 Nodes (9): cleanImportValue(), defaultImportAction(), genericGeminiReason(), importNoiseReason(), importRowNeedsReview(), importWarnings(), isBlankImportValue(), normalizedImportCategory() (+1 more)
 
-### Community 9 - "Community 9"
-Cohesion: 0.32
-Nodes (8): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), gemini_analysis_schema(), GeminiEvidenceAnalyzeRequest, GeminiEvidenceItem, run_gemini_import_batches(), selected_ai_evidence()
-
 ### Community 10 - "Community 10"
-Cohesion: 0.36
-Nodes (8): countImportRows(), escapeHtml(), fmtImportCounts(), importInput(), loadImportLatest(), renderImportRun(), renderImportToolbar(), runImport()
+Cohesion: 0.33
+Nodes (7): applyImportFilters(), buildImportErrorRows(), evidenceById(), handleImportFilterChange(), importDisplayRows(), refreshImportRowsOnly(), renderImportReviewRows()
 
 ### Community 11 - "Community 11"
+Cohesion: 0.43
+Nodes (7): countImportRows(), escapeHtml(), fmtImportCounts(), importInput(), loadImportLatest(), renderImportRun(), renderImportToolbar()
+
+### Community 12 - "Community 12"
 Cohesion: 0.52
 Nodes (6): _candidate_columns(), _connect(), _fetchall(), _fetchone(), main(), _mask_name()
 
-### Community 12 - "Community 12"
+### Community 13 - "Community 13"
 Cohesion: 0.67
 Nodes (4): approval_preview(), build_approval_body(), build_approval_title(), split_counts()
-
-### Community 13 - "Community 13"
-Cohesion: 0.83
-Nodes (4): config(), gemini_configured(), gemini_key_status(), gemini_status()
 
 ### Community 14 - "Community 14"
 Cohesion: 1.0
@@ -121,7 +121,7 @@ Nodes (1): Overtime reporting web backend.
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `import_run()` connect `Community 0` to `Community 9`, `Community 2`, `Community 13`?**
+- **Why does `import_run()` connect `Community 0` to `Community 2`, `Community 5`?**
   _High betweenness centrality (0.149) - this node is a cross-community bridge._
 - **Why does `run_reply_import()` connect `Community 0` to `Community 1`?**
   _High betweenness centrality (0.114) - this node is a cross-community bridge._
