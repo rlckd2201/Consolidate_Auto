@@ -6,10 +6,13 @@ const state = {
   selectedEmployees: {},
   selectedRowKey: null,
   importRun: null,
+  importFilters: { status: "all", category: "all", query: "" },
 };
 
 const $ = (id) => document.getElementById(id);
 const JOB_GROUPS = ["관리직", "간접직", "직접직"];
+const IMPORT_ACTIONS = ["검토대기", "확정", "제외", "수정필요"];
+const REPORT_CATEGORIES = ["직접직", "간접직", "비생산", "검토필요"];
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -103,16 +106,225 @@ function fmtImportCounts(counts = {}) {
   return Object.entries(counts).map(([key, value]) => `${key} ${value}`).join(" · ") || "-";
 }
 
+function normalizedImportCategory(row) {
+  return String(row.category_normalized || row.category_raw || row.category_guess || "검토필요");
+}
+
+function candidateEvidenceIds(row) {
+  const fromEvidence = String(row.evidence || "").match(/\b(?:xlsx|xls|pdf|pptx)-\d+-\d+\b/g) || [];
+  const sourceIds = row.source_id ? [row.source_id] : (row.source_ids || []);
+  return [...new Set([...fromEvidence, ...sourceIds])];
+}
+
+function importReviewKey(row, index) {
+  const source = candidateEvidenceIds(row).join("|") || row.source_file || "unknown";
+  return `importReview:${state.importRun?.run_id || "none"}:${row.row_kind || "row"}:${source}:${index}`;
+}
+
+function loadImportReview(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveImportReview(key, patch) {
+  const next = { ...loadImportReview(key), ...patch, updated_at: new Date().toISOString() };
+  localStorage.setItem(key, JSON.stringify(next));
+  return next;
+}
+
+function importRowNeedsReview(row) {
+  if (row.row_kind === "error") return true;
+  const confidence = String(row.confidence || "").toLowerCase();
+  const reviewReason = String(row.needs_review_reason || "");
+  const category = normalizedImportCategory(row);
+  const missingCore = !row.date || row.date === "N/A" || !row.headcount || row.headcount === "N/A" || !row.detail || row.detail === "N/A";
+  return confidence === "low" || category === "검토필요" || missingCore || (reviewReason && reviewReason !== "None");
+}
+
+function defaultImportAction(row) {
+  if (row.row_kind === "error") return "수정필요";
+  return importRowNeedsReview(row) ? "검토대기" : "확정";
+}
+
+function evidenceById(run) {
+  return Object.fromEntries((run?.evidence_items || []).map((item) => [item.source_id, item]));
+}
+
+function buildImportErrorRows(run) {
+  const index = evidenceById(run);
+  return (run?.ai?.errors || []).flatMap((error) => (error.source_ids || []).map((sourceId) => {
+    const evidence = index[sourceId] || {};
+    return {
+      row_kind: "error",
+      source_id: sourceId,
+      source_ids: [sourceId],
+      source_file: evidence.source_file || "-",
+      source_sheet_or_page: evidence.source_sheet_or_page || "-",
+      source_factory: evidence.factory_guess || evidence.source_folder || "-",
+      date: evidence.date_hits?.join(", ") || "",
+      team: "",
+      name: "",
+      headcount: "",
+      hours: "",
+      detail: "AI 미처리. 근거 블록 확인 필요",
+      category_normalized: "검토필요",
+      confidence: "low",
+      needs_review_reason: error.detail || "Gemini 처리 실패",
+    };
+  }));
+}
+
+function importDisplayRows(run) {
+  const index = evidenceById(run);
+  const enrich = (row) => {
+    const evidenceId = candidateEvidenceIds(row)[0];
+    const evidence = index[evidenceId] || {};
+    return {
+      ...row,
+      source_id: evidenceId || row.source_id,
+      source_file: row.source_file || evidence.source_file || "",
+      source_sheet_or_page: row.source_sheet_or_page || evidence.source_sheet_or_page || "",
+      source_factory: row.source_factory || evidence.factory_guess || evidence.source_folder || "",
+    };
+  };
+  const aiRows = (run?.ai?.candidate_rows || []).map((row) => enrich({ ...row, row_kind: "gemini" }));
+  const localRows = (run?.local_candidate_rows || []).map((row) => enrich({ ...row, row_kind: "local" }));
+  return [...aiRows, ...localRows, ...buildImportErrorRows(run)];
+}
+
+function countImportRows(rows) {
+  return rows.reduce((acc, row) => {
+    const category = normalizedImportCategory(row);
+    acc.categories[category] = (acc.categories[category] || 0) + 1;
+    if (importRowNeedsReview(row)) acc.review += 1;
+    if (row.row_kind === "error") acc.errors += 1;
+    return acc;
+  }, { categories: {}, review: 0, errors: 0 });
+}
+
+function renderImportToolbar(rows) {
+  const counts = countImportRows(rows);
+  const categoryOptions = ["all", ...REPORT_CATEGORIES, ...Object.keys(counts.categories).filter((item) => !REPORT_CATEGORIES.includes(item))];
+  $("importReviewToolbar").innerHTML = `
+    <label>상태
+      <select id="importFilterStatus">
+        <option value="all" ${state.importFilters.status === "all" ? "selected" : ""}>전체</option>
+        <option value="review" ${state.importFilters.status === "review" ? "selected" : ""}>검토필요 ${counts.review}</option>
+        <option value="error" ${state.importFilters.status === "error" ? "selected" : ""}>AI오류 ${counts.errors}</option>
+        <option value="confirmed" ${state.importFilters.status === "confirmed" ? "selected" : ""}>확정</option>
+      </select>
+    </label>
+    <label>분류
+      <select id="importFilterCategory">
+        ${categoryOptions.map((value) => `<option value="${escapeHtml(value)}" ${state.importFilters.category === value ? "selected" : ""}>${escapeHtml(value === "all" ? "전체" : `${value} ${counts.categories[value] || ""}`)}</option>`).join("")}
+      </select>
+    </label>
+    <label>검색
+      <input id="importFilterQuery" value="${escapeHtml(state.importFilters.query)}" placeholder="파일, 팀, 이름, 세부내용" />
+    </label>
+    <div class="review-counts">
+      <strong>${rows.length}</strong> 후보 · <span>${counts.review}</span> 검토 · <span>${counts.errors}</span> 오류
+    </div>
+  `;
+}
+
+function applyImportFilters(rows) {
+  const query = state.importFilters.query.trim().toLowerCase();
+  return rows.filter((row, index) => {
+    const key = importReviewKey(row, index);
+    const saved = loadImportReview(key);
+    const action = saved.action || defaultImportAction(row);
+    const category = saved.category || normalizedImportCategory(row);
+    if (state.importFilters.status === "review" && !importRowNeedsReview(row) && action !== "수정필요" && action !== "검토대기") return false;
+    if (state.importFilters.status === "error" && row.row_kind !== "error") return false;
+    if (state.importFilters.status === "confirmed" && action !== "확정") return false;
+    if (state.importFilters.category !== "all" && category !== state.importFilters.category) return false;
+    if (!query) return true;
+    const haystack = [
+      row.source_id,
+      row.source_ids?.join(" "),
+      row.source_file,
+      row.source_sheet_or_page,
+      row.source_factory,
+      row.target_factory,
+      row.date,
+      row.team,
+      row.name,
+      row.detail,
+      row.needs_review_reason,
+    ].join(" ").toLowerCase();
+    return haystack.includes(query);
+  });
+}
+
+function sourceLabel(row) {
+  const ids = candidateEvidenceIds(row);
+  const id = row.source_id || ids[0] || "-";
+  const file = row.source_file || "";
+  const sheet = row.source_sheet_or_page ? ` / ${row.source_sheet_or_page}` : "";
+  const batch = ids.length > 1 ? ` · batch ${ids.length}` : "";
+  return `${id}${file ? ` · ${file}${sheet}` : ""}${batch}`;
+}
+
+function importInput(value, field, key, className = "") {
+  return `<input class="${className}" data-review-key="${escapeHtml(key)}" data-review-field="${field}" value="${escapeHtml(value || "")}" />`;
+}
+
+function renderImportReviewRows(rows) {
+  const filtered = applyImportFilters(rows);
+  $("importCandidateRows").innerHTML = filtered.map((row) => {
+    const index = rows.indexOf(row);
+    const key = importReviewKey(row, index);
+    const saved = loadImportReview(key);
+    const action = saved.action || defaultImportAction(row);
+    const category = saved.category || normalizedImportCategory(row);
+    const needsReview = importRowNeedsReview(row);
+    const statusClass = row.row_kind === "error" ? "bad" : (needsReview ? "needs-review" : "ready");
+    return `
+      <tr class="import-row ${statusClass}" data-review-key="${escapeHtml(key)}">
+        <td><span class="status ${row.confidence || "low"}">${row.row_kind === "error" ? "AI오류" : (needsReview ? "검토" : "후보")}</span></td>
+        <td>
+          <select data-review-key="${escapeHtml(key)}" data-review-field="action">
+            ${IMPORT_ACTIONS.map((value) => `<option value="${value}" ${action === value ? "selected" : ""}>${value}</option>`).join("")}
+          </select>
+        </td>
+        <td>
+          <select data-review-key="${escapeHtml(key)}" data-review-field="category">
+            ${REPORT_CATEGORIES.map((value) => `<option value="${value}" ${category === value ? "selected" : ""}>${value}</option>`).join("")}
+          </select>
+        </td>
+        <td class="source-cell">${escapeHtml(sourceLabel(row))}</td>
+        <td>${importInput(saved.source_factory ?? row.source_factory ?? row.target_factory, "source_factory", key)}</td>
+        <td>${importInput(saved.date ?? row.date, "date", key, "date-input")}</td>
+        <td>
+          ${importInput(saved.team ?? row.team ?? "", "team", key)}
+          ${importInput(saved.name ?? row.name ?? "", "name", key)}
+        </td>
+        <td>${importInput(saved.headcount ?? row.headcount, "headcount", key, "small-input")}</td>
+        <td>${importInput(saved.hours ?? row.hours, "hours", key, "small-input")}</td>
+        <td>${importInput(saved.detail ?? row.detail ?? row.category_guess, "detail", key, "detail-input")}</td>
+        <td class="reason-cell">${escapeHtml(row.needs_review_reason || row.confidence || "-")}</td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="11">표시할 후보가 없습니다. 필터를 바꾸거나 회신자료 Import를 다시 실행하세요.</td></tr>`;
+}
+
 function renderImportRun(run) {
   state.importRun = run;
   if (!run) {
     $("importStatus").textContent = "실행 전";
     $("importSummary").innerHTML = `<span class="muted">아직 import 결과가 없습니다.</span>`;
+    $("importReviewToolbar").innerHTML = "";
     $("importCandidateRows").innerHTML = "";
     return;
   }
   const summary = run.summary || {};
   const ai = run.ai || {};
+  const rows = importDisplayRows(run);
+  const counts = countImportRows(rows);
   $("importStatus").textContent = `${run.run_id} · ${run.mode}`;
   $("importSummary").innerHTML = `
     <div><strong>${summary.file_count ?? 0}</strong><span>파일</span></div>
@@ -121,25 +333,15 @@ function renderImportRun(run) {
     <div><strong>${summary.local_candidate_count ?? 0}</strong><span>로컬 후보</span></div>
     <div><strong>${summary.ai_candidate_count ?? 0}</strong><span>AI 후보</span></div>
     <div><strong>${summary.unsupported_count ?? 0}</strong><span>XLS 등 미지원</span></div>
+    <div><strong>${counts.review}</strong><span>검토 필요 후보</span></div>
+    <div><strong>${counts.errors}</strong><span>AI 미처리</span></div>
     <p>확장자: ${escapeHtml(fmtImportCounts(summary.extension_counts))}</p>
     <p>추출상태: ${escapeHtml(fmtImportCounts(summary.extract_status_counts))}</p>
+    <p>AI 분류: ${escapeHtml(fmtImportCounts(summary.ai_normalized_category_counts || counts.categories))}</p>
     ${ai.errors?.length ? `<p class="bad">AI 오류 ${ai.errors.length}건: ${escapeHtml(ai.errors[0].detail || "")}</p>` : ""}
   `;
-  const localRows = (run.local_candidate_rows || []).map((row) => ({ ...row, row_kind: "local" }));
-  const aiRows = (ai.candidate_rows || []).map((row) => ({ ...row, row_kind: "gemini" }));
-  const rows = [...aiRows, ...localRows].slice(0, 120);
-  $("importCandidateRows").innerHTML = rows.map((row) => `
-    <tr>
-      <td>${escapeHtml(row.row_kind)}</td>
-      <td>${escapeHtml(row.source_id || row.source_ids?.join(", ") || "-")}</td>
-      <td>${escapeHtml(row.source_factory || "-")} → ${escapeHtml(row.target_factory || "검토")}</td>
-      <td>${escapeHtml(row.team || row.name || "-")}</td>
-      <td>${escapeHtml(row.headcount || "-")}</td>
-      <td>${escapeHtml(row.hours || "-")}</td>
-      <td>${escapeHtml(row.detail || row.category_guess || "-")}</td>
-      <td>${escapeHtml(row.needs_review_reason || row.confidence || "-")}</td>
-    </tr>
-  `).join("") || `<tr><td colspan="8">후보 행 없음. 근거 블록을 먼저 확인하세요.</td></tr>`;
+  renderImportToolbar(rows);
+  renderImportReviewRows(rows);
 }
 
 async function loadImportLatest() {
@@ -149,6 +351,7 @@ async function loadImportLatest() {
   } catch (error) {
     $("importStatus").textContent = "조회 실패";
     $("importSummary").innerHTML = `<p class="bad">${escapeHtml(error.message)}</p>`;
+    $("importReviewToolbar").innerHTML = "";
   }
 }
 
@@ -439,6 +642,37 @@ async function fillDraft() {
   $("draftMessage").textContent = result.message;
 }
 
+function refreshImportRowsOnly() {
+  if (state.importRun) {
+    renderImportReviewRows(importDisplayRows(state.importRun));
+  }
+}
+
+function handleImportFilterChange(event) {
+  if (event.target.id === "importFilterStatus") {
+    state.importFilters.status = event.target.value;
+    refreshImportRowsOnly();
+  }
+  if (event.target.id === "importFilterCategory") {
+    state.importFilters.category = event.target.value;
+    refreshImportRowsOnly();
+  }
+  if (event.target.id === "importFilterQuery") {
+    state.importFilters.query = event.target.value;
+    refreshImportRowsOnly();
+  }
+}
+
+function handleImportReviewChange(event) {
+  const key = event.target.dataset.reviewKey;
+  const field = event.target.dataset.reviewField;
+  if (!key || !field) return;
+  saveImportReview(key, { [field]: event.target.value });
+  if (field === "action" || field === "category") {
+    refreshImportRowsOnly();
+  }
+}
+
 document.querySelectorAll(".nav-btn").forEach((btn) => btn.addEventListener("click", () => switchView(btn.dataset.view)));
 $("refreshBtn").addEventListener("click", loadBootstrap);
 $("exportExcelBtn").addEventListener("click", exportExcel);
@@ -451,6 +685,10 @@ $("runImportAiBtn").addEventListener("click", () => runImport(true).catch((error
   $("importStatus").textContent = "Gemini 실행 실패";
   $("importSummary").innerHTML = `<p class="bad">${escapeHtml(error.message)}</p>`;
 }));
+$("importReviewToolbar").addEventListener("input", handleImportFilterChange);
+$("importReviewToolbar").addEventListener("change", handleImportFilterChange);
+$("importCandidateRows").addEventListener("input", handleImportReviewChange);
+$("importCandidateRows").addEventListener("change", handleImportReviewChange);
 $("addEntryBtn").addEventListener("click", addEntryRow);
 $("saveSubmissionBtn").addEventListener("click", saveSubmission);
 $("entitySelect").addEventListener("change", () => {

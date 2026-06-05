@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.2.1"
+APP_VERSION = "0.2.2"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -35,7 +35,7 @@ DEFAULT_OUTPUT_ROOT = Path(os.environ.get("APPDATA", str(ROOT))) / "Consolidate_
 TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPLATE_DIR)))
 OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
 REPLY_DIR = Path(os.environ.get("CONSOLIDATE_REPLY_DIR", str(ROOT.parent.parent / "회신자료")))
-IMPORT_RUN_DIR = OUTPUT_ROOT / "import_runs"
+IMPORT_RUN_DIR = Path(os.environ.get("CONSOLIDATE_IMPORT_RUN_DIR", str(OUTPUT_ROOT / "import_runs")))
 HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta")
@@ -724,13 +724,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace"]}
 
 
 @app.get("/api/bootstrap")

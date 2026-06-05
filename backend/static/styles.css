@@ -212,7 +212,7 @@ p {
 
 .import-summary {
   display: grid;
-  grid-template-columns: repeat(6, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -244,7 +244,74 @@ p {
 }
 
 .import-table table {
-  min-width: 1180px;
+  min-width: 1680px;
+}
+
+.review-toolbar {
+  display: grid;
+  grid-template-columns: 170px 190px minmax(260px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.review-counts {
+  align-self: center;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.review-counts strong,
+.review-counts span {
+  color: var(--text);
+}
+
+.import-row.needs-review td {
+  background: #fffaf2;
+}
+
+.import-row.bad td {
+  background: #fff5f5;
+}
+
+.import-row select,
+.import-row input {
+  min-height: 30px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.import-row .small-input {
+  max-width: 76px;
+}
+
+.import-row .date-input {
+  max-width: 110px;
+}
+
+.import-row .detail-input {
+  min-width: 360px;
+}
+
+.source-cell {
+  width: 280px;
+  max-width: 320px;
+  color: #405060;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.reason-cell {
+  width: 260px;
+  max-width: 320px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .bars {
