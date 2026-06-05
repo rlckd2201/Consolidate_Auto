@@ -541,8 +541,129 @@ function renderEntryRows() {
   }
 }
 
+function ensureReportWorkspace() {
+  if ($("reportStatus")) return;
+  const slideCards = $("slideCards");
+  const panel = slideCards.closest(".panel");
+  panel.querySelector(".panel-head h2").textContent = "PPT 1~3페이지 작업대";
+  panel.querySelector(".panel-head span").id = "reportRunText";
+  panel.querySelector(".panel-head span").textContent = "회신자료 import 기준";
+  slideCards.insertAdjacentHTML("beforebegin", `
+    <div id="reportStatus" class="report-status"></div>
+    <div id="reportKpis" class="report-kpis"></div>
+    <div class="report-grid">
+      <section>
+        <h3>2p 종합현황</h3>
+        <div id="reportCategoryTable" class="report-table"></div>
+      </section>
+      <section>
+        <h3>검토할 예외만</h3>
+        <div id="reportExceptions" class="exception-list"></div>
+      </section>
+    </div>
+    <section class="report-matrix-block">
+      <h3>3p 공장별/업무별 매트릭스</h3>
+      <div id="reportMatrix" class="table-wrap report-matrix"></div>
+    </section>
+  `);
+}
+
+function reportDelta(actual, expected, unit = "명") {
+  if (expected === undefined || expected === null) return "";
+  const diff = Number(actual || 0) - Number(expected || 0);
+  if (!diff) return "일치";
+  return `${diff > 0 ? "+" : ""}${diff}${unit}`;
+}
+
+function renderReportKpis(draft) {
+  const summary = draft.summary || {};
+  const baseline = draft.baseline || {};
+  const items = [
+    ["전체 특근인원", summary.total_headcount, baseline.total_headcount, "명"],
+    ["주말 특근현황", summary.weekend_headcount, baseline.weekend_headcount, "명"],
+    ["6/3 포함 참고", summary.reference_headcount, baseline.reference_headcount, "명"],
+    ["검토 예외", draft.counts?.blocking_count ?? draft.exceptions?.length ?? 0, 0, "건"],
+  ];
+  $("reportKpis").innerHTML = items.map(([label, actual, expected, unit]) => `
+    <div class="report-kpi ${expected !== undefined && Number(actual || 0) !== Number(expected || 0) ? "warn" : ""}">
+      <span>${label}</span>
+      <strong>${actual ?? 0}${unit}</strong>
+      <em>기준 ${expected ?? "-"}${expected === undefined || expected === null ? "" : unit} / ${reportDelta(actual, expected, unit)}</em>
+    </div>
+  `).join("");
+}
+
+function renderReportCategoryTable(draft) {
+  const byCategory = draft.summary?.by_category || {};
+  $("reportCategoryTable").innerHTML = `
+    <table>
+      <thead><tr><th>특근 업무</th><th>인원</th></tr></thead>
+      <tbody>
+        ${Object.entries(byCategory).map(([category, count]) => `
+          <tr><td>${escapeHtml(category)}</td><td>${count || "-"}</td></tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderReportExceptions(draft) {
+  const exceptions = draft.exceptions || [];
+  $("reportExceptions").innerHTML = exceptions.length ? exceptions.map((item) => `
+    <div class="exception ${item.severity || "medium"}">
+      <strong>${item.severity === "high" ? "잠금불가" : "확인"}</strong>
+      <span>${escapeHtml(item.reason || "")}</span>
+    </div>
+  `).join("") : `<div class="exception ok"><strong>잠금 가능</strong><span>PPT 1~3페이지 기준 예외가 없습니다.</span></div>`;
+}
+
+function renderReportMatrix(draft) {
+  const summary = draft.summary || {};
+  const factories = (summary.factory_order || []).filter((factory) => {
+    const byFactory = summary.by_factory || {};
+    return byFactory[factory] || Object.values(summary.matrix || {}).some((row) => row[factory]?.total);
+  });
+  const matrix = summary.matrix || {};
+  $("reportMatrix").innerHTML = `
+    <table>
+      <thead>
+        <tr><th>특근 업무</th>${factories.map((factory) => `<th>${escapeHtml(factory)}</th>`).join("")}<th>TOTAL</th></tr>
+      </thead>
+      <tbody>
+        ${Object.entries(matrix).map(([category, cells]) => {
+          const total = factories.reduce((sum, factory) => sum + Number(cells[factory]?.total || 0), 0);
+          if (!total) return "";
+          return `<tr>
+            <th>${escapeHtml(category)}</th>
+            ${factories.map((factory) => {
+              const cell = cells[factory] || {};
+              const value = Number(cell.total || 0);
+              const weekend = Number(cell.weekend || 0);
+              return `<td>${value ? `${value}명<br><small>(${weekend || "-"})</small>` : "-"}</td>`;
+            }).join("")}
+            <td><strong>${total}명</strong></td>
+          </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
 async function renderSlides() {
-  const preview = await api("/api/report/preview");
+  ensureReportWorkspace();
+  const preview = await api("/api/report/workspace");
+  const draft = preview.report_draft || {};
+  $("reportRunText").textContent = draft.run_id ? `${draft.run_id} · ${draft.message}` : draft.message || "회신자료 import 기준";
+  $("reportStatus").className = `report-status ${draft.ready ? "ready" : "blocked"}`;
+  $("reportStatus").innerHTML = `
+    <strong>${draft.ready ? "PPT 작성 가능" : "PPT 잠금 전 검토 필요"}</strong>
+    <span>${escapeHtml(preview.primary_goal || "보고자료 PPT 1~3페이지 완성")}</span>
+    <em>후보 ${draft.counts?.input_candidates ?? 0}건 -> 보고 반영 ${draft.counts?.report_rows ?? 0}건 / 제외 ${draft.counts?.excluded_rows ?? 0}건</em>
+  `;
+  renderReportKpis(draft);
+  renderReportCategoryTable(draft);
+  renderReportExceptions(draft);
+  renderReportMatrix(draft);
   $("slideCards").innerHTML = preview.slides.map((slide) => `
     <article class="slide-card">
       <h3>${slide.slide}p · ${slide.title}</h3>
@@ -592,6 +713,7 @@ async function loadBootstrap() {
   renderSubmissionSelect(state.bootstrap.submissions);
   renderEntryRows();
   await renderSlides();
+  switchView("ppt");
   await loadApprovalPreview();
   await loadImportLatest();
 }

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import socket
 import urllib.error
 import urllib.request
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -23,7 +25,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.2.5"
+APP_VERSION = "0.3.0"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -39,6 +41,42 @@ IMPORT_RUN_DIR = Path(os.environ.get("CONSOLIDATE_IMPORT_RUN_DIR", str(OUTPUT_RO
 HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta")
+REPORT_CATEGORIES = [
+    "유지보수",
+    "생산 돌대응",
+    "납품용기/제품관리",
+    "개발/공정개선",
+    "고객사 납품대응",
+    "행정업무",
+    "설비/시설 청소",
+    "생산지원",
+    "기타",
+]
+REPORT_FACTORY_ORDER = [
+    "D1공장",
+    "D2공장",
+    "D3공장",
+    "P1공장",
+    "P2공장",
+    "P3공장",
+    "P4공장",
+    "일강1공장",
+    "일강2공장",
+    "더원공장",
+    "제이엠공장",
+    "경영지원",
+    "영업",
+    "구매",
+    "생기",
+]
+REPORT_BASELINES = {
+    "2026-05-W5": {
+        "total_headcount": 188,
+        "weekend_headcount": 95,
+        "reference_headcount": 93,
+    }
+}
+BLANK_IMPORT_VALUES = {"", "N/A", "NA", "None", "none", "null", "-", "미기재"}
 
 HR_ENTITY_RULES = {
     "daeseung": {"label": "대승", "binum": "1", "factories": ["D1공장", "D2공장", "D3공장"]},
@@ -709,6 +747,279 @@ def build_approval_body(submission: Submission, period: Period) -> str:
 """.strip()
 
 
+def clean_import_value(value) -> str:
+    text = str(value or "").strip()
+    return "" if text in BLANK_IMPORT_VALUES else text
+
+
+def import_number(value) -> float | None:
+    text = clean_import_value(value).replace(",", "")
+    if not text:
+        return None
+    try:
+        number = float(text)
+    except ValueError:
+        return None
+    return number if number >= 0 else None
+
+
+def import_headcount(value) -> int | None:
+    number = import_number(value)
+    if number is None:
+        return None
+    return int(round(number))
+
+
+def evidence_by_id(run: dict) -> dict[str, dict]:
+    return {item.get("source_id", ""): item for item in run.get("evidence_items", [])}
+
+
+def candidate_evidence_ids(row: dict) -> list[str]:
+    ids: list[str] = []
+    ids.extend(re.findall(r"\b(?:xlsx|xls|pdf|pptx)-\d+-\d+\b", str(row.get("evidence") or "")))
+    if row.get("source_id"):
+        ids.append(str(row["source_id"]))
+    ids.extend(str(item) for item in row.get("source_ids") or [])
+    return list(dict.fromkeys(ids))
+
+
+def choose_candidate_evidence(row: dict, index: dict[str, dict]) -> dict:
+    explicit_ids = re.findall(r"\b(?:xlsx|xls|pdf|pptx)-\d+-\d+\b", str(row.get("evidence") or ""))
+    for source_id in explicit_ids:
+        if source_id in index:
+            return index[source_id]
+
+    candidates = [index[source_id] for source_id in candidate_evidence_ids(row) if source_id in index]
+    tokens = [
+        token
+        for token in (clean_import_value(row.get("name")), clean_import_value(row.get("detail")))
+        if len(token) >= 2 and token not in {"LINE 관리", "생산 관리"}
+    ]
+    for item in candidates:
+        text = str(item.get("text") or "")
+        if any(token in text for token in tokens):
+            return item
+
+    ai_factory = clean_import_value(row.get("source_factory"))
+    for item in candidates:
+        evidence_factory = clean_import_value(item.get("factory_guess") or item.get("source_folder"))
+        if evidence_factory == ai_factory:
+            return item
+    return candidates[0] if candidates else {}
+
+
+def import_noise_reason(row: dict, evidence: dict | None = None) -> str:
+    text = " ".join(
+        clean_import_value(value)
+        for value in (
+            row.get("source_sheet_or_page"),
+            row.get("evidence"),
+            row.get("needs_review_reason"),
+            evidence.get("text") if evidence else "",
+        )
+    )
+    detail = clean_import_value(row.get("detail") or row.get("category_guess"))
+    headcount = import_headcount(row.get("headcount"))
+    hours = import_number(row.get("hours"))
+    has_person = bool(clean_import_value(row.get("name")))
+    line_plan = any(token.lower() in text.lower() for token in ("M/H", "man-hours", "라인근무계획", "수급사 및 라인근무계획"))
+    if hours is not None and hours > 24 and (headcount is None or line_plan):
+        return "M/H 또는 라인계획 집계값"
+    if line_plan and headcount is None and not has_person and len(detail) <= 10:
+        return "라인계획 보조값"
+    if not detail:
+        return "세부내용 없음"
+    return ""
+
+
+def report_category_for(row: dict) -> str:
+    text = " ".join(clean_import_value(row.get(key)) for key in ("team", "detail", "category_guess", "job_group"))
+    rules = [
+        ("유지보수", ("유지", "보수", "보전", "설비점검", "예방보전", "교체", "수리")),
+        ("생산 돌대응", ("돌발", "트러블", "긴급", "복구", "라인대응", "생산대응")),
+        ("고객사 납품대응", ("고객사", "납품대응", "납품", "출하", "상차", "포장", "창고", "물류")),
+        ("납품용기/제품관리", ("납품용기", "제품", "재고", "선별", "검사", "재고조사", "제품관리")),
+        ("개발/공정개선", ("개발", "공정", "개선", "정도", "LAY-OUT", "OP", "TAP", "BURR")),
+        ("행정업무", ("행정", "총무", "인사", "문서", "자료")),
+        ("설비/시설 청소", ("청소", "정리", "이형제", "5S", "시설")),
+        ("생산지원", ("생산지원", "라인 지원", "가공 생산지원")),
+    ]
+    for category, tokens in rules:
+        if any(token.lower() in text.lower() for token in tokens):
+            return category
+    return "기타"
+
+
+def import_report_rows(run: dict, period: Period) -> tuple[list[dict], list[dict], list[dict]]:
+    index = evidence_by_id(run)
+    rows: list[dict] = []
+    exclusions: list[dict] = []
+    exceptions: list[dict] = []
+    seen: set[tuple] = set()
+
+    for raw in run.get("ai", {}).get("candidate_rows", []) + run.get("local_candidate_rows", []):
+        evidence = choose_candidate_evidence(raw, index)
+        source_id = evidence.get("source_id") or (candidate_evidence_ids(raw) or [""])[0]
+        factory = clean_import_value(evidence.get("factory_guess") or evidence.get("source_folder") or raw.get("source_factory"))
+        date = clean_import_value(raw.get("date"))
+        name = clean_import_value(raw.get("name"))
+        team = clean_import_value(raw.get("team"))
+        detail = clean_import_value(raw.get("detail") or raw.get("category_guess"))
+        headcount = import_headcount(raw.get("headcount"))
+        hours = import_number(raw.get("hours"))
+        if headcount is None and name:
+            headcount = 1
+        noise = import_noise_reason(raw, evidence)
+        key = (date, factory, team, name, headcount, hours, detail, source_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        base_row = {
+            "source_id": source_id,
+            "source_file": evidence.get("source_file") or raw.get("source_file") or "",
+            "source_sheet_or_page": evidence.get("source_sheet_or_page") or raw.get("source_sheet_or_page") or "",
+            "factory": factory,
+            "date": date,
+            "team": team,
+            "name": name,
+            "headcount": headcount,
+            "hours": hours,
+            "detail": detail,
+            "confidence": clean_import_value(raw.get("confidence")) or "Low",
+            "category": report_category_for(raw),
+        }
+        missing = []
+        if date not in period.weekend_dates + period.reference_dates:
+            missing.append("일자")
+        if not factory:
+            missing.append("공장")
+        if not detail:
+            missing.append("세부내용")
+        if not headcount:
+            missing.append("인원")
+        if noise:
+            exclusions.append({**base_row, "reason": noise})
+            continue
+        if missing:
+            exceptions.append({**base_row, "severity": "high", "reason": f"필수값 누락: {', '.join(missing)}"})
+            continue
+        rows.append(base_row)
+
+    return rows, exclusions, exceptions
+
+
+def summarize_report_rows(rows: list[dict], period: Period) -> dict:
+    by_date: defaultdict[str, int] = defaultdict(int)
+    by_category: defaultdict[str, int] = defaultdict(int)
+    by_factory: defaultdict[str, int] = defaultdict(int)
+    matrix: dict[str, dict[str, dict[str, int]]] = {
+        category: {factory: {"total": 0, "weekend": 0} for factory in REPORT_FACTORY_ORDER}
+        for category in REPORT_CATEGORIES
+    }
+    extra_factories: list[str] = []
+
+    for row in rows:
+        count = int(row.get("headcount") or 0)
+        date = row.get("date") or ""
+        category = row.get("category") if row.get("category") in REPORT_CATEGORIES else "기타"
+        factory = row.get("factory") or "미확인"
+        if factory not in REPORT_FACTORY_ORDER and factory not in extra_factories:
+            extra_factories.append(factory)
+            for category_map in matrix.values():
+                category_map[factory] = {"total": 0, "weekend": 0}
+        by_date[date] += count
+        by_category[category] += count
+        by_factory[factory] += count
+        matrix[category][factory]["total"] += count
+        if date in period.weekend_dates:
+            matrix[category][factory]["weekend"] += count
+
+    total = sum(by_date.values())
+    weekend = sum(value for date, value in by_date.items() if date in period.weekend_dates)
+    reference = sum(value for date, value in by_date.items() if date in period.reference_dates)
+    return {
+        "total_headcount": total,
+        "weekend_headcount": weekend,
+        "reference_headcount": reference,
+        "by_date": dict(sorted(by_date.items())),
+        "by_category": {category: by_category.get(category, 0) for category in REPORT_CATEGORIES},
+        "by_factory": dict(sorted(by_factory.items(), key=lambda item: (-item[1], item[0]))),
+        "factory_order": [*REPORT_FACTORY_ORDER, *extra_factories],
+        "matrix": matrix,
+    }
+
+
+def report_exceptions(run: dict, period: Period, rows: list[dict], exclusions: list[dict], row_exceptions: list[dict], summary: dict) -> list[dict]:
+    exceptions = list(row_exceptions)
+    baseline = REPORT_BASELINES.get(period.id, {})
+    for key, label in (
+        ("total_headcount", "전체 특근인원"),
+        ("weekend_headcount", "주말 특근현황"),
+        ("reference_headcount", "6/3 포함 참고"),
+    ):
+        expected = baseline.get(key)
+        actual = summary.get(key)
+        if expected is not None and expected != actual:
+            exceptions.insert(0, {"severity": "high", "reason": f"{label} 기준 불일치: 기준 {expected}명 / 현재 초안 {actual}명"})
+
+    if exclusions:
+        exceptions.append({"severity": "medium", "reason": f"집계 제외 후보 {len(exclusions)}건: M/H, 라인계획, 세부내용 없음 등"})
+    for error in run.get("ai", {}).get("errors", []):
+        source_ids = ", ".join(str(item) for item in error.get("source_ids") or [])
+        exceptions.append({"severity": "high", "reason": f"AI 미처리 원천 {source_ids}: {error.get('detail', '')}"})
+
+    people: defaultdict[str, set[str]] = defaultdict(set)
+    for row in rows:
+        name = clean_import_value(row.get("name"))
+        if name and "외" not in name:
+            people[name].add(row.get("factory") or "")
+    for name, factories in sorted(people.items()):
+        if len(factories) > 1:
+            exceptions.append({"severity": "medium", "reason": f"동명이인/공장충돌 가능: {name} -> {', '.join(sorted(factories))}"})
+    return exceptions[:80]
+
+
+def build_ppt_report_workspace(period: Period) -> dict:
+    try:
+        run = load_latest(IMPORT_RUN_DIR)
+    except FileNotFoundError:
+        empty_summary = summarize_report_rows([], period)
+        return {
+            "source": "seed_state",
+            "ready": False,
+            "message": f"import run not found: {IMPORT_RUN_DIR}",
+            "rows": [],
+            "exclusions": [],
+            "exceptions": [{"severity": "high", "reason": "회신자료 import 결과가 없어 PPT 자동 산출을 시작할 수 없음"}],
+            "summary": empty_summary,
+            "baseline": REPORT_BASELINES.get(period.id, {}),
+            "counts": {"input_candidates": 0, "report_rows": 0, "excluded_rows": 0, "exception_count": 1, "blocking_count": 1},
+        }
+
+    rows, exclusions, row_exceptions = import_report_rows(run, period)
+    summary = summarize_report_rows(rows, period)
+    exceptions = report_exceptions(run, period, rows, exclusions, row_exceptions, summary)
+    blocking = [item for item in exceptions if item.get("severity") == "high"]
+    return {
+        "source": "latest_import",
+        "ready": not blocking,
+        "message": "PPT 1~3페이지 산출 가능" if not blocking else "PPT 잠금 전 예외 확인 필요",
+        "run_id": run.get("run_id"),
+        "rows": rows,
+        "exclusions": exclusions[:30],
+        "exceptions": exceptions,
+        "summary": summary,
+        "baseline": REPORT_BASELINES.get(period.id, {}),
+        "counts": {
+            "input_candidates": len(run.get("ai", {}).get("candidate_rows", [])) + len(run.get("local_candidate_rows", [])),
+            "report_rows": len(rows),
+            "excluded_rows": len(exclusions),
+            "exception_count": len(exceptions),
+            "blocking_count": len(blocking),
+        },
+    }
+
+
 app = FastAPI(title="특근 보고 취합 WEB", version=APP_VERSION)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -724,13 +1035,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching", "ppt_report_workspace"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching", "ppt_report_workspace"]}
 
 
 @app.get("/api/bootstrap")
@@ -986,6 +1297,52 @@ def report_preview() -> dict:
                 "title": "표지",
                 "items": [
                     {"label": "보고명", "value": f"비생산부문 주말 특근현황 보고 [ {period.label.replace('2026년 ', '')} ]"},
+                    {"label": "기준기간", "value": f"{period.start_date} ~ {period.end_date}"},
+                    {"label": "작성부서", "value": "경영기획본부"},
+                ],
+            },
+            {
+                "slide": 2,
+                "title": "비생산부문 주말 특근 종합현황",
+                "items": [
+                    {"label": "전체 특근인원", "value": summary["total_headcount"]},
+                    {"label": "주말 특근현황", "value": summary["weekend_headcount"]},
+                    {"label": "6/3 포함 참고", "value": summary["reference_headcount"]},
+                    *date_items,
+                    *category_items[:10],
+                ],
+            },
+            {
+                "slide": 3,
+                "title": "공장별 비생산부문 특근업무 세부",
+                "items": [
+                    *factory_items,
+                    *category_items[:10],
+                ],
+            },
+        ],
+    }
+
+
+@app.get("/api/report/workspace")
+def report_workspace() -> dict:
+    state = load_state()
+    period = state.periods[0]
+    report = build_ppt_report_workspace(period)
+    summary = report["summary"]
+    date_items = [{"label": date, "value": value} for date, value in sorted(summary["by_date"].items())]
+    category_items = [{"label": key, "value": value} for key, value in summary["by_category"].items() if value]
+    factory_items = [{"label": key, "value": value} for key, value in summary["by_factory"].items()]
+    return {
+        "period": period.model_dump(),
+        "primary_goal": "보고자료 PPT 1~3페이지 완성",
+        "report_draft": report,
+        "slides": [
+            {
+                "slide": 1,
+                "title": "표지",
+                "items": [
+                    {"label": "보고명", "value": f"비생산부문 주말 특근현황 보고 [ {period.label} ]"},
                     {"label": "기준기간", "value": f"{period.start_date} ~ {period.end_date}"},
                     {"label": "작성부서", "value": "경영기획본부"},
                 ],
