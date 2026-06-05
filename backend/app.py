@@ -23,7 +23,7 @@ except ImportError:  # pragma: no cover - dependency is optional until HR lookup
     pymysql = None
 
 
-APP_VERSION = "0.2.2"
+APP_VERSION = "0.2.3"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -724,13 +724,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace"],
+        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate"],
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate"]}
 
 
 @app.get("/api/bootstrap")

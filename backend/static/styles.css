@@ -249,7 +249,7 @@ p {
 
 .review-toolbar {
   display: grid;
-  grid-template-columns: 170px 190px minmax(260px, 1fr) auto;
+  grid-template-columns: 150px 170px 190px minmax(260px, 1fr) auto;
   gap: 10px;
   align-items: end;
   border: 1px solid var(--line);
@@ -277,6 +277,11 @@ p {
 
 .import-row.bad td {
   background: #fff5f5;
+}
+
+.import-row.noise td {
+  background: #f7f8fa;
+  color: #4b5563;
 }
 
 .import-row select,
@@ -312,6 +317,16 @@ p {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
+}
+
+.mini-warn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: var(--warn);
+  font-size: 11px;
 }
 
 .bars {
