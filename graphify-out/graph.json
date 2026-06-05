@@ -18,7 +18,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1",
       "id": "backend_app_py",
-      "community": 2,
+      "community": 0,
       "norm_label": "app.py"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L93",
       "id": "backend_app_period",
-      "community": 7,
+      "community": 8,
       "norm_label": "period"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "",
       "source_location": "",
       "id": "basemodel",
-      "community": 7,
+      "community": 8,
       "norm_label": "basemodel"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L103",
       "id": "backend_app_legalentity",
-      "community": 7,
+      "community": 8,
       "norm_label": "legalentity"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L113",
       "id": "backend_app_overtimerow",
-      "community": 7,
+      "community": 8,
       "norm_label": "overtimerow"
     },
     {
@@ -63,7 +63,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L134",
       "id": "backend_app_submission",
-      "community": 7,
+      "community": 8,
       "norm_label": "submission"
     },
     {
@@ -72,7 +72,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L148",
       "id": "backend_app_submissioncreate",
-      "community": 7,
+      "community": 8,
       "norm_label": "submissioncreate"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L156",
       "id": "backend_app_state",
-      "community": 7,
+      "community": 8,
       "norm_label": "state"
     },
     {
@@ -90,7 +90,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L162",
       "id": "backend_app_hremployeecandidate",
-      "community": 11,
+      "community": 0,
       "norm_label": "hremployeecandidate"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L183",
       "id": "backend_app_geminievidenceitem",
-      "community": 12,
+      "community": 10,
       "norm_label": "geminievidenceitem"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L191",
       "id": "backend_app_geminievidenceanalyzerequest",
-      "community": 12,
+      "community": 10,
       "norm_label": "geminievidenceanalyzerequest"
     },
     {
@@ -117,7 +117,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L198",
       "id": "backend_app_replyimportrunrequest",
-      "community": 7,
+      "community": 8,
       "norm_label": "replyimportrunrequest"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L206",
       "id": "backend_app_now",
-      "community": 6,
+      "community": 7,
       "norm_label": "_now()"
     },
     {
@@ -135,7 +135,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L210",
       "id": "backend_app_seed_state",
-      "community": 7,
+      "community": 8,
       "norm_label": "_seed_state()"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L248",
       "id": "backend_app_load_state",
-      "community": 6,
+      "community": 7,
       "norm_label": "load_state()"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L259",
       "id": "backend_app_save_state",
-      "community": 6,
+      "community": 7,
       "norm_label": "save_state()"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L264",
       "id": "backend_app_apply_master_updates",
-      "community": 7,
+      "community": 8,
       "norm_label": "apply_master_updates()"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L279",
       "id": "backend_app_all_rows",
-      "community": 6,
+      "community": 7,
       "norm_label": "all_rows()"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L286",
       "id": "backend_app_summarize",
-      "community": 6,
+      "community": 7,
       "norm_label": "summarize()"
     },
     {
@@ -189,7 +189,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L312",
       "id": "backend_app_split_counts",
-      "community": 2,
+      "community": 15,
       "norm_label": "split_counts()"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L319",
       "id": "backend_app_hr_db_configured",
-      "community": 13,
+      "community": 11,
       "norm_label": "hr_db_configured()"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L324",
       "id": "backend_app_gemini_configured",
-      "community": 13,
+      "community": 11,
       "norm_label": "gemini_configured()"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L328",
       "id": "backend_app_gemini_key_status",
-      "community": 13,
+      "community": 11,
       "norm_label": "gemini_key_status()"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L343",
       "id": "backend_app_gemini_analysis_schema",
-      "community": 12,
+      "community": 10,
       "norm_label": "gemini_analysis_schema()"
     },
     {
@@ -234,7 +234,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L389",
       "id": "backend_app_build_gemini_prompt",
-      "community": 12,
+      "community": 10,
       "norm_label": "build_gemini_prompt()"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L430",
       "id": "backend_app_call_gemini_json",
-      "community": 12,
+      "community": 10,
       "norm_label": "call_gemini_json()"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L482",
       "id": "backend_app_selected_ai_evidence",
-      "community": 12,
+      "community": 10,
       "norm_label": "selected_ai_evidence()"
     },
     {
@@ -261,7 +261,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L497",
       "id": "backend_app_run_gemini_import_batches",
-      "community": 12,
+      "community": 10,
       "norm_label": "run_gemini_import_batches()"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L565",
       "id": "backend_app_hr_connection",
-      "community": 13,
+      "community": 11,
       "norm_label": "hr_connection()"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L583",
       "id": "backend_app_production_department",
-      "community": 11,
+      "community": 0,
       "norm_label": "production_department()"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L590",
       "id": "backend_app_classify_hr_employee",
-      "community": 11,
+      "community": 0,
       "norm_label": "classify_hr_employee()"
     },
     {
@@ -297,7 +297,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L604",
       "id": "backend_app_entity_code_from_hr",
-      "community": 11,
+      "community": 0,
       "norm_label": "entity_code_from_hr()"
     },
     {
@@ -306,7 +306,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L619",
       "id": "backend_app_display_factory_from_hr",
-      "community": 11,
+      "community": 0,
       "norm_label": "display_factory_from_hr()"
     },
     {
@@ -315,7 +315,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L627",
       "id": "backend_app_hr_candidate_from_row",
-      "community": 11,
+      "community": 0,
       "norm_label": "hr_candidate_from_row()"
     },
     {
@@ -324,7 +324,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L653",
       "id": "backend_app_add_entity_filters",
-      "community": 11,
+      "community": 0,
       "norm_label": "add_entity_filters()"
     },
     {
@@ -333,7 +333,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L675",
       "id": "backend_app_choose_template",
-      "community": 2,
+      "community": 0,
       "norm_label": "choose_template()"
     },
     {
@@ -342,7 +342,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L688",
       "id": "backend_app_copy_template_output",
-      "community": 2,
+      "community": 0,
       "norm_label": "copy_template_output()"
     },
     {
@@ -351,7 +351,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L702",
       "id": "backend_app_build_approval_title",
-      "community": 2,
+      "community": 15,
       "norm_label": "build_approval_title()"
     },
     {
@@ -360,7 +360,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L706",
       "id": "backend_app_build_approval_body",
-      "community": 2,
+      "community": 15,
       "norm_label": "build_approval_body()"
     },
     {
@@ -450,7 +450,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L911",
       "id": "backend_app_summarize_report_rows",
-      "community": 2,
+      "community": 0,
       "norm_label": "summarize_report_rows()"
     },
     {
@@ -459,7 +459,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L952",
       "id": "backend_app_report_exceptions",
-      "community": 2,
+      "community": 0,
       "norm_label": "report_exceptions()"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L982",
       "id": "backend_app_build_ppt_report_workspace",
-      "community": 2,
+      "community": 0,
       "norm_label": "build_ppt_report_workspace()"
     },
     {
@@ -477,7 +477,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1028",
       "id": "backend_app_index",
-      "community": 2,
+      "community": 0,
       "norm_label": "index()"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1033",
       "id": "backend_app_health",
-      "community": 2,
+      "community": 0,
       "norm_label": "health()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1043",
       "id": "backend_app_version",
-      "community": 2,
+      "community": 0,
       "norm_label": "version()"
     },
     {
@@ -504,7 +504,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1048",
       "id": "backend_app_bootstrap",
-      "community": 6,
+      "community": 7,
       "norm_label": "bootstrap()"
     },
     {
@@ -513,7 +513,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1061",
       "id": "backend_app_config",
-      "community": 13,
+      "community": 11,
       "norm_label": "config()"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1097",
       "id": "backend_app_gemini_status",
-      "community": 13,
+      "community": 11,
       "norm_label": "gemini_status()"
     },
     {
@@ -531,7 +531,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1110",
       "id": "backend_app_analyze_evidence_with_gemini",
-      "community": 12,
+      "community": 10,
       "norm_label": "analyze_evidence_with_gemini()"
     },
     {
@@ -540,7 +540,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1123",
       "id": "backend_app_import_latest",
-      "community": 2,
+      "community": 0,
       "norm_label": "import_latest()"
     },
     {
@@ -549,7 +549,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1136",
       "id": "backend_app_import_run",
-      "community": 0,
+      "community": 1,
       "norm_label": "import_run()"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1150",
       "id": "backend_app_hr_status",
-      "community": 13,
+      "community": 11,
       "norm_label": "hr_status()"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1161",
       "id": "backend_app_search_hr_employees",
-      "community": 11,
+      "community": 0,
       "norm_label": "search_hr_employees()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1238",
       "id": "backend_app_templates",
-      "community": 2,
+      "community": 0,
       "norm_label": "templates()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1250",
       "id": "backend_app_dashboard",
-      "community": 6,
+      "community": 7,
       "norm_label": "dashboard()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1257",
       "id": "backend_app_submissions",
-      "community": 6,
+      "community": 7,
       "norm_label": "submissions()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1262",
       "id": "backend_app_create_submission",
-      "community": 6,
+      "community": 7,
       "norm_label": "create_submission()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1282",
       "id": "backend_app_report_preview",
-      "community": 6,
+      "community": 7,
       "norm_label": "report_preview()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1328",
       "id": "backend_app_report_workspace",
-      "community": 2,
+      "community": 0,
       "norm_label": "report_workspace()"
     },
     {
@@ -630,7 +630,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1374",
       "id": "backend_app_export_excel_stub",
-      "community": 2,
+      "community": 0,
       "norm_label": "export_excel_stub()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1379",
       "id": "backend_app_export_ppt_stub",
-      "community": 2,
+      "community": 0,
       "norm_label": "export_ppt_stub()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1384",
       "id": "backend_app_approval_preview",
-      "community": 2,
+      "community": 15,
       "norm_label": "approval_preview()"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "backend\\app.py",
       "source_location": "L1401",
       "id": "backend_app_fill_approval_draft_stub",
-      "community": 6,
+      "community": 7,
       "norm_label": "fill_approval_draft_stub()"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L1",
       "id": "backend_reply_import_py",
-      "community": 0,
+      "community": 1,
       "norm_label": "reply_import.py"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L73",
       "id": "backend_reply_import_now_id",
-      "community": 0,
+      "community": 1,
       "norm_label": "now_id()"
     },
     {
@@ -684,7 +684,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L77",
       "id": "backend_reply_import_norm",
-      "community": 0,
+      "community": 1,
       "norm_label": "norm()"
     },
     {
@@ -693,7 +693,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L90",
       "id": "backend_reply_import_rel",
-      "community": 0,
+      "community": 1,
       "norm_label": "rel()"
     },
     {
@@ -702,7 +702,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L97",
       "id": "backend_reply_import_row_to_text",
-      "community": 0,
+      "community": 1,
       "norm_label": "row_to_text()"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L101",
       "id": "backend_reply_import_contains_any",
-      "community": 0,
+      "community": 1,
       "norm_label": "contains_any()"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L106",
       "id": "backend_reply_import_hits",
-      "community": 0,
+      "community": 1,
       "norm_label": "hits()"
     },
     {
@@ -729,7 +729,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L111",
       "id": "backend_reply_import_role_guess",
-      "community": 0,
+      "community": 1,
       "norm_label": "role_guess()"
     },
     {
@@ -738,7 +738,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L129",
       "id": "backend_reply_import_extract_factory",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_factory()"
     },
     {
@@ -747,7 +747,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L139",
       "id": "backend_reply_import_extract_date",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_date()"
     },
     {
@@ -756,7 +756,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L164",
       "id": "backend_reply_import_guess_category",
-      "community": 0,
+      "community": 1,
       "norm_label": "guess_category()"
     },
     {
@@ -765,7 +765,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L171",
       "id": "backend_reply_import_normalize_job_group",
-      "community": 0,
+      "community": 1,
       "norm_label": "normalize_job_group()"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L181",
       "id": "backend_reply_import_import_dependency_status",
-      "community": 0,
+      "community": 1,
       "norm_label": "import_dependency_status()"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L192",
       "id": "backend_reply_import_file_inventory",
-      "community": 0,
+      "community": 1,
       "norm_label": "file_inventory()"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L212",
       "id": "backend_reply_import_build_evidence",
-      "community": 0,
+      "community": 1,
       "norm_label": "build_evidence()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L232",
       "id": "backend_reply_import_extract_xlsx",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_xlsx()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L287",
       "id": "backend_reply_import_extract_pdf",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_pdf()"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L316",
       "id": "backend_reply_import_extract_pptx",
-      "community": 0,
+      "community": 1,
       "norm_label": "extract_pptx()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L353",
       "id": "backend_reply_import_local_candidates_from_evidence",
-      "community": 0,
+      "community": 1,
       "norm_label": "local_candidates_from_evidence()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L412",
       "id": "backend_reply_import_run_reply_import",
-      "community": 0,
+      "community": 1,
       "norm_label": "run_reply_import()"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L491",
       "id": "backend_reply_import_save_run",
-      "community": 0,
+      "community": 1,
       "norm_label": "save_run()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "backend\\reply_import.py",
       "source_location": "L501",
       "id": "backend_reply_import_load_latest",
-      "community": 2,
+      "community": 0,
       "norm_label": "load_latest()"
     },
     {
@@ -891,7 +891,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L12",
       "id": "static_app",
-      "community": 8,
+      "community": 6,
       "norm_label": "$()"
     },
     {
@@ -900,7 +900,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L17",
       "id": "static_app_escapehtml",
-      "community": 14,
+      "community": 12,
       "norm_label": "escapehtml()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L92",
       "id": "static_app_renderentities",
-      "community": 10,
+      "community": 6,
       "norm_label": "renderentities()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L105",
       "id": "static_app_fmtimportcounts",
-      "community": 14,
+      "community": 12,
       "norm_label": "fmtimportcounts()"
     },
     {
@@ -1152,7 +1152,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L303",
       "id": "static_app_countimportrows",
-      "community": 14,
+      "community": 12,
       "norm_label": "countimportrows()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L314",
       "id": "static_app_renderimporttoolbar",
-      "community": 14,
+      "community": 12,
       "norm_label": "renderimporttoolbar()"
     },
     {
@@ -1206,7 +1206,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L435",
       "id": "static_app_renderimportrun",
-      "community": 14,
+      "community": 12,
       "norm_label": "renderimportrun()"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L468",
       "id": "static_app_loadimportlatest",
-      "community": 14,
+      "community": 12,
       "norm_label": "loadimportlatest()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L479",
       "id": "static_app_runimport",
-      "community": 14,
+      "community": 12,
       "norm_label": "runimport()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L493",
       "id": "static_app_updatefactoryoptions",
-      "community": 10,
+      "community": 6,
       "norm_label": "updatefactoryoptions()"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L530",
       "id": "static_app_renderentryrows",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderentryrows()"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L544",
       "id": "static_app_ensurereportworkspace",
-      "community": 8,
+      "community": 6,
       "norm_label": "ensurereportworkspace()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L578",
       "id": "static_app_renderreportkpis",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderreportkpis()"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L596",
       "id": "static_app_renderreportcategorytable",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderreportcategorytable()"
     },
     {
@@ -1314,7 +1314,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L610",
       "id": "static_app_renderreportexceptions",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderreportexceptions()"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L620",
       "id": "static_app_renderreportmatrix",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderreportmatrix()"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L652",
       "id": "static_app_renderslides",
-      "community": 8,
+      "community": 6,
       "norm_label": "renderslides()"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L721",
       "id": "static_app_addentryrow",
-      "community": 8,
+      "community": 6,
       "norm_label": "addentryrow()"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L735",
       "id": "static_app_selectedentryrow",
-      "community": 10,
+      "community": 13,
       "norm_label": "selectedentryrow()"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L740",
       "id": "static_app_selectentryrow",
-      "community": 8,
+      "community": 6,
       "norm_label": "selectentryrow()"
     },
     {
@@ -1404,7 +1404,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L750",
       "id": "static_app_setlookupstate",
-      "community": 10,
+      "community": 13,
       "norm_label": "setlookupstate()"
     },
     {
@@ -1413,7 +1413,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L755",
       "id": "static_app_candidatelabel",
-      "community": 10,
+      "community": 13,
       "norm_label": "candidatelabel()"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L760",
       "id": "static_app_renderemployeeresults",
-      "community": 10,
+      "community": 13,
       "norm_label": "renderemployeeresults()"
     },
     {
@@ -1431,7 +1431,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L775",
       "id": "static_app_applyemployeetorow",
-      "community": 10,
+      "community": 13,
       "norm_label": "applyemployeetorow()"
     },
     {
@@ -1440,7 +1440,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L786",
       "id": "static_app_searchemployees",
-      "community": 10,
+      "community": 13,
       "norm_label": "searchemployees()"
     },
     {
@@ -1449,7 +1449,7 @@
       "source_file": "backend\\static\\app.js",
       "source_location": "L820",
       "id": "static_app_applyselectedcandidate",
-      "community": 10,
+      "community": 13,
       "norm_label": "applyselectedcandidate()"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L1",
       "id": "tools_hr_db_probe_py",
-      "community": 15,
+      "community": 14,
       "norm_label": "hr_db_probe.py"
     },
     {
@@ -1548,7 +1548,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L14",
       "id": "tools_hr_db_probe_connect",
-      "community": 15,
+      "community": 14,
       "norm_label": "_connect()"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L28",
       "id": "tools_hr_db_probe_fetchall",
-      "community": 15,
+      "community": 14,
       "norm_label": "_fetchall()"
     },
     {
@@ -1566,7 +1566,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L33",
       "id": "tools_hr_db_probe_fetchone",
-      "community": 15,
+      "community": 14,
       "norm_label": "_fetchone()"
     },
     {
@@ -1575,7 +1575,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L38",
       "id": "tools_hr_db_probe_mask_name",
-      "community": 15,
+      "community": 14,
       "norm_label": "_mask_name()"
     },
     {
@@ -1584,7 +1584,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L46",
       "id": "tools_hr_db_probe_candidate_columns",
-      "community": 15,
+      "community": 14,
       "norm_label": "_candidate_columns()"
     },
     {
@@ -1593,7 +1593,7 @@
       "source_file": "tools\\hr_db_probe.py",
       "source_location": "L73",
       "id": "tools_hr_db_probe_main",
-      "community": 15,
+      "community": 14,
       "norm_label": "main()"
     },
     {
@@ -1602,7 +1602,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L1",
       "id": "tools_run_reply_import_py",
-      "community": 1,
+      "community": 2,
       "norm_label": "run_reply_import.py"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L19",
       "id": "tools_run_reply_import_parse_args",
-      "community": 1,
+      "community": 2,
       "norm_label": "parse_args()"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L42",
       "id": "tools_run_reply_import_progress",
-      "community": 1,
+      "community": 2,
       "norm_label": "progress()"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L48",
       "id": "tools_run_reply_import_count_by",
-      "community": 1,
+      "community": 2,
       "norm_label": "count_by()"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L56",
       "id": "tools_run_reply_import_source_sort_key",
-      "community": 1,
+      "community": 2,
       "norm_label": "source_sort_key()"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L71",
       "id": "tools_run_reply_import_sheet_relevance_penalty",
-      "community": 1,
+      "community": 2,
       "norm_label": "sheet_relevance_penalty()"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L92",
       "id": "tools_run_reply_import_evidence_rank",
-      "community": 1,
+      "community": 2,
       "norm_label": "evidence_rank()"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L103",
       "id": "tools_run_reply_import_is_auxiliary_evidence",
-      "community": 1,
+      "community": 2,
       "norm_label": "is_auxiliary_evidence()"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L123",
       "id": "tools_run_reply_import_select_ai_evidence",
-      "community": 1,
+      "community": 2,
       "norm_label": "select_ai_evidence()"
     },
     {
@@ -1683,7 +1683,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L149",
       "id": "tools_run_reply_import_normalized_category",
-      "community": 1,
+      "community": 2,
       "norm_label": "normalized_category()"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L162",
       "id": "tools_run_reply_import_normalize_candidate_row",
-      "community": 1,
+      "community": 2,
       "norm_label": "normalize_candidate_row()"
     },
     {
@@ -1701,7 +1701,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L169",
       "id": "tools_run_reply_import_post_json",
-      "community": 1,
+      "community": 2,
       "norm_label": "post_json()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L181",
       "id": "tools_run_reply_import_gemini_cache_key",
-      "community": 1,
+      "community": 2,
       "norm_label": "gemini_cache_key()"
     },
     {
@@ -1719,7 +1719,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L201",
       "id": "tools_run_reply_import_load_ai_cache",
-      "community": 1,
+      "community": 2,
       "norm_label": "load_ai_cache()"
     },
     {
@@ -1728,7 +1728,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L210",
       "id": "tools_run_reply_import_save_ai_cache",
-      "community": 1,
+      "community": 2,
       "norm_label": "save_ai_cache()"
     },
     {
@@ -1737,7 +1737,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L231",
       "id": "tools_run_reply_import_post_gemini_batch",
-      "community": 1,
+      "community": 2,
       "norm_label": "post_gemini_batch()"
     },
     {
@@ -1746,7 +1746,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L289",
       "id": "tools_run_reply_import_gemini_context",
-      "community": 1,
+      "community": 2,
       "norm_label": "gemini_context()"
     },
     {
@@ -1755,7 +1755,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L298",
       "id": "tools_run_reply_import_append_gemini_result",
-      "community": 1,
+      "community": 2,
       "norm_label": "append_gemini_result()"
     },
     {
@@ -1764,7 +1764,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L311",
       "id": "tools_run_reply_import_update_ai_summary",
-      "community": 1,
+      "community": 2,
       "norm_label": "update_ai_summary()"
     },
     {
@@ -1773,7 +1773,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L320",
       "id": "tools_run_reply_import_retry_failed_gemini_batches",
-      "community": 1,
+      "community": 2,
       "norm_label": "retry_failed_gemini_batches()"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L407",
       "id": "tools_run_reply_import_run_gemini_batches",
-      "community": 1,
+      "community": 2,
       "norm_label": "run_gemini_batches()"
     },
     {
@@ -1791,7 +1791,7 @@
       "source_file": "tools\\run_reply_import.py",
       "source_location": "L518",
       "id": "tools_run_reply_import_main",
-      "community": 1,
+      "community": 2,
       "norm_label": "main()"
     }
   ],

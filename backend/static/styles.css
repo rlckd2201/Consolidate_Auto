@@ -382,9 +382,15 @@ p {
 
 .report-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 0.8fr) minmax(360px, 1.2fr);
+  grid-template-columns: minmax(360px, 0.85fr) minmax(0, 1.15fr);
   gap: 12px;
+  align-items: start;
   margin-bottom: 12px;
+}
+
+.report-grid > section {
+  min-width: 0;
+  overflow: hidden;
 }
 
 .report-grid h3,
@@ -400,12 +406,24 @@ p {
   border-radius: 8px;
   background: #fff;
   padding: 10px;
+  min-width: 0;
 }
 
 .report-table table,
 .report-matrix table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.report-table table {
+  min-width: 0;
+}
+
+.report-table th:last-child,
+.report-table td:last-child {
+  width: 88px;
+  text-align: right;
 }
 
 .report-table th,
@@ -428,8 +446,9 @@ p {
 .exception-list {
   display: grid;
   gap: 8px;
-  max-height: 280px;
+  max-height: 270px;
   overflow: auto;
+  align-content: start;
 }
 
 .exception {
@@ -474,6 +493,7 @@ p {
 
 .report-matrix table {
   min-width: 980px;
+  table-layout: auto;
 }
 
 .mini-warn {
@@ -712,6 +732,6 @@ iframe {
   .app-shell { grid-template-columns: 1fr; }
   .sidebar { position: static; }
   .nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .split, .kpi-grid, .form-grid, .slide-grid, .approval-layout { grid-template-columns: 1fr; }
+  .split, .kpi-grid, .form-grid, .slide-grid, .approval-layout, .report-grid, .report-kpis { grid-template-columns: 1fr; }
   .topbar { align-items: flex-start; flex-direction: column; }
 }

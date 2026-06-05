@@ -55,16 +55,16 @@
 ## Communities
 
 ### Community 0 - "Community 0"
+Cohesion: 0.14
+Nodes (18): add_entity_filters(), build_ppt_report_workspace(), choose_template(), classify_hr_employee(), copy_template_output(), display_factory_from_hr(), entity_code_from_hr(), export_excel_stub() (+10 more)
+
+### Community 1 - "Community 1"
 Cohesion: 0.21
 Nodes (21): import_run(), build_evidence(), contains_any(), extract_date(), extract_factory(), extract_pdf(), extract_pptx(), extract_xlsx() (+13 more)
 
-### Community 1 - "Community 1"
+### Community 2 - "Community 2"
 Cohesion: 0.19
 Nodes (20): append_gemini_result(), count_by(), evidence_rank(), gemini_cache_key(), gemini_context(), is_auxiliary_evidence(), load_ai_cache(), main() (+12 more)
-
-### Community 2 - "Community 2"
-Cohesion: 0.17
-Nodes (14): approval_preview(), build_approval_body(), build_approval_title(), build_ppt_report_workspace(), choose_template(), copy_template_output(), export_excel_stub(), export_ppt_stub() (+6 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.21
@@ -79,44 +79,44 @@ Cohesion: 0.19
 Nodes (13): api(), exportExcel(), exportPpt(), fillDraft(), flattenRows(), fmtCount(), loadApprovalPreview(), loadBootstrap() (+5 more)
 
 ### Community 6 - "Community 6"
+Cohesion: 0.29
+Nodes (12): $(), addEntryRow(), ensureReportWorkspace(), renderEntities(), renderEntryRows(), renderReportCategoryTable(), renderReportExceptions(), renderReportKpis() (+4 more)
+
+### Community 7 - "Community 7"
 Cohesion: 0.31
 Nodes (11): all_rows(), bootstrap(), create_submission(), dashboard(), fill_approval_draft_stub(), load_state(), _now(), report_preview() (+3 more)
 
-### Community 7 - "Community 7"
+### Community 8 - "Community 8"
 Cohesion: 0.29
 Nodes (10): apply_master_updates(), LegalEntity, OvertimeRow, Period, ReplyImportRunRequest, _seed_state(), State, Submission (+2 more)
-
-### Community 8 - "Community 8"
-Cohesion: 0.36
-Nodes (10): $(), addEntryRow(), ensureReportWorkspace(), renderEntryRows(), renderReportCategoryTable(), renderReportExceptions(), renderReportKpis(), renderReportMatrix() (+2 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.44
 Nodes (9): candidate_evidence_ids(), choose_candidate_evidence(), clean_import_value(), evidence_by_id(), import_headcount(), import_noise_reason(), import_number(), import_report_rows() (+1 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.31
-Nodes (9): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), renderEntities(), searchEmployees(), selectedEntryRow(), setLookupState() (+1 more)
-
-### Community 11 - "Community 11"
-Cohesion: 0.25
-Nodes (8): add_entity_filters(), classify_hr_employee(), display_factory_from_hr(), entity_code_from_hr(), hr_candidate_from_row(), HREmployeeCandidate, production_department(), search_hr_employees()
-
-### Community 12 - "Community 12"
 Cohesion: 0.32
 Nodes (8): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), gemini_analysis_schema(), GeminiEvidenceAnalyzeRequest, GeminiEvidenceItem, run_gemini_import_batches(), selected_ai_evidence()
 
-### Community 13 - "Community 13"
+### Community 11 - "Community 11"
 Cohesion: 0.38
 Nodes (7): config(), gemini_configured(), gemini_key_status(), gemini_status(), hr_connection(), hr_db_configured(), hr_status()
 
-### Community 14 - "Community 14"
+### Community 12 - "Community 12"
 Cohesion: 0.43
 Nodes (7): countImportRows(), escapeHtml(), fmtImportCounts(), loadImportLatest(), renderImportRun(), renderImportToolbar(), runImport()
 
-### Community 15 - "Community 15"
+### Community 13 - "Community 13"
+Cohesion: 0.43
+Nodes (7): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), searchEmployees(), selectedEntryRow(), setLookupState()
+
+### Community 14 - "Community 14"
 Cohesion: 0.52
 Nodes (6): _candidate_columns(), _connect(), _fetchall(), _fetchone(), main(), _mask_name()
+
+### Community 15 - "Community 15"
+Cohesion: 0.67
+Nodes (4): approval_preview(), build_approval_body(), build_approval_title(), split_counts()
 
 ### Community 16 - "Community 16"
 Cohesion: 1.0
@@ -131,11 +131,13 @@ Nodes (1): Overtime reporting web backend.
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `import_run()` connect `Community 0` to `Community 2`, `Community 12`, `Community 13`?**
+- **Why does `import_run()` connect `Community 1` to `Community 0`, `Community 10`, `Community 11`?**
   _High betweenness centrality (0.135) - this node is a cross-community bridge._
-- **Why does `main()` connect `Community 1` to `Community 0`?**
+- **Why does `main()` connect `Community 2` to `Community 1`?**
   _High betweenness centrality (0.101) - this node is a cross-community bridge._
-- **Why does `run_reply_import()` connect `Community 0` to `Community 1`?**
+- **Why does `run_reply_import()` connect `Community 1` to `Community 2`?**
   _High betweenness centrality (0.101) - this node is a cross-community bridge._
 - **What connects `Overtime reporting web backend.` to the rest of the system?**
   _1 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 0` be split into smaller, more focused modules?**
+  _Cohesion score 0.14 - nodes in this community are weakly interconnected._
