@@ -133,6 +133,10 @@ function candidateEvidenceIds(row) {
   return [...new Set([...fromEvidence, ...sourceIds])];
 }
 
+function explicitEvidenceIds(row) {
+  return [...new Set(String(row.evidence || "").match(/\b(?:xlsx|xls|pdf|pptx)-\d+-\d+\b/g) || [])];
+}
+
 function importReviewKey(row, index) {
   const source = candidateEvidenceIds(row).join("|") || row.source_file || "unknown";
   return `importReview:${state.importRun?.run_id || "none"}:${row.row_kind || "row"}:${source}:${index}`;
@@ -217,6 +221,27 @@ function evidenceById(run) {
   return Object.fromEntries((run?.evidence_items || []).map((item) => [item.source_id, item]));
 }
 
+function chooseCandidateEvidence(row, index) {
+  const explicitId = explicitEvidenceIds(row).find((id) => index[id]);
+  if (explicitId) return index[explicitId];
+
+  const candidates = candidateEvidenceIds(row).map((id) => index[id]).filter(Boolean);
+  const tokens = [row.name, row.detail]
+    .map((value) => cleanImportValue(value))
+    .filter((value) => value.length >= 2 && !["LINE 관리", "생산 관리"].includes(value));
+  const byText = candidates.find((item) => {
+    const text = String(item.text || "");
+    return tokens.some((token) => text.includes(token));
+  });
+  if (byText) return byText;
+
+  const aiFactory = cleanImportValue(row.source_factory);
+  const byFactory = candidates.find((item) => cleanImportValue(item.factory_guess || item.source_folder) === aiFactory);
+  if (byFactory) return byFactory;
+
+  return candidates[0] || {};
+}
+
 function buildImportErrorRows(run) {
   const index = evidenceById(run);
   return (run?.ai?.errors || []).flatMap((error) => (error.source_ids || []).map((sourceId) => {
@@ -244,8 +269,8 @@ function buildImportErrorRows(run) {
 function importDisplayRows(run) {
   const index = evidenceById(run);
   const enrich = (row) => {
-    const evidenceId = candidateEvidenceIds(row)[0];
-    const evidence = index[evidenceId] || {};
+    const evidence = chooseCandidateEvidence(row, index);
+    const evidenceId = evidence.source_id || candidateEvidenceIds(row)[0];
     const aiSourceFactory = cleanImportValue(row.source_factory);
     const evidenceFactory = cleanImportValue(evidence.factory_guess || evidence.source_folder);
     const sourceFactory = evidenceFactory || aiSourceFactory;
