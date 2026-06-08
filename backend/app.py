@@ -30,7 +30,7 @@ except ImportError:  # pragma: no cover - dependency is optional until report re
     openpyxl = None
 
 
-APP_VERSION = "0.3.1"
+APP_VERSION = "0.3.2"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -59,6 +59,7 @@ APP_FEATURES = [
     "import_source_evidence_matching",
     "ppt_report_workspace",
     "report_reconciliation_workspace",
+    "import_latest_null_guard",
 ]
 REPORT_CATEGORIES = [
     "유지보수",
@@ -1339,16 +1340,31 @@ def build_ppt_report_workspace(period: Period) -> dict:
     baseline = reference_report_baseline(period)
     try:
         run = load_latest(IMPORT_RUN_DIR)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError) as exc:
         empty_summary = summarize_report_rows([], period)
         reconciliation = build_reconciliation({}, period, [], [], [], empty_summary, baseline)
         return {
             "source": "seed_state",
             "ready": False,
-            "message": f"import run not found: {IMPORT_RUN_DIR}",
+            "message": f"import run not readable: {IMPORT_RUN_DIR} ({type(exc).__name__})",
             "rows": [],
             "exclusions": [],
             "exceptions": [{"severity": "high", "reason": "회신자료 import 결과가 없어 PPT 자동 산출을 시작할 수 없음"}],
+            "summary": empty_summary,
+            "baseline": baseline,
+            "reconciliation": reconciliation,
+            "counts": {"input_candidates": 0, "report_rows": 0, "excluded_rows": 0, "exception_count": 1, "blocking_count": 1},
+        }
+    if not isinstance(run, dict):
+        empty_summary = summarize_report_rows([], period)
+        reconciliation = build_reconciliation({}, period, [], [], [], empty_summary, baseline)
+        return {
+            "source": "seed_state",
+            "ready": False,
+            "message": f"import run result not found: {IMPORT_RUN_DIR}",
+            "rows": [],
+            "exclusions": [],
+            "exceptions": [{"severity": "high", "reason": "회신자료 import 결과가 없거나 latest.json이 비어 있음"}],
             "summary": empty_summary,
             "baseline": baseline,
             "reconciliation": reconciliation,
