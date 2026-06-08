@@ -68,7 +68,61 @@ CATEGORY_RULES = (
 )
 
 JOB_GROUPS = ("관리직", "간접직", "직접직", "관리", "간접", "직접")
+LINE_SUMMARY_NAMES = {"", "주간", "야간", "계", "합계", "직접직", "간접직", "관리직"}
+STRUCTURED_REPORTABLE_TEXT = (
+    "관리",
+    "총괄",
+    "전산",
+    "ISIR",
+    "지적",
+    "집계",
+    "월마감",
+    "서류",
+    "자료",
+    "재물",
+    "지원판단",
+    "출하대응",
+    "공정관리",
+    "품질문제",
+    "개선",
+    "개조",
+    "교체",
+    "수정",
+    "점검",
+    "설비",
+    "유지보수",
+    "청소",
+    "선별",
+    "불량",
+    "반송품",
+    "포장",
+    "납품",
+    "출하",
+    "상차",
+    "불출",
+    "유류",
+)
 
+
+class SnapshotCell:
+    def __init__(self, value: Any):
+        self.value = value
+
+
+class WorksheetSnapshot:
+    def __init__(self, title: str, rows: list[list[Any]], max_column: int):
+        self.title = title
+        self._rows = rows
+        self.max_row = len(rows)
+        self.max_column = max_column
+
+    def cell(self, row: int, column: int) -> SnapshotCell:
+        value = None
+        if 1 <= row <= len(self._rows):
+            values = self._rows[row - 1]
+            if 1 <= column <= len(values):
+                value = values[column - 1]
+        return SnapshotCell(value)
 
 def now_id() -> str:
     return datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -178,6 +232,301 @@ def normalize_job_group(value: str) -> str:
     return value or ""
 
 
+
+def normalize_iso_date(value: Any) -> str:
+    text = norm(value)
+    if not text:
+        return ""
+    explicit = re.search(r"^(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", text)
+    if explicit:
+        year, month, day = explicit.groups()
+        return f"{int(year):04d}-{int(month):02d}-{int(day):02d}"
+    short = re.search(r"^(\d{2})[-./](\d{1,2})[-./](\d{1,2})", text)
+    if short:
+        year, month, day = short.groups()
+        return f"20{int(year):02d}-{int(month):02d}-{int(day):02d}"
+    return extract_date(text)
+
+
+def number_value(value: Any) -> float | None:
+    text = norm(value).replace(",", "")
+    if not text:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def positive_hours(value: Any) -> float | None:
+    number = number_value(value)
+    if number is None or number <= 0 or number > 24:
+        return None
+    return number
+
+
+def positive_headcount(value: Any) -> int | None:
+    number = number_value(value)
+    if number is None or number <= 0 or number > 300:
+        return None
+    return int(round(number))
+
+
+def structured_category(text: str) -> str:
+    rules = (
+        ("유지보수", ("보전", "설비", "점검", "경광등", "PLC", "칠러", "유압유", "누유", "도어락", "너트러너", "교체", "수정", "유지보수")),
+        ("납품대응", ("납품", "출하", "상차", "불출", "물류", "포장")),
+        ("납품용기/제품관리", ("선별", "검사", "불량", "반송품", "제품", "용기", "정기검사", "Burr", "BURR", "밀림", "조사")),
+        ("설비/시설 청소", ("청소", "이형제")),
+        ("행정업무", ("전산", "ISIR", "지적", "집계", "월마감", "서류", "자료", "보고", "재고조사")),
+        ("개발/공정개선", ("개선", "개조", "C/T", "샘플", "이관설비", "T/O")),
+        ("생산 돌대응", ("관리", "총괄", "지원판단", "품질문제", "공정관리", "현장관리", "대응")),
+    )
+    for category, tokens in rules:
+        if any(token.lower() in text.lower() for token in tokens):
+            return category
+    return "기타"
+
+
+def row_has_line_workbook_header(worksheet: Any) -> bool:
+    header = row_to_text([worksheet.cell(2, col).value for col in range(1, min(worksheet.max_column, 18) + 1)])
+    subheader = row_to_text([worksheet.cell(4, col).value for col in range(1, min(worksheet.max_column, 18) + 1)])
+    return "NO" in header and "라인명" in header and "성" in header and "근" in header and "직접부서" in subheader and "간접부서" in subheader
+
+
+def structured_candidate(
+    source: dict[str, Any],
+    source_id: str,
+    sheet_name: str,
+    date: str,
+    row_number: int,
+    team: str,
+    name: str,
+    job_group: str,
+    headcount: int,
+    hours: float | None,
+    detail: str,
+    category: str,
+    parser: str,
+) -> dict[str, Any]:
+    return {
+        "source_id": source_id,
+        "date": date,
+        "source_factory": extract_factory(f"{source['folder']} {source['file']} {sheet_name}", source["folder"]),
+        "target_factory": "",
+        "team": team,
+        "name": name,
+        "job_group": job_group,
+        "headcount": str(headcount),
+        "hours": "" if hours is None else f"{hours:g}",
+        "detail": detail,
+        "category_guess": category,
+        "category_raw": category,
+        "category_normalized": category,
+        "confidence": "medium",
+        "evidence": f"{source_id} R{row_number}: {team} / {name} / {job_group} / {headcount}명 / {'' if hours is None else f'{hours:g}h'} / {detail}",
+        "needs_review_reason": f"{parser}_structured_candidate_confirm_before_report",
+        "parser": parser,
+    }
+
+
+def declaration_candidates_from_sheet(source: dict[str, Any], source_id: str, worksheet: Any) -> list[dict[str, Any]]:
+    text_top = " ".join(
+        norm(worksheet.cell(row, col).value)
+        for row in range(1, min(9, worksheet.max_row) + 1)
+        for col in range(1, min(25, worksheet.max_column) + 1)
+    )
+    if "특근계획 신고서" not in text_top or "특근일자" not in text_top:
+        return []
+    date = ""
+    factory = ""
+    for col in range(1, min(25, worksheet.max_column) + 1):
+        cell_text = norm(worksheet.cell(5, col).value)
+        if cell_text == "공장 / 팀":
+            factory = norm(worksheet.cell(5, col + 2).value)
+        if cell_text == "특근일자":
+            date = normalize_iso_date(worksheet.cell(5, col + 2).value)
+    if not date:
+        date = extract_date(text_top)
+    if date not in TARGET_ISO_DATES:
+        return []
+
+    candidates: list[dict[str, Any]] = []
+    current_team = ""
+    current_job = ""
+    current_work = ""
+    current_detail = ""
+    current_name = ""
+    for row_number in range(9, worksheet.max_row + 1):
+        first = norm(worksheet.cell(row_number, 1).value)
+        if first.startswith("※") or first in {"합계", "TOTAL"}:
+            break
+
+        team = norm(worksheet.cell(row_number, 2).value) or current_team
+        job_left = " ".join(
+            part for part in (norm(worksheet.cell(row_number, 3).value), norm(worksheet.cell(row_number, 4).value)) if part
+        )
+        job_group = normalize_job_group(job_left or current_job)
+        work = norm(worksheet.cell(row_number, 5).value) or current_work
+        detail = norm(worksheet.cell(row_number, 9).value) or current_detail or work
+        headcount = positive_headcount(worksheet.cell(row_number, 18).value) or positive_headcount(worksheet.cell(row_number, 14).value)
+        hours = positive_hours(worksheet.cell(row_number, 19).value) or positive_hours(worksheet.cell(row_number, 15).value)
+        note = norm(worksheet.cell(row_number, 22).value)
+        name = ""
+        if job_group == "관리직" and note:
+            name = re.split(r"\s+", note)[0].strip()
+            if name in {"주간", "야간", "관리직"}:
+                name = ""
+
+        if team:
+            current_team = team
+        if job_group:
+            current_job = job_group
+        if work:
+            current_work = work
+        if detail:
+            current_detail = detail
+        if name:
+            current_name = name
+        elif job_group == "관리직":
+            name = current_name
+
+        if not headcount or not detail or not team:
+            continue
+        if job_group != "관리직" and not any(token.lower() in f"{team} {work} {detail}".lower() for token in STRUCTURED_REPORTABLE_TEXT):
+            continue
+        if job_group == "직접직" and not any(token in detail for token in ("선별", "청소", "불량", "반송품", "검사")):
+            continue
+
+        category = structured_category(f"{team} {work} {detail}")
+        candidates.append(
+            structured_candidate(
+                source,
+                source_id,
+                worksheet.title,
+                date,
+                row_number,
+                team or factory,
+                name,
+                job_group,
+                headcount,
+                hours,
+                detail,
+                category,
+                "declaration_sheet",
+            )
+        )
+    return candidates
+
+
+def management_candidates_from_sheet(source: dict[str, Any], source_id: str, worksheet: Any) -> list[dict[str, Any]]:
+    if "관리직" not in worksheet.title:
+        return []
+    target_columns: list[tuple[int, str]] = []
+    for col in range(1, min(worksheet.max_column, 80) + 1):
+        date = normalize_iso_date(worksheet.cell(3, col).value)
+        if date in TARGET_ISO_DATES:
+            target_columns.append((col, date))
+    if not target_columns:
+        return []
+
+    work_col = None
+    for col in range(1, min(worksheet.max_column, 80) + 1):
+        if "근무내용" in norm(worksheet.cell(3, col).value):
+            work_col = col
+            break
+    candidates: list[dict[str, Any]] = []
+    current_team = ""
+    for row_number in range(5, worksheet.max_row + 1):
+        team = norm(worksheet.cell(row_number, 1).value) or current_team
+        if team and "합계" not in team:
+            current_team = team
+        position = norm(worksheet.cell(row_number, 2).value)
+        name = norm(worksheet.cell(row_number, 3).value)
+        if position:
+            pass
+        if not name or name in LINE_SUMMARY_NAMES or "합계" in team:
+            continue
+        detail = norm(worksheet.cell(row_number, work_col).value) if work_col else ""
+        for col, date in target_columns:
+            hours = positive_hours(worksheet.cell(row_number, col).value)
+            if hours is None:
+                continue
+            candidate_detail = detail or f"{team} 관리직 특근"
+            candidates.append(
+                structured_candidate(
+                    source,
+                    source_id,
+                    worksheet.title,
+                    date,
+                    row_number,
+                    team,
+                    name,
+                    "관리직",
+                    1,
+                    hours,
+                    candidate_detail,
+                    structured_category(f"{team} {candidate_detail}"),
+                    "management_sheet",
+                )
+            )
+    return candidates
+
+
+def line_workbook_candidates_from_sheet(source: dict[str, Any], source_id: str, worksheet: Any) -> list[dict[str, Any]]:
+    if not row_has_line_workbook_header(worksheet):
+        return []
+    date = normalize_iso_date(worksheet.cell(1, 1).value) or extract_date(worksheet.title)
+    if date not in TARGET_ISO_DATES:
+        return []
+
+    candidates: list[dict[str, Any]] = []
+    current_direct_team = ""
+    current_indirect_team = ""
+    for row_number in range(5, worksheet.max_row + 1):
+        direct_team = norm(worksheet.cell(row_number, 2).value) or current_direct_team
+        if direct_team:
+            current_direct_team = direct_team
+        indirect_team = norm(worksheet.cell(row_number, 12).value) or current_indirect_team
+        if indirect_team:
+            current_indirect_team = indirect_team
+
+        for block, team, name_col, detail_col, hours_col, job_group in (
+            ("direct", direct_team, 3, 8, 9, "직접직"),
+            ("indirect", indirect_team, 13, 16, 17, "간접직"),
+        ):
+            name = norm(worksheet.cell(row_number, name_col).value)
+            detail = norm(worksheet.cell(row_number, detail_col).value)
+            if not name or name in LINE_SUMMARY_NAMES or not detail or detail.isdigit():
+                continue
+            hours = positive_hours(worksheet.cell(row_number, hours_col).value)
+            text = f"{team} {name} {detail}"
+            if not any(token.lower() in text.lower() for token in STRUCTURED_REPORTABLE_TEXT):
+                continue
+            if block == "direct" and not any(token in detail for token in ("선별", "청소", "불량", "반송품", "검사", "개조", "교체", "점검")):
+                continue
+            if block == "indirect" and any(token in detail for token in ("정밀측정", "공정검사", "측정대응", "공구셋팅", "원통 연마", "드릴 호닝", "5축 연마")):
+                continue
+            candidates.append(
+                structured_candidate(
+                    source,
+                    source_id,
+                    worksheet.title,
+                    date,
+                    row_number,
+                    team,
+                    name,
+                    job_group,
+                    1,
+                    hours,
+                    detail,
+                    structured_category(text),
+                    "line_workbook_sheet",
+                )
+            )
+    return candidates
+
+
 def import_dependency_status() -> dict[str, bool]:
     status: dict[str, bool] = {}
     for name in ("openpyxl", "pypdf"):
@@ -238,6 +587,7 @@ def extract_xlsx(source: dict[str, Any], source_index: int, reply_dir: Path) -> 
     path = Path(source["path"])
     evidence: list[dict[str, Any]] = []
     sheet_summaries: list[dict[str, Any]] = []
+    local_candidates: list[dict[str, Any]] = []
     try:
         workbook = openpyxl.load_workbook(path, data_only=True, read_only=True)
         for sheet_index, worksheet in enumerate(workbook.worksheets, start=1):
@@ -246,9 +596,12 @@ def extract_xlsx(source: dict[str, Any], source_index: int, reply_dir: Path) -> 
             date_counter: Counter[str] = Counter()
             rows_scanned = 0
             non_empty = 0
+            cached_rows: list[list[Any]] = []
             for row_number, row in enumerate(worksheet.iter_rows(max_row=220, max_col=60, values_only=True), start=1):
                 rows_scanned += 1
-                text = row_to_text(list(row))
+                row_values = list(row)
+                cached_rows.append(row_values)
+                text = row_to_text(row_values)
                 if not text:
                     continue
                 non_empty += 1
@@ -279,9 +632,16 @@ def extract_xlsx(source: dict[str, Any], source_index: int, reply_dir: Path) -> 
                     ]
                 )
                 evidence.append(build_evidence(source, source_id, worksheet.title, f"sheet:{worksheet.title}", text, "xlsx_sheet"))
+                sheet_snapshot = WorksheetSnapshot(worksheet.title, cached_rows, min(worksheet.max_column, 60))
+                if "특근계획 신고서" in text:
+                    local_candidates.extend(declaration_candidates_from_sheet(source, source_id, sheet_snapshot))
+                if "관리직" in worksheet.title:
+                    local_candidates.extend(management_candidates_from_sheet(source, source_id, sheet_snapshot))
+                if "직접부서" in text and "간접부서" in text:
+                    local_candidates.extend(line_workbook_candidates_from_sheet(source, source_id, sheet_snapshot))
     except Exception as exc:
-        return evidence, {"status": "error", "error": repr(exc), "sheets": sheet_summaries}
-    return evidence, {"status": "ok", "sheets": sheet_summaries, "sheet_count": len(sheet_summaries)}
+        return evidence, {"status": "error", "error": repr(exc), "sheets": sheet_summaries, "local_candidate_rows": local_candidates}
+    return evidence, {"status": "ok", "sheets": sheet_summaries, "sheet_count": len(sheet_summaries), "local_candidate_rows": local_candidates, "local_candidate_count": len(local_candidates)}
 
 
 def extract_pdf(source: dict[str, Any], source_index: int) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -409,6 +769,32 @@ def local_candidates_from_evidence(evidence_items: list[dict[str, Any]]) -> list
     return candidates
 
 
+def dedupe_local_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    deduped: list[dict[str, Any]] = []
+    seen: set[tuple[str, ...]] = set()
+    parser_rank = {
+        "declaration_sheet": 0,
+        "management_sheet": 1,
+        "line_workbook_sheet": 2,
+    }
+    sorted_candidates = sorted(candidates, key=lambda row: parser_rank.get(str(row.get("parser") or ""), 9))
+    for row in sorted_candidates:
+        date = norm(row.get("date"))
+        name = norm(row.get("name"))
+        detail = norm(row.get("detail"))
+        team = norm(row.get("team"))
+        source_id = norm(row.get("source_id"))
+        if name:
+            key = (date, name)
+        else:
+            key = (date, source_id, team, detail, norm(row.get("headcount")))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(row)
+    return deduped
+
+
 def run_reply_import(reply_dir: Path, period_label: str = "2026년 5월 5주차") -> dict[str, Any]:
     run_id = f"imp-{now_id()}"
     reply_dir = reply_dir.resolve()
@@ -416,6 +802,7 @@ def run_reply_import(reply_dir: Path, period_label: str = "2026년 5월 5주차"
     inventory = file_inventory(reply_dir)
     evidence_items: list[dict[str, Any]] = []
     sources: list[dict[str, Any]] = []
+    structured_local_candidates: list[dict[str, Any]] = []
 
     for source_index, source in enumerate(inventory, start=1):
         ext = source["extension"]
@@ -435,6 +822,7 @@ def run_reply_import(reply_dir: Path, period_label: str = "2026년 5월 5주차"
         else:
             details = {"status": "skipped", "error": f"unsupported extension {ext}"}
         evidence_items.extend(extracted)
+        structured_local_candidates.extend(details.get("local_candidate_rows", []))
         sources.append(
             {
                 **source,
@@ -450,7 +838,7 @@ def run_reply_import(reply_dir: Path, period_label: str = "2026년 5월 5주차"
     status_counts = Counter(item["extract_status"] for item in sources)
     evidence_type_counts = Counter(item["source_type"] for item in evidence_items)
     current_evidence_count = sum(1 for item in evidence_items if item["current_period"])
-    local_candidates = local_candidates_from_evidence(evidence_items)
+    local_candidates = dedupe_local_candidates([*local_candidates_from_evidence(evidence_items), *structured_local_candidates])
     finished_at = datetime.now().isoformat(timespec="seconds")
     return {
         "run_id": run_id,

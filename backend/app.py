@@ -30,7 +30,7 @@ except ImportError:  # pragma: no cover - dependency is optional until report re
     openpyxl = None
 
 
-APP_VERSION = "0.3.3"
+APP_VERSION = "0.3.4"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -61,6 +61,7 @@ APP_FEATURES = [
     "report_reconciliation_workspace",
     "import_latest_null_guard",
     "reconciliation_layout_fix",
+    "structured_0603_recovery",
 ]
 REPORT_CATEGORIES = [
     "유지보수",
@@ -886,6 +887,10 @@ def import_noise_reason(row: dict, evidence: dict | None = None) -> str:
 
 
 def report_category_for(row: dict) -> str:
+    for key in ("category_guess", "category_raw"):
+        category = normalize_report_category(row.get(key))
+        if category in REPORT_CATEGORIES:
+            return category
     text = " ".join(clean_import_value(row.get(key)) for key in ("team", "detail", "category_guess", "job_group"))
     rules = [
         ("유지보수", ("유지", "보수", "보전", "설비점검", "예방보전", "교체", "수리")),
@@ -1074,7 +1079,7 @@ def import_report_rows(run: dict, period: Period) -> tuple[list[dict], list[dict
         evidence = choose_candidate_evidence(raw, index)
         source_id = evidence.get("source_id") or (candidate_evidence_ids(raw) or [""])[0]
         factory = clean_import_value(evidence.get("factory_guess") or evidence.get("source_folder") or raw.get("source_factory"))
-        date = clean_import_value(raw.get("date"))
+        date = normalize_report_date(raw.get("date"))
         name = clean_import_value(raw.get("name"))
         team = clean_import_value(raw.get("team"))
         detail = clean_import_value(raw.get("detail") or raw.get("category_guess"))
