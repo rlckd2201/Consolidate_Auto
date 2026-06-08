@@ -551,6 +551,17 @@ function ensureReportWorkspace() {
   slideCards.insertAdjacentHTML("beforebegin", `
     <div id="reportStatus" class="report-status"></div>
     <div id="reportKpis" class="report-kpis"></div>
+    <section class="report-recon-block">
+      <div class="report-section-head">
+        <h3>수량 대사</h3>
+        <span id="reportBaselineText">기준자료 확인 중</span>
+      </div>
+      <div class="recon-grid">
+        <div id="reportReconciliation" class="recon-table"></div>
+        <div id="reportDrivers" class="driver-list"></div>
+      </div>
+      <div id="reportSourceCoverage" class="source-coverage"></div>
+    </section>
     <div class="report-grid">
       <section>
         <h3>2p 종합현황</h3>
@@ -566,6 +577,17 @@ function ensureReportWorkspace() {
       <div id="reportMatrix" class="table-wrap report-matrix"></div>
     </section>
   `);
+}
+
+function deltaClass(delta) {
+  if (!Number(delta || 0)) return "delta-zero";
+  return Number(delta) > 0 ? "delta-over" : "delta-missing";
+}
+
+function fmtDelta(delta, unit = "명") {
+  const value = Number(delta || 0);
+  if (!value) return "일치";
+  return `${value > 0 ? "+" : ""}${value}${unit}`;
 }
 
 function reportDelta(actual, expected, unit = "명") {
@@ -591,6 +613,67 @@ function renderReportKpis(draft) {
       <em>기준 ${expected ?? "-"}${expected === undefined || expected === null ? "" : unit} / ${reportDelta(actual, expected, unit)}</em>
     </div>
   `).join("");
+}
+
+function renderReconTable(title, rows) {
+  return `
+    <h4>${escapeHtml(title)}</h4>
+    <table>
+      <thead><tr><th>구분</th><th>기준</th><th>현재</th><th>차이</th></tr></thead>
+      <tbody>
+        ${(rows || []).map((row) => `
+          <tr>
+            <td>${escapeHtml(row.label || "")}</td>
+            <td>${row.expected ?? 0}${row.unit || ""}</td>
+            <td>${row.actual ?? 0}${row.unit || ""}</td>
+            <td class="${deltaClass(row.delta)}">${fmtDelta(row.delta, row.unit || "")}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderReportReconciliation(draft) {
+  const recon = draft.reconciliation || {};
+  const sourceText = recon.baseline_source === "reference_workbook"
+    ? `기준: ${recon.baseline_sheet || "통합 엑셀"}`
+    : "기준: 내장 기준값";
+  $("reportBaselineText").textContent = recon.baseline_warning ? `${sourceText} · ${recon.baseline_warning}` : sourceText;
+  $("reportReconciliation").innerHTML = `
+    ${renderReconTable("총량", recon.totals || [])}
+    ${renderReconTable("일자", recon.dates || [])}
+  `;
+  $("reportDrivers").innerHTML = `
+    <h4>차이 원인 후보</h4>
+    ${(recon.drivers || []).length ? (recon.drivers || []).map((item) => `
+      <div class="driver ${item.severity || "medium"}">
+        <strong>${escapeHtml(item.label || "")}</strong>
+        <span>${escapeHtml(item.message || "")}</span>
+      </div>
+    `).join("") : `<div class="driver ok"><strong>일치</strong><span>큰 수량 차이가 없습니다.</span></div>`}
+  `;
+  const sources = (recon.source_coverage || []).filter((item) =>
+    item.ai_error_rows || item.exception_rows || item.excluded_rows
+  ).slice(0, 10);
+  $("reportSourceCoverage").innerHTML = sources.length ? `
+    <h4>원천별 문제</h4>
+    <table>
+      <thead><tr><th>원천</th><th>반영</th><th>제외</th><th>예외</th><th>AI오류</th><th>메모</th></tr></thead>
+      <tbody>
+        ${sources.map((item) => `
+          <tr>
+            <td>${escapeHtml(item.label || "")}</td>
+            <td>${item.counted_headcount || 0}명</td>
+            <td>${item.excluded_rows || 0}</td>
+            <td>${item.exception_rows || 0}</td>
+            <td>${item.ai_error_rows || 0}</td>
+            <td>${escapeHtml((item.notes || []).slice(0, 2).join(" / "))}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  ` : "";
 }
 
 function renderReportCategoryTable(draft) {
@@ -661,6 +744,7 @@ async function renderSlides() {
     <em>후보 ${draft.counts?.input_candidates ?? 0}건 -> 보고 반영 ${draft.counts?.report_rows ?? 0}건 / 제외 ${draft.counts?.excluded_rows ?? 0}건</em>
   `;
   renderReportKpis(draft);
+  renderReportReconciliation(draft);
   renderReportCategoryTable(draft);
   renderReportExceptions(draft);
   renderReportMatrix(draft);

@@ -24,8 +24,13 @@ try:
 except ImportError:  # pragma: no cover - dependency is optional until HR lookup is used.
     pymysql = None
 
+try:
+    import openpyxl
+except ImportError:  # pragma: no cover - dependency is optional until report reconciliation is used.
+    openpyxl = None
 
-APP_VERSION = "0.3.0"
+
+APP_VERSION = "0.3.1"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -38,9 +43,23 @@ TEMPLATE_DIR = Path(os.environ.get("CONSOLIDATE_TEMPLATE_DIR", str(DEFAULT_TEMPL
 OUTPUT_ROOT = Path(os.environ.get("CONSOLIDATE_OUTPUT_ROOT", str(DEFAULT_OUTPUT_ROOT)))
 REPLY_DIR = Path(os.environ.get("CONSOLIDATE_REPLY_DIR", str(ROOT.parent.parent / "회신자료")))
 IMPORT_RUN_DIR = Path(os.environ.get("CONSOLIDATE_IMPORT_RUN_DIR", str(OUTPUT_ROOT / "import_runs")))
+REFERENCE_WORKBOOK_ENV = os.environ.get("CONSOLIDATE_REFERENCE_WORKBOOK", "").strip()
 HR_DB_NAME = os.environ.get("HR_DB_NAME", "ksystem_yundong")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_API_BASE = os.environ.get("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta")
+APP_FEATURES = [
+    "hr_lookup",
+    "template_copy",
+    "approval_preview",
+    "gemini_evidence_triage",
+    "reply_import_pipeline",
+    "import_review_workspace",
+    "import_candidate_quality_gate",
+    "ppt_pages_1_3_focus",
+    "import_source_evidence_matching",
+    "ppt_report_workspace",
+    "report_reconciliation_workspace",
+]
 REPORT_CATEGORIES = [
     "유지보수",
     "생산 돌대응",
@@ -74,6 +93,38 @@ REPORT_BASELINES = {
         "total_headcount": 188,
         "weekend_headcount": 95,
         "reference_headcount": 93,
+        "row_count": 150,
+        "by_date": {
+            "2026-05-30": 71,
+            "2026-05-31": 24,
+            "2026-06-03": 93,
+        },
+        "by_category": {
+            "유지보수": 35,
+            "생산 돌대응": 30,
+            "납품용기/제품관리": 21,
+            "개발/공정개선": 20,
+            "고객사 납품대응": 19,
+            "행정업무": 17,
+            "설비/시설 청소": 12,
+            "생산지원": 10,
+            "기타": 24,
+        },
+        "by_factory": {
+            "D1공장": 1,
+            "D2공장": 2,
+            "D3공장": 13,
+            "P2공장": 37,
+            "P3공장": 17,
+            "P4공장": 4,
+            "일강1공장": 2,
+            "일강2공장": 52,
+            "더원공장": 4,
+            "경영지원": 4,
+            "영업": 19,
+            "구매": 1,
+            "생기": 32,
+        },
     }
 }
 BLANK_IMPORT_VALUES = {"", "N/A", "NA", "None", "none", "null", "-", "미기재"}
@@ -850,6 +901,166 @@ def report_category_for(row: dict) -> str:
     return "기타"
 
 
+def normalize_report_category(value: object) -> str:
+    text = clean_import_value(value)
+    mapping = {
+        "특근대응": "생산 돌대응",
+        "생산특근대응": "생산 돌대응",
+        "생산 돌대응": "생산 돌대응",
+        "납품대응": "고객사 납품대응",
+        "고객사 납품": "고객사 납품대응",
+        "청소": "설비/시설 청소",
+        "시설청소": "설비/시설 청소",
+        "설비청소": "설비/시설 청소",
+        "해외출장": "기타",
+        "재물조사": "기타",
+    }
+    if text in REPORT_CATEGORIES:
+        return text
+    return mapping.get(text, text if text in REPORT_CATEGORIES else "기타")
+
+
+def normalize_report_factory(entity: object, factory: object) -> str:
+    entity_text = clean_import_value(entity)
+    factory_text = clean_import_value(factory)
+    if entity_text == "일강":
+        if factory_text in {"1", "1.0", "일강1", "일강 1공장", "일강1공장"}:
+            return "일강1공장"
+        if factory_text in {"2", "2.0", "일강2", "일강 2공장", "일강2공장"}:
+            return "일강2공장"
+    if entity_text == "더원":
+        return "더원공장"
+    if entity_text == "제이엠":
+        return "제이엠공장"
+    if factory_text in REPORT_FACTORY_ORDER:
+        return factory_text
+    if "전산" in factory_text or "경영" in factory_text:
+        return "경영지원"
+    if "구매" in factory_text:
+        return "구매"
+    if "생기" in factory_text or "생산기술" in factory_text:
+        return "생기"
+    if "영업" in factory_text or "물류" in factory_text:
+        return "영업"
+    return factory_text or "미확인"
+
+
+def normalize_report_date(value: object) -> str:
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d")
+    text = clean_import_value(value)
+    match = re.match(r"^(\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})", text)
+    if match:
+        year, month, day = match.groups()
+        return f"20{year}-{int(month):02d}-{int(day):02d}"
+    match = re.match(r"^(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})", text)
+    if match:
+        year, month, day = match.groups()
+        return f"{year}-{int(month):02d}-{int(day):02d}"
+    return text
+
+
+def reference_workbook_path() -> Path | None:
+    if REFERENCE_WORKBOOK_ENV:
+        path = Path(REFERENCE_WORKBOOK_ENV)
+        return path if path.exists() else None
+    if TEMPLATE_DIR.exists():
+        matches = sorted(
+            path for path in TEMPLATE_DIR.glob("*특근계획 검토*.xlsx")
+            if not path.name.startswith("~$")
+        )
+        if matches:
+            return matches[0]
+    return None
+
+
+def column_index(header: dict[str, int], *names: str, fallback: int) -> int:
+    for name in names:
+        if name in header:
+            return header[name]
+    return fallback
+
+
+def reference_report_baseline(period: Period) -> dict:
+    static_baseline = REPORT_BASELINES.get(period.id, {})
+    fallback = {
+        **static_baseline,
+        "source": "static_baseline",
+        "row_count": static_baseline.get("row_count", 0),
+        "by_category": {
+            category: static_baseline.get("by_category", {}).get(category, 0)
+            for category in REPORT_CATEGORIES
+        },
+        "by_factory": dict(static_baseline.get("by_factory", {})),
+        "matrix": {},
+    }
+    path = reference_workbook_path()
+    if openpyxl is None or not path:
+        return fallback
+
+    try:
+        workbook = openpyxl.load_workbook(path, data_only=True, read_only=True)
+        sheet_name = "통합(5월 5주차)" if "통합(5월 5주차)" in workbook.sheetnames else workbook.sheetnames[0]
+        sheet = workbook[sheet_name]
+        header_row = 4
+        for row_number in range(1, min(sheet.max_row, 30) + 1):
+            values = [clean_import_value(sheet.cell(row_number, col).value) for col in range(1, min(sheet.max_column, 50) + 1)]
+            if "일자" in values and "인원" in values and "특근내용(분류1)" in values:
+                header_row = row_number
+                break
+        header = {
+            clean_import_value(sheet.cell(header_row, col).value): col
+            for col in range(1, sheet.max_column + 1)
+            if clean_import_value(sheet.cell(header_row, col).value)
+        }
+        no_col = column_index(header, "NO", fallback=2)
+        date_col = column_index(header, "일자", fallback=3)
+        entity_col = column_index(header, "소속", fallback=7)
+        factory_col = column_index(header, "공장", fallback=8)
+        headcount_col = column_index(header, "인원", fallback=13)
+        category_col = column_index(header, "특근내용(분류1)", fallback=14)
+
+        rows: list[dict] = []
+        by_date: defaultdict[str, int] = defaultdict(int)
+        by_category: defaultdict[str, int] = defaultdict(int)
+        by_factory: defaultdict[str, int] = defaultdict(int)
+        matrix: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        for row_number in range(header_row + 1, sheet.max_row + 1):
+            no_value = sheet.cell(row_number, no_col).value
+            count = import_headcount(sheet.cell(row_number, headcount_col).value)
+            date = normalize_report_date(sheet.cell(row_number, date_col).value)
+            if count is None or not date:
+                continue
+            if not isinstance(no_value, (int, float)) and not clean_import_value(no_value).isdigit():
+                continue
+            category = normalize_report_category(sheet.cell(row_number, category_col).value)
+            factory = normalize_report_factory(sheet.cell(row_number, entity_col).value, sheet.cell(row_number, factory_col).value)
+            rows.append({"date": date, "category": category, "factory": factory, "headcount": count})
+            by_date[date] += count
+            by_category[category] += count
+            by_factory[factory] += count
+            matrix[category][factory] += count
+
+        total = sum(by_date.values())
+        weekend = sum(value for date, value in by_date.items() if date in period.weekend_dates)
+        reference = sum(value for date, value in by_date.items() if date in period.reference_dates)
+        return {
+            "source": "reference_workbook",
+            "workbook_path": str(path),
+            "sheet_name": sheet_name,
+            "row_count": len(rows),
+            "total_headcount": total,
+            "weekend_headcount": weekend,
+            "reference_headcount": reference,
+            "by_date": dict(sorted(by_date.items())),
+            "by_category": {category: by_category.get(category, 0) for category in REPORT_CATEGORIES},
+            "by_factory": dict(sorted(by_factory.items(), key=lambda item: (-item[1], item[0]))),
+            "matrix": {category: dict(factory_map) for category, factory_map in matrix.items()},
+        }
+    except Exception as exc:  # pragma: no cover - defensive fallback for damaged workbooks.
+        return {**fallback, "warning": f"reference workbook read failed: {type(exc).__name__}: {exc}"}
+
+
 def import_report_rows(run: dict, period: Period) -> tuple[list[dict], list[dict], list[dict]]:
     index = evidence_by_id(run)
     rows: list[dict] = []
@@ -949,9 +1160,154 @@ def summarize_report_rows(rows: list[dict], period: Period) -> dict:
     }
 
 
-def report_exceptions(run: dict, period: Period, rows: list[dict], exclusions: list[dict], row_exceptions: list[dict], summary: dict) -> list[dict]:
+def reconciliation_line(label: str, expected: int | None, actual: int | None, unit: str = "명") -> dict:
+    expected_value = int(expected or 0)
+    actual_value = int(actual or 0)
+    delta = actual_value - expected_value
+    if delta == 0:
+        status = "match"
+    elif delta > 0:
+        status = "over"
+    else:
+        status = "missing"
+    return {
+        "label": label,
+        "expected": expected_value,
+        "actual": actual_value,
+        "delta": delta,
+        "unit": unit,
+        "status": status,
+    }
+
+
+def source_label(item: dict) -> str:
+    file_name = Path(clean_import_value(item.get("source_file"))).name if clean_import_value(item.get("source_file")) else ""
+    sheet = clean_import_value(item.get("source_sheet_or_page"))
+    if file_name and sheet:
+        return f"{file_name} / {sheet}"
+    return file_name or sheet or clean_import_value(item.get("source_id")) or "미확인 원천"
+
+
+def build_source_coverage(run: dict, rows: list[dict], exclusions: list[dict], row_exceptions: list[dict]) -> list[dict]:
+    coverage: dict[str, dict] = {}
+
+    def ensure(label: str, item: dict | None = None) -> dict:
+        if label not in coverage:
+            coverage[label] = {
+                "label": label,
+                "source_file": clean_import_value((item or {}).get("source_file")),
+                "source_sheet_or_page": clean_import_value((item or {}).get("source_sheet_or_page")),
+                "counted_headcount": 0,
+                "counted_rows": 0,
+                "excluded_rows": 0,
+                "exception_rows": 0,
+                "ai_error_rows": 0,
+                "notes": [],
+            }
+        return coverage[label]
+
+    for row in rows:
+        entry = ensure(source_label(row), row)
+        entry["counted_headcount"] += int(row.get("headcount") or 0)
+        entry["counted_rows"] += 1
+    for row in exclusions:
+        entry = ensure(source_label(row), row)
+        entry["excluded_rows"] += 1
+        reason = clean_import_value(row.get("reason"))
+        if reason and reason not in entry["notes"]:
+            entry["notes"].append(reason)
+    for row in row_exceptions:
+        entry = ensure(source_label(row), row)
+        entry["exception_rows"] += 1
+        reason = clean_import_value(row.get("reason"))
+        if reason and reason not in entry["notes"]:
+            entry["notes"].append(reason)
+
+    index = evidence_by_id(run)
+    for error in run.get("ai", {}).get("errors", []):
+        for source_id in error.get("source_ids") or []:
+            evidence = index.get(str(source_id), {"source_id": str(source_id)})
+            entry = ensure(source_label(evidence), evidence)
+            entry["ai_error_rows"] += 1
+            detail = clean_import_value(error.get("detail"))
+            if detail and detail not in entry["notes"]:
+                entry["notes"].append(detail)
+
+    return sorted(
+        coverage.values(),
+        key=lambda item: (
+            -(item["exception_rows"] + item["ai_error_rows"] + item["excluded_rows"]),
+            -item["counted_headcount"],
+            item["label"],
+        ),
+    )[:40]
+
+
+def build_reconciliation(run: dict, period: Period, rows: list[dict], exclusions: list[dict], row_exceptions: list[dict], summary: dict, baseline: dict) -> dict:
+    totals = [
+        reconciliation_line("전체 특근인원", baseline.get("total_headcount"), summary.get("total_headcount")),
+        reconciliation_line("주말 특근현황", baseline.get("weekend_headcount"), summary.get("weekend_headcount")),
+        reconciliation_line("6/3 포함 참고", baseline.get("reference_headcount"), summary.get("reference_headcount")),
+    ]
+
+    date_keys = list(dict.fromkeys([*period.weekend_dates, *period.reference_dates, *baseline.get("by_date", {}).keys(), *summary.get("by_date", {}).keys()]))
+    dates = [
+        reconciliation_line(date, baseline.get("by_date", {}).get(date), summary.get("by_date", {}).get(date))
+        for date in date_keys
+    ]
+
+    category_keys = list(dict.fromkeys([*REPORT_CATEGORIES, *baseline.get("by_category", {}).keys(), *summary.get("by_category", {}).keys()]))
+    categories = [
+        reconciliation_line(category, baseline.get("by_category", {}).get(category), summary.get("by_category", {}).get(category))
+        for category in category_keys
+        if baseline.get("by_category", {}).get(category) or summary.get("by_category", {}).get(category)
+    ]
+
+    factory_keys = list(dict.fromkeys([*REPORT_FACTORY_ORDER, *baseline.get("by_factory", {}).keys(), *summary.get("by_factory", {}).keys()]))
+    factories = [
+        reconciliation_line(factory, baseline.get("by_factory", {}).get(factory), summary.get("by_factory", {}).get(factory))
+        for factory in factory_keys
+        if baseline.get("by_factory", {}).get(factory) or summary.get("by_factory", {}).get(factory)
+    ]
+
+    drivers: list[dict] = []
+    for line in [*totals, *dates]:
+        if line["delta"]:
+            direction = "과다" if line["delta"] > 0 else "부족"
+            drivers.append({
+                "severity": "high",
+                "label": line["label"],
+                "message": f"{abs(line['delta'])}{line['unit']} {direction}",
+            })
+    for line in sorted([*categories, *factories], key=lambda item: abs(item["delta"]), reverse=True)[:10]:
+        if line["delta"]:
+            direction = "과다" if line["delta"] > 0 else "부족"
+            drivers.append({
+                "severity": "medium",
+                "label": line["label"],
+                "message": f"{abs(line['delta'])}{line['unit']} {direction}",
+            })
+    if exclusions:
+        drivers.append({"severity": "medium", "label": "집계 제외", "message": f"{len(exclusions)}건은 M/H/라인계획/빈 세부내용으로 제외"})
+    if run.get("ai", {}).get("errors"):
+        drivers.append({"severity": "high", "label": "AI 미처리", "message": f"{len(run.get('ai', {}).get('errors', []))}개 배치/원천 재처리 필요"})
+
+    return {
+        "baseline_source": baseline.get("source"),
+        "baseline_workbook": baseline.get("workbook_path", ""),
+        "baseline_sheet": baseline.get("sheet_name", ""),
+        "baseline_warning": baseline.get("warning", ""),
+        "totals": totals,
+        "dates": dates,
+        "categories": categories,
+        "factories": factories,
+        "drivers": drivers[:18],
+        "source_coverage": build_source_coverage(run, rows, exclusions, row_exceptions),
+    }
+
+
+def report_exceptions(run: dict, period: Period, rows: list[dict], exclusions: list[dict], row_exceptions: list[dict], summary: dict, baseline: dict) -> list[dict]:
     exceptions = list(row_exceptions)
-    baseline = REPORT_BASELINES.get(period.id, {})
     for key, label in (
         ("total_headcount", "전체 특근인원"),
         ("weekend_headcount", "주말 특근현황"),
@@ -980,10 +1336,12 @@ def report_exceptions(run: dict, period: Period, rows: list[dict], exclusions: l
 
 
 def build_ppt_report_workspace(period: Period) -> dict:
+    baseline = reference_report_baseline(period)
     try:
         run = load_latest(IMPORT_RUN_DIR)
     except FileNotFoundError:
         empty_summary = summarize_report_rows([], period)
+        reconciliation = build_reconciliation({}, period, [], [], [], empty_summary, baseline)
         return {
             "source": "seed_state",
             "ready": False,
@@ -992,13 +1350,15 @@ def build_ppt_report_workspace(period: Period) -> dict:
             "exclusions": [],
             "exceptions": [{"severity": "high", "reason": "회신자료 import 결과가 없어 PPT 자동 산출을 시작할 수 없음"}],
             "summary": empty_summary,
-            "baseline": REPORT_BASELINES.get(period.id, {}),
+            "baseline": baseline,
+            "reconciliation": reconciliation,
             "counts": {"input_candidates": 0, "report_rows": 0, "excluded_rows": 0, "exception_count": 1, "blocking_count": 1},
         }
 
     rows, exclusions, row_exceptions = import_report_rows(run, period)
     summary = summarize_report_rows(rows, period)
-    exceptions = report_exceptions(run, period, rows, exclusions, row_exceptions, summary)
+    reconciliation = build_reconciliation(run, period, rows, exclusions, row_exceptions, summary, baseline)
+    exceptions = report_exceptions(run, period, rows, exclusions, row_exceptions, summary, baseline)
     blocking = [item for item in exceptions if item.get("severity") == "high"]
     return {
         "source": "latest_import",
@@ -1009,7 +1369,8 @@ def build_ppt_report_workspace(period: Period) -> dict:
         "exclusions": exclusions[:30],
         "exceptions": exceptions,
         "summary": summary,
-        "baseline": REPORT_BASELINES.get(period.id, {}),
+        "baseline": baseline,
+        "reconciliation": reconciliation,
         "counts": {
             "input_candidates": len(run.get("ai", {}).get("candidate_rows", [])) + len(run.get("local_candidate_rows", [])),
             "report_rows": len(rows),
@@ -1035,13 +1396,13 @@ def health() -> dict:
         "ok": True,
         "version": APP_VERSION,
         "service": "overtime-reporting-web",
-        "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching", "ppt_report_workspace"],
+        "features": APP_FEATURES,
     }
 
 
 @app.get("/api/version")
 def version() -> dict:
-    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": ["hr_lookup", "template_copy", "approval_preview", "gemini_evidence_triage", "reply_import_pipeline", "import_review_workspace", "import_candidate_quality_gate", "ppt_pages_1_3_focus", "import_source_evidence_matching", "ppt_report_workspace"]}
+    return {"product": "특근 보고 취합 WEB", "version": APP_VERSION, "features": APP_FEATURES}
 
 
 @app.get("/api/bootstrap")
@@ -1062,6 +1423,8 @@ def config() -> dict:
     return {
         "template_dir": str(TEMPLATE_DIR),
         "template_dir_exists": TEMPLATE_DIR.exists(),
+        "reference_workbook": str(reference_workbook_path() or ""),
+        "reference_workbook_exists": bool(reference_workbook_path()),
         "output_root": str(OUTPUT_ROOT),
         "reply_import": {
             "default_reply_dir": str(REPLY_DIR),
