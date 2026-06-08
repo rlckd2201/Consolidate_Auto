@@ -1,7 +1,7 @@
 # Graph Report - overtime_web  (2026-06-08)
 
 ## Corpus Check
-- 9 files · ~15,343 words
+- 9 files · ~15,344 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -79,28 +79,28 @@ Cohesion: 0.21
 Nodes (14): candidateEvidenceIds(), chooseCandidateEvidence(), cleanImportValue(), defaultImportAction(), explicitEvidenceIds(), genericGeminiReason(), importNoiseReason(), importReviewKey() (+6 more)
 
 ### Community 6 - "Community 6"
+Cohesion: 0.18
+Nodes (14): api(), exportExcel(), exportPpt(), fillDraft(), flattenRows(), fmtCount(), loadApprovalPreview(), loadBootstrap() (+6 more)
+
+### Community 7 - "Community 7"
 Cohesion: 0.31
 Nodes (13): candidate_evidence_ids(), choose_candidate_evidence(), clean_import_value(), column_index(), import_headcount(), import_noise_reason(), import_number(), import_report_rows() (+5 more)
 
-### Community 7 - "Community 7"
-Cohesion: 0.19
-Nodes (13): api(), exportExcel(), exportPpt(), fillDraft(), flattenRows(), fmtCount(), loadApprovalPreview(), loadBootstrap() (+5 more)
-
 ### Community 8 - "Community 8"
-Cohesion: 0.24
-Nodes (11): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), renderEntities(), rowField(), rowValue(), searchEmployees() (+3 more)
+Cohesion: 0.27
+Nodes (13): $(), addEntryRow(), ensureReportWorkspace(), renderEntities(), renderEntryRows(), renderReportCategoryTable(), renderReportExceptions(), renderReportKpis() (+5 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.33
-Nodes (11): $(), addEntryRow(), ensureReportWorkspace(), renderEntryRows(), renderReportCategoryTable(), renderReportExceptions(), renderReportKpis(), renderReportMatrix() (+3 more)
+Cohesion: 0.31
+Nodes (9): applyEmployeeToRow(), applySelectedCandidate(), candidateLabel(), renderEmployeeResults(), rowField(), rowValue(), searchEmployees(), selectedEntryRow() (+1 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.31
-Nodes (9): countImportRows(), escapeHtml(), fmtImportCounts(), importInput(), loadImportLatest(), renderImportRun(), renderImportToolbar(), renderReconTable() (+1 more)
-
-### Community 11 - "Community 11"
 Cohesion: 0.32
 Nodes (8): analyze_evidence_with_gemini(), build_gemini_prompt(), call_gemini_json(), gemini_analysis_schema(), GeminiEvidenceAnalyzeRequest, GeminiEvidenceItem, run_gemini_import_batches(), selected_ai_evidence()
+
+### Community 11 - "Community 11"
+Cohesion: 0.36
+Nodes (8): countImportRows(), escapeHtml(), fmtImportCounts(), importInput(), loadImportLatest(), renderImportRun(), renderImportToolbar(), renderReconTable()
 
 ### Community 12 - "Community 12"
 Cohesion: 0.52
@@ -111,12 +111,12 @@ Cohesion: 0.33
 Nodes (6): build_ppt_report_workspace(), import_latest(), report_exceptions(), report_workspace(), summarize_report_rows(), load_latest()
 
 ### Community 14 - "Community 14"
-Cohesion: 0.4
-Nodes (5): build_reconciliation(), build_source_coverage(), evidence_by_id(), reconciliation_line(), source_label()
-
-### Community 15 - "Community 15"
 Cohesion: 0.6
 Nodes (5): config(), gemini_configured(), gemini_key_status(), gemini_status(), reference_workbook_path()
+
+### Community 15 - "Community 15"
+Cohesion: 0.4
+Nodes (5): build_reconciliation(), build_source_coverage(), evidence_by_id(), reconciliation_line(), source_label()
 
 ### Community 16 - "Community 16"
 Cohesion: 1.0
@@ -131,7 +131,7 @@ Nodes (1): Overtime reporting web backend.
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `import_run()` connect `Community 1` to `Community 11`, `Community 3`, `Community 15`?**
+- **Why does `import_run()` connect `Community 1` to `Community 10`, `Community 3`, `Community 14`?**
   _High betweenness centrality (0.134) - this node is a cross-community bridge._
 - **Why does `main()` connect `Community 2` to `Community 1`?**
   _High betweenness centrality (0.098) - this node is a cross-community bridge._

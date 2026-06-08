@@ -30,7 +30,7 @@ except ImportError:  # pragma: no cover - dependency is optional until report re
     openpyxl = None
 
 
-APP_VERSION = "0.3.2"
+APP_VERSION = "0.3.3"
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
 DATA_DIR = ROOT / "data"
@@ -60,6 +60,7 @@ APP_FEATURES = [
     "ppt_report_workspace",
     "report_reconciliation_workspace",
     "import_latest_null_guard",
+    "reconciliation_layout_fix",
 ]
 REPORT_CATEGORIES = [
     "유지보수",
